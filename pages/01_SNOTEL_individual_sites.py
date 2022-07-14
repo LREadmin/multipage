@@ -110,7 +110,7 @@ with st.sidebar:
     end_date = st.date_input("Pick an end date", min_value=min_date, max_value=max_date)
     
 if start_date >= end_date:
-    st.error('Use Selection to change start date (default has been set to %s)'%min_date)
+    st.sidebar.error('Use Selection to change start date (default has been set to %s)'%min_date)
     start_date=min_date
 
 #change dates to similar for comparison
