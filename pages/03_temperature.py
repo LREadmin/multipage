@@ -29,7 +29,7 @@ monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','D
 
 #get parameter list
 params=data_raw.columns
-params=params[params.isin(["precip_rank","site"])==False]
+params=params[params.isin(["date","precip_rank","site"])==False]
 
 #get site list
 sites=data_raw['site'].drop_duplicates()
