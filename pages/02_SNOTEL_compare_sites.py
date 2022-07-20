@@ -80,14 +80,11 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select = container.multiselect('Select one or more sites:', sites,sites,value=True)
+    multi_site_select = container.multiselect('Select one or more sites:', sites, sites)
 
 else:
-    multi_site_select = container.multiselect('Select one or more sites:', sites)
+    multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites.iloc[0])
 
-if len(multi_site_select)==0:
-    multi_site_select = sites.iloc[0]
-    st.sidebar.error('Select at least one site')
     
 def multisitefilter():
     return system_data[system_data['Site'].isin(multi_site_select)]
