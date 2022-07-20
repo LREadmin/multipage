@@ -80,7 +80,7 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select = container.multiselect('Select one or more sites:', sites,sites)
+    multi_site_select = container.multiselect('Select one or more sites:', sites,sites,value=True)
 
 else:
     multi_site_select = container.multiselect('Select one or more sites:', sites)
