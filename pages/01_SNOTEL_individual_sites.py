@@ -66,7 +66,7 @@ data1['Date']=data1['Date'].str[:-15]
 
 data1=data1.sort_values(by="Date", ascending=False)
 
-if st.checkbox('show SNOTEL data'):    
+if st.checkbox('show SNOTEL data for full POR'):    
     st.dataframe(data1)
     
 #%% download snotel data  
@@ -78,7 +78,7 @@ def convert_df(df):
 csv = convert_df(data)
 
 st.download_button(
-     label="Download data as CSV",
+     label="Download POR SNOTEL data as CSV",
      data=csv,
      file_name='%s_data.csv'%site_selected,
      mime='text/csv',
@@ -104,7 +104,7 @@ def endDate():
 
 end_date=endDate()
 
-st.write("Date range: %s through %s"%(start_date, end_date))
+st.header("Date range: %s through %s"%(start_date, end_date))
 
 #change dates to similar for comparison
 start_date=pandas.to_datetime(start_date,utc=True) 
