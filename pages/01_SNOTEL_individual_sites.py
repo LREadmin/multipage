@@ -39,28 +39,12 @@ siteNamesList = [s.replace("]", "") for s in siteNamesList]
 siteNamesList = [s.replace("'", "") for s in siteNamesList]
 siteNames=pandas.DataFrame(siteNamesList)
 
-#%%convert to map data
-mapData=sites_df[['name','location']]
-mapData['location']=mapData['location'].str.replace("{","")
-mapData['location']=mapData['location'].str.replace("}","")
-mapData[['1','2','3','4']]=mapData['location'].str.split(expand=True)
-mapData=mapData[['name','2','4']]
-mapData['2']=mapData['2'].str.replace("'","")
-mapData['2']=mapData['2'].str.replace(",","")
-mapData['4']=mapData['4'].str.replace("'","")
-mapData.rename({'2':'lat','4':'lon'},axis=1,inplace=True)
-mapData[['lat','lon']]=mapData[['lat','lon']].astype(float).fillna(0.0)
-
-selected_mapData=pandas.concat([mapData.set_index('name'),siteNames.set_index([0])],axis=1,join='inner').reset_index()
-#plot map data
-st.map(selected_mapData,7)
-
 #%%start and end dates needed for initial data fetch
 startY=1950
 startM=10
 startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
-end_date = arrow.now().format('YYYY-MM-DD')
+end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
 #%%
 pandas.to_datetime(data_raw['Date'])
@@ -79,6 +63,8 @@ data=data[cols]
 data1=data
 data1=data1.set_index('Site')
 data1['Date']=data1['Date'].str[:-15]
+
+data1=data1.sort_values(by="Date", ascending=False)
 
 if st.checkbox('show SNOTEL data'):    
     st.dataframe(data1)
@@ -104,20 +90,28 @@ st.download_button(
 min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
-with st.sidebar:
-    st.write("Date range:")
-    start_date = st.date_input("Pick a start date", min_value=min_date, max_value=max_date) #force start date at least 1 year before end date
-    end_date = st.date_input("Pick an end date", min_value=min_date, max_value=max_date)
-    
-if start_date >= end_date:
-    st.sidebar.error('Use Selection to change start date (default has been set to %s)'%min_date)
-    start_date=min_date
+# with st.sidebar: 
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4])-1)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
+
+def startDate():
+    return "%s-%s-0%s"%(startYear-1,10,1)
+
+start_date=startDate()
+
+def endDate():
+    return "%s-0%s-%s"%(endYear,9,30)
+
+end_date=endDate()
+
+st.write("Date range: %s through %s"%(start_date, end_date))
 
 #change dates to similar for comparison
 start_date=pandas.to_datetime(start_date,utc=True) 
+end_date=pandas.to_datetime(end_date,utc=True) 
 data['Date'] = pandas.to_datetime(data['Date'])
 
-data=data[(data['Date']>start_date)]
+data=data[(data['Date']>=start_date)&(data['Date']<=end_date)]
 
 #%% redefine years as needed for remaining analyses
 start=start_date
@@ -198,20 +192,51 @@ zeroSWE=zeroSWE.drop_duplicates('WY',keep='first')
 summary=PeakSWE[['PeakSWE','WY','CalDay']].copy()
 merge=summary.merge(zeroSWE,how='inner',on='WY')
 merge=merge.drop(['SWE_in','PeakCalDay','PeakSWE_y','CY'],axis=1)
-merge.rename({'PeakSWE_x': 'PeakSWE_in', 'WY': 'WY', 'CalDay_x':'PeakSWE_Day','CalDay_y': 'FirstZeroDay'}, axis=1, inplace=True)
-merge['MeltDays']=merge['FirstZeroDay']-merge['PeakSWE_Day']
+merge.rename({'PeakSWE_x': 'Peak SWE (in)', 'WY': 'WY', 'CalDay_x':'Peak SWE Day','CalDay_y': 'First Zero SWE Day'}, axis=1, inplace=True)
+merge['Melt Day Count']=merge['First Zero SWE Day']-merge['Peak SWE Day']
 
 
 #%%Mann kendall
 merge=merge.set_index('WY')
+params=merge.columns
 median=pandas.DataFrame(merge.median()).T
-merge1=pandas.concat([merge,median],ignore_index=True)
-index=pandas.DataFrame(merge.index)
-tempDF=pandas.DataFrame([9999],columns=['WY'])
-index1=pandas.concat([index,tempDF])
 
-merge1=merge1.set_index(index1['WY'])
-mk.original_test(merge['PeakSWE_in'])
+trendraw=[]
+ManKraw=[]
+for row in params:
+    print(row)
+    tempManK=mk.original_test(merge[row])
+    ManKraw.append(tempManK)
+    if ManKraw[0][0]=='no trend':
+        trendraw.append(-9999)
+    else:
+        trendraw.append(ManKraw[0][6])       #slope value 
+ManK=pandas.DataFrame(ManKraw)
+trend=pandas.DataFrame(trendraw)
+ManK['params']=params
+ManK['slope1']=trend
+
+ManK=ManK[['trend','slope1','params']].T
+ManK.columns=ManK.iloc[2]
+ManK=ManK.drop(['params','trend'])
+
+# trend=[]
+# for row in ManK:
+#     print(row)
+#     if row['trend']=="no trend":
+#         row['slope']==-9999
+#     else:
+#         row['slope']
+#     trend.append(row['slope'])
+
+merge1=pandas.concat([median, ManK],ignore_index=True)
+merge1=merge1.rename(index={0: 'Median',1:'Slope'})
+# index=pandas.DataFrame(merge.index)
+# tempDF=pandas.DataFrame([9999],columns=['WY'])
+# index1=pandas.concat([index,tempDF])
+
+# merge1=merge1.set_index(index1['WY'])
+# mk.original_test(merge['PeakSWE_in'])
 
 #%%accumulated SWE to array
 array=data4.to_numpy()
@@ -269,17 +294,16 @@ cbar.set_label("SWE (inches)")
 cb2axes=fig.add_axes([1.02,0.5,0.03,0.3])
 cbar1=fig.colorbar(peak,cax=cb2axes,shrink=.25)
 cbar1.set_label("Peak SWE (inches)")
-
-st.pyplot(fig)
-
+st.pyplot(plt)
 #save file
 #plt.savefig("%s.png"%site_selected,dpi=300,bbox_inches="tight")
 
-#%% stats table
-if st.checkbox('summary stats'):
-    st.dataframe(merge1.style.format({"PeakSWE_in":"{:.1f}","PeakSWE_Day":"{:.0f}","FirstZeroDay":"{:.0f}","MeltDays":"{:.0f}"}))#)width=1000,height=500)
-    
-#%% download merge stats data
+#%% stats tables
+
+st.header("Summary Statistic Table")
+st.write(merge1)
+st.markdown("(note '-9999' indicates no trend)")
+# download sum stats data
 @st.cache
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -287,9 +311,34 @@ def convert_df(df):
 
 csv = convert_df(merge1)
 
-st.markdown("(note: row 9999 = median)")
 st.download_button(
-     label="Download data as CSV",
+     label="Download summary stats CSV",
+     data=csv,
+     file_name='%s_sum_stats.csv'%site_selected,
+     mime='text/csv',
+ )
+
+merge=merge.sort_values(by="WY", ascending=False)
+merge2=merge.style\
+    .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})\
+    .set_properties(**{'width':'10000px'})
+
+# merge3=merge1.loc[1].style\
+#     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})
+
+st.header("Yearly Data Table")
+st.write(merge2)
+
+# download sum stats data
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(merge)
+
+st.download_button(
+     label="Download yearly data as CSV",
      data=csv,
      file_name='%s_stats.csv'%site_selected,
      mime='text/csv',
