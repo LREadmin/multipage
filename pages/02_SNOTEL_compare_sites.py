@@ -133,7 +133,7 @@ startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=sta
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
 
 def startDate():
-    return "%s-%s-0%s"%(startYear-1,10,1)
+    return "%s-%s-0%s"%(int(startYear-1),10,1)
 
 start_date=startDate()
 
@@ -145,7 +145,6 @@ end_date=endDate()
 #change dates to similar for comparison
 start_date1=pandas.to_datetime(start_date,utc=True) 
 end_date1=pandas.to_datetime(end_date,utc=True) 
-#system_site_data['Date'] = pandas.to_datetime(system_site_data['Date'])
 
 final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_data['Date']<=end_date1)]
 
