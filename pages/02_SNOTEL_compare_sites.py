@@ -20,7 +20,7 @@ from matplotlib import colors
 
 import pymannkendall as mk
 #%% set working directory
-st.set_page_config(page_title="Site Comparison", page_icon="📈")
+st.set_page_config(page_title="SNOTEL Site Comparison", page_icon="📈")
 
 st.markdown("# Site Comparison")
 st.sidebar.header("Site Comparison")

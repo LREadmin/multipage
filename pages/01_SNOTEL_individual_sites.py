@@ -21,7 +21,7 @@ import pymannkendall as mk
 
 
 #%%
-st.set_page_config(page_title="Individual Sites", page_icon="📈")
+st.set_page_config(page_title="SNOTEL Individual Sites", page_icon="📈")
 
 #st.markdown("#Individual Sites")
 #st.sidebar.header("Plotting Demo")
