@@ -143,11 +143,11 @@ def endDate():
 end_date=endDate()
 
 #change dates to similar for comparison
-#start_date=pandas.to_datetime(start_date,utc=True) 
-#end_date=pandas.to_datetime(end_date,utc=True) 
+start_date1=pandas.to_datetime(start_date,utc=True) 
+end_date1=pandas.to_datetime(end_date,utc=True) 
 
 #start_date=pandas.to_datetime(start_date,utc=True) 
-final_data=system_site_data[(system_site_data['Date']>start_date)&(system_site_data['Date']<=end_date)]
+final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_data['Date']<=end_date1)]
 
 summary=pandas.DataFrame()
 
