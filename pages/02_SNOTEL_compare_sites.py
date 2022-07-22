@@ -145,7 +145,7 @@ end_date=endDate()
 #change dates to similar for comparison
 start_date1=pandas.to_datetime(start_date,utc=True) 
 end_date1=pandas.to_datetime(end_date,utc=True) 
-system_site_data['Date'] = pandas.to_datetime(system_site_data['Date'])
+#system_site_data['Date'] = pandas.to_datetime(system_site_data['Date'])
 
 final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_data['Date']<=end_date1)]
 
