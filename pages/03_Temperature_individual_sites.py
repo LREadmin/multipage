@@ -37,19 +37,25 @@ monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','D
 params=data_raw.columns
 params=params[params.isin(["maxt","mint","meant"])==True]
 
+paramsDF=pandas.DataFrame(params)
+paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
+paramsSelect=paramsDF['long']
+
+
 #get site list
 sites=data_raw['site'].drop_duplicates()
 
 #%% filter first for parameters
-params_select = st.sidebar.selectbox('Select one parameter:', params)
+params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
+param=paramsDF.loc[paramsDF['long']==params_select][0]
 
 def paramfilter():
-    return data_raw.loc[data_raw[params_select] >= 0]
+    return data_raw.loc[data_raw[param.iloc[0]] >= 0]
 
 data_param=paramfilter()
 
 #%%
-data1=data_param[[params_select,'Month','site','CY']]
+data1=data_param[[param.iloc[0],'Month','site','CY']]
 
 #%% filter second for site
 site_select = st.sidebar.selectbox('Select one site:', sites)
@@ -78,7 +84,9 @@ data_param_site_date=data_param_site[(data_param_site['CY']>=startYear)&(data_pa
 
 
 #%%threshold filter
-threshold = st.sidebar.number_input('Set %s threshold:'%params_select)
+thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select)
+
+thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select)
 
 #%%calc statistic for all months
 yearList=data_param_site_date['CY'].drop_duplicates()
@@ -91,7 +99,7 @@ for row in yearList:
         tempData2=tempData2.dropna()
         tempData2=tempData2.drop(columns='site')
         median=tempData2.median()
-        count=tempData2[tempData2 > threshold].count()
+        count=tempData2[(tempData2 > thresholdHigh)&(tempData2 < thresholdLow)].count()
         newParamData.append([row,row1,median[0]])
         newParamData1.append([row,row1,count[0]])
         
@@ -247,7 +255,7 @@ countTableData=data5.style\
 
 #%%display
 pandas.set_option('display.width',100)
-st.header("Count of days with %s over %s value" %(params_select,threshold))
+st.header("Count of days with %s between %s and %s value" %(params_select,thresholdLow, thresholdHigh))
 st.dataframe(countTableData)
 
 # download data
