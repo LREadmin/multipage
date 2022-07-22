@@ -100,7 +100,7 @@ def startDate():
 start_date=startDate()
 
 def endDate():
-    return "%s-0%s-%s"%(endYear,9,30)
+    return "%s-0%s-%s"%(int(endYear),9,30)
 
 end_date=endDate()
 
