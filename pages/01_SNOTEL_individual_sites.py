@@ -91,11 +91,11 @@ min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]-1))
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]))
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
 
 def startDate():
-    return "%s-%s-0%s"%(startYear-1,10,1)
+    return "%s-%s-0%s"%(int(startYear-1),10,1)
 
 start_date=startDate()
 
