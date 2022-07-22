@@ -143,10 +143,10 @@ def endDate():
 end_date=endDate()
 
 #change dates to similar for comparison
-start_date=pandas.to_datetime(start_date,utc=True) 
-end_date=pandas.to_datetime(end_date,utc=True) 
+#start_date=pandas.to_datetime(start_date,utc=True) 
+#end_date=pandas.to_datetime(end_date,utc=True) 
 
-start_date=pandas.to_datetime(start_date,utc=True) 
+#start_date=pandas.to_datetime(start_date,utc=True) 
 final_data=system_site_data[(system_site_data['Date']>start_date)&(system_site_data['Date']<=end_date)]
 
 summary=pandas.DataFrame()
@@ -269,7 +269,7 @@ yearList1=yearList.style\
 
     
 st.header("SNOTEL WY Median / SNOTEL POR Median")
-st.markdown("Date range: %s through %s"%(start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d')))
+st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearList1
 
 # download data
