@@ -94,8 +94,8 @@ max_date = datetime.datetime.today() #today
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]))
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
 
-#startYear=2021
-#endYear=2021
+# startYear=2021
+# endYear=2021
 
 def startDate():
     return "%s-%s-0%s"%(int(startYear-1),10,1)
@@ -135,7 +135,7 @@ data2['WY']=numpy.where(data2['CalDay']>=274,data2['CY']+1,data2['CY'])
 
 #create year list
 years=[]
-years.extend(range(startYear,endYear+1))
+years.extend(range(startYear+1,endYear+1))
 
 #%%create day list for cal year or water year
 daysCY=[]
@@ -152,7 +152,7 @@ else:
 
 
 #%%transpose to get days as columns
-list=range(startYear,endYear+1)
+list=years
 yearList=[]
 for n in list:
     if yearType=="WY":
