@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 
 import pymannkendall as mk
+
 #%% set working directory
 st.set_page_config(page_title="SNOTEL Site Comparison", page_icon="📈")
 
@@ -63,7 +64,8 @@ manKPOR=[]
 median=[]
 for row in siteNames['Site']:
     temp=combo_data2[combo_data2['Site']==row]
-    temp_median=temp['SWE_in'].median()
+    tempMedian=temp[['WY','SWE_in']]
+    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
     median.append([row,temp_median])
     
     #Man Kendall Test
@@ -71,7 +73,7 @@ for row in siteNames['Site']:
     tempPORMKMedian=tempPOR.groupby(tempPOR['WY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[0]=='no trend':
-        manKPOR.append([row,-9999])
+        manKPOR.append([row,None])
     else:
         manKPOR.append([row,tempPORManK[7].round(2)])       #slope value 
         
@@ -154,7 +156,8 @@ manK=[]
 median=[]
 for row in multi_site_select:
     temp=final_data[final_data['Site']==row]
-    temp_median=temp['SWE_in'].median()
+    tempMedian=temp[['WY','SWE_in']]
+    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
     median.append(temp_median)
     
     #Man Kendall Test
@@ -162,7 +165,7 @@ for row in multi_site_select:
     tempMKMedian=tempMK.groupby(tempMK['WY']).median()
     tempManK=mk.original_test(tempMKMedian)
     if tempManK[0]=='no trend':
-        manK.append(-9999)
+        manK.append(None)
     else:
         manK.append(tempManK[7].round(2))       #slope value 
     
@@ -173,7 +176,7 @@ for row in multi_site_select:
 median=pandas.DataFrame(median)
 manK=pandas.DataFrame(manK)
 summary=pandas.concat([summary,median,manK],axis=1)
-summary.columns=['Site','System','POR Start','POR End','SWE median for POR (in)','SWE ManK Slope for POR','SWE Median For Selected Date Range (in)','ManK Slope (Selected Date Range)']
+summary.columns=['Site','System','POR Start','POR End','POR Stat','POR Trend','Select WY Stat','Select WY Trend']
 #summary=summary.set_index(['Site'])
 summary["POR Start"] = pandas.to_datetime(summary["POR Start"]).dt.strftime('%Y-%m-%d')
 summary["POR End"] = pandas.to_datetime(summary["POR End"]).dt.strftime('%Y-%m-%d')
@@ -181,10 +184,13 @@ summary["POR End"] = pandas.to_datetime(summary["POR End"]).dt.strftime('%Y-%m-%
 summary=summary.set_index('Site')
 
 summary1=summary.style\
-    .format({'SWE median for POR (in)':"{:.1f}",'SWE Median For Selected Date Range (in)':"{:.1f}"})\
-    .set_properties(**{'width':'10000px'})
+    .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
+              ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
+    .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
+    #.set_properties(**{'width':'10000px'})
 
-st.dataframe(summary1)
+st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
+summary1
 
 # download data
 @st.cache
@@ -217,14 +223,15 @@ for WYrow in selectWY:
     try:
         for siterow in selectSite:
             tempSiteData=tempWYdata[tempWYdata['Site']==siterow]
-            tempSiteWYmedian=tempSiteData['SWE_in'].median()
+            tempSiteWYPeak=tempSiteData['SWE_in'].max()
             tempPORmed=tempSiteData.iloc[0]['MedianPOR']
-            tempMedNorm=tempSiteWYmedian/tempPORmed
+            tempMedNorm=tempSiteWYPeak/tempPORmed
             compList.append([siterow,WYrow,tempMedNorm])
     except:
         compList.append([siterow,WYrow,None])
 compListDF=pandas.DataFrame(compList)
 compListDF.columns=['Site','WY','NormMed']
+#compListDF=compListDF.sort_values(by='WY',ascending=False)
 
 #%%transpose to get days as columns
 #compListDF=pandas.read_csv("temp.csv")
@@ -240,11 +247,10 @@ for n in list:
     temp2=temp1.iloc[:,[1]].copy()
     temp2.columns=[n]
     yearList[n]=temp2
-
+#yearList=yearList.fillna("NaN")
 #%%colormap
-
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
-    print(s.shape)
+def background_gradient(s, m=None, M=None, cmap='Blues',low=0, high=0):
+    #print(s.shape)
     if m is None:
         m = s.min().min()
     if M is None:
@@ -257,16 +263,21 @@ def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
     cm = plt.cm.get_cmap(cmap)
     c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
     ret = c.applymap(lambda x: 'background-color: %s' % x)
-    # if data4.isnull().values.any():
-    #     return 'background-color: white'
     return ret 
-    
-yearList1=yearList.style\
-    .format('{:,.0%}')\
-    .set_properties(**{'width':'10000px'})\
-    .apply(background_gradient, axis=None)
 
-    
+yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
+
+siteSystem=system_site_data[['Site','System']].drop_duplicates()
+siteSystem=siteSystem.set_index(['Site'])
+yearList.insert(0,'System',siteSystem['System'])
+
+select_col=yearList.columns[1:]
+yearList1=yearList.style\
+    .set_properties(**{'width':'10000px'})\
+    .apply(background_gradient, axis=None,subset=select_col)\
+    .format('{:,.0%}',subset=select_col)
+
+    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
 st.header("SNOTEL WY Median / SNOTEL POR Median")
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearList1

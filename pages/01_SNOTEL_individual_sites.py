@@ -215,7 +215,7 @@ else:
         tempManK=mk.original_test(merge[row])
         ManKraw.append(tempManK)
         if ManKraw[0][0]=='no trend':
-            trendraw.append(-9999)
+            trendraw.append(None)
         else:
             trendraw.append(ManKraw[0][6])       #slope value 
     ManK=pandas.DataFrame(ManKraw)
@@ -237,13 +237,7 @@ else:
     #     trend.append(row['slope'])
     
     merge1=pandas.concat([median, ManK],ignore_index=True)
-    merge1=merge1.rename(index={0: 'Median',1:'Slope'})
-# index=pandas.DataFrame(merge.index)
-# tempDF=pandas.DataFrame([9999],columns=['WY'])
-# index1=pandas.concat([index,tempDF])
-
-# merge1=merge1.set_index(index1['WY'])
-# mk.original_test(merge['PeakSWE_in'])
+    merge1=merge1.rename(index={0: 'Median',1:'Trend'})
 
 #%%accumulated SWE to array
 array=data4.to_numpy()
@@ -308,11 +302,16 @@ st.pyplot(plt)
 #%% stats tables
 
 st.header("Summary Statistic Table")
-st.write(merge1)
+sumDisplay=merge1.style\
+    .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.1f}"})\
+    .set_properties(**{'width':'10000px'})
+
+st.markdown("Trend (Theil-Sen Slope (inches/year or days/year) if Mann-Kendall trend test is significant; otherwise nan)")
+sumDisplay
+
 if len(merge1)==1:
     pass
-else:
-    st.markdown("(note '-9999' indicates no trend)")
+
 # download sum stats data
 @st.cache
 def convert_df(df):
@@ -332,9 +331,6 @@ merge=merge.sort_values(by="WY", ascending=False)
 merge2=merge.style\
     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})\
     .set_properties(**{'width':'10000px'})
-
-# merge3=merge1.loc[1].style\
-#     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})
 
 st.header("Yearly Data Table")
 st.write(merge2)
