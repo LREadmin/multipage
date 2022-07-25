@@ -176,18 +176,21 @@ for row in multi_site_select:
 median=pandas.DataFrame(median)
 manK=pandas.DataFrame(manK)
 summary=pandas.concat([summary,median,manK],axis=1)
+
 summary.columns=['Site','System','POR Start','POR End','POR Stat','POR Trend','Select WY Stat','Select WY Trend']
-#summary=summary.set_index(['Site'])
 summary["POR Start"] = pandas.to_datetime(summary["POR Start"]).dt.strftime('%Y-%m-%d')
 summary["POR End"] = pandas.to_datetime(summary["POR End"]).dt.strftime('%Y-%m-%d')
 
 summary=summary.set_index('Site')
-
-summary1=summary.style\
+if len(summary)==1:
+    summary1=summary.style\
+        .format({'POR Stat':"{:.1f}",'Select WY Stat':"{:.1f}"})\
+        .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])  
+else:
+    summary1=summary.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
               ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
-    #.set_properties(**{'width':'10000px'})
 
 st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
 summary1
