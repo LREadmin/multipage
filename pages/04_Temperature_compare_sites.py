@@ -66,7 +66,7 @@ for site in sites:
     medstat.append(tempstat)
     
     #Man Kendall Test
-    dataforMK=dataBySite[[stat_selection[0],'CY']]
+    dataforMK=dataBySite[[stat_selection.iloc[0],'CY']]
     tempPORMKMedian=dataforMK.groupby(dataforMK['CY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[0]=='no trend':
@@ -160,7 +160,7 @@ for site in siteSelect:
     medstatSelect.append(tempstat)
     
     #Man Kendall Test
-    dataforMKSelect=dataBySite[[stat_selection[0],'CY']]
+    dataforMKSelect=dataBySite[[stat_selection.iloc[0],'CY']]
     tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['CY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[0]=='no trend':
