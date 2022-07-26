@@ -40,9 +40,15 @@ data['CY']=data['date'].dt.year
 
 #%%select stat
 #statistic
-stat_selection= st.sidebar.selectbox(
-     'Select one statistic:',
-     ('maxt','mint','meant'))
+
+paramsDF=pandas.DataFrame({0:['maxt','mint','meant'], 'long': ['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']})
+paramsSelect=paramsDF['long']
+
+stat_select= st.sidebar.selectbox(
+     'Select one statistic:', paramsSelect)
+
+stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
+
 
 #%%calulcate params for POR
 manKPOR=[]
@@ -60,17 +66,17 @@ for site in sites:
     medstat.append(tempstat)
     
     #Man Kendall Test
-    dataforMK=dataBySite[[stat_selection,'CY']]
+    dataforMK=dataBySite[[stat_selection[0],'CY']]
     tempPORMKMedian=dataforMK.groupby(dataforMK['CY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[0]=='no trend':
-        manKPOR.append([site,-9999])
+        manKPOR.append([site,None])
     else:
         manKPOR.append([site,tempPORManK[7].round(2)])       #slope value 
 
 manKPOR=pandas.DataFrame(manKPOR)
 manKPOR=manKPOR.set_index([sites])
-manKPOR.columns=(['Site','ManKPOR'])
+manKPOR.columns=(['Site','POR Trend'])
     
 pordf=pandas.DataFrame(por)
 pordf=pordf.set_index([0])
@@ -78,7 +84,7 @@ pordf.columns=["POR Start","POR End"]
 
 medstatdf=pandas.DataFrame(medstat)
 medstatdf=medstatdf.set_index([sites])
-medstatdf.columns=['POR %s'%stat_selection]
+medstatdf.columns=['POR Stat']
 
 sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
 
@@ -154,33 +160,43 @@ for site in siteSelect:
     medstatSelect.append(tempstat)
     
     #Man Kendall Test
-    dataforMKSelect=dataBySite[[stat_selection,'CY']]
+    dataforMKSelect=dataBySite[[stat_selection[0],'CY']]
     tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['CY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[0]=='no trend':
-        manKPORSelect.append([site,-9999])
+        manKPORSelect.append([site,None])
     else:
         manKPORSelect.append([site,tempPORManK[7].round(2)])       #slope value 
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
 manKPORSelect=manKPORSelect.set_index([0])
-manKPORSelect.columns=(['ManKSelect'])
+manKPORSelect.columns=(['Select CY Trend'])
 
 medstatSelectdf=pandas.DataFrame(medstatSelect)
 medstatSelectdf=medstatSelectdf.set_index([siteSelect])
 
-medstatSelectdf.columns=[stat_selection]
+medstatSelectdf.columns=['Select CY Stat']
 
 sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
 sumSites=sumSites.drop("Site",axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
-# sumSites2=sumSites1.style\
-#     .format({'POR %s'%stat_selection:"{:.1f}",'POR mint':"{:.1f}",'POR meant':"{:.1f}",'maxt':"{:.1f}",'mint':"{:.1f}",'meant':"{:.1f}"})\
+if len(sumSites1)==1:
+    sumSitesDisplay=sumSites1.style\
+        .format({'POR Stat':"{:.1f}",
+                  'Select CY Stat':"{:.1f}"})\
+        .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
+else:
+    sumSitesDisplay=sumSites1.style\
+        .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
+                  ,'Select CY Stat':"{:.1f}",'Select CY Trend':"{:.2f}"})\
+        .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
-st.header("Site Comparison, with Median")
-sumSites1
+st.header("Site Comparison")
+st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
+st.markdown("Date range for Selection: %s through %s"%(start_date, end_date))
+sumSitesDisplay
 
 # download data
 @st.cache
