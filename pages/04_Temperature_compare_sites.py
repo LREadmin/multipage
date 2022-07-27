@@ -388,7 +388,7 @@ countList1=countList.style\
     .apply(background_gradient, axis=None)\
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Count of days with %s between %s and %s median %s"%(stat_select,thresholdLow, thresholdHigh, stat_select))
+st.header("Count of days with %s between %s and %s %s"%(stat_select,thresholdLow, thresholdHigh, stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 countList1
 
