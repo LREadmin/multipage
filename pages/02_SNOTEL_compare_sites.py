@@ -133,6 +133,8 @@ max_date = datetime.datetime.today() #today
 # with st.sidebar: 
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]), value=1950)
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
+#startYear=2022
+#endYear=startYear
 
 def startDate():
     return "%s-%s-0%s"%(int(startYear-1),10,1)
@@ -154,6 +156,7 @@ final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_
 summary=pandas.DataFrame()
 siteSelect=final_data['Site'].drop_duplicates()
 
+tempManK=[]
 manK=[]
 median=[]
 for row in siteNames['Site']:
@@ -167,12 +170,14 @@ for row in siteNames['Site']:
         tempMK=temp[['WY','SWE_in']]
         tempMKMedian=tempMK.groupby(tempMK['WY']).median()
         tempManK=mk.original_test(tempMKMedian)
+        try:
+            tempManK[0]=='no trend'
+            manK.append(float('nan'))
+        except:
+            manK.append(tempManK[7].round(2))   
     except:
-        pass
-    if tempManK[0]=='no trend':
         manK.append(float('nan'))
-    else:
-        manK.append(tempManK[7].round(2))       #slope value 
+    #slope value 
     
     temp1=temp[['Site','System','por_start','por_end','MedianPOR','ManKPOR']]
     temp1=temp1.drop_duplicates()

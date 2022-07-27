@@ -34,9 +34,49 @@ sumSites=sumSites.set_index(['site']) #empty dataframe with sites as index
 
 #%% add POR
 data=data_raw
-data=data_raw[['site','date','maxt','mint','meant']]
+data=data_raw[['site','date','Month','maxt','mint','meant']]
 data['date']=pandas.to_datetime(data['date'])
 data['CY']=data['date'].dt.year
+
+#%%select months
+
+monthOptions=pandas.DataFrame({'Month':['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                               'Season':['Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer','Fall','Fall','Fall'],
+                               'Num':[1,2,3,4,5,6,7,8,9,10,11,12]})
+monthSelect=monthOptions['Month']
+
+winterMonths=monthOptions.loc[monthOptions['Season']=='Winter']['Month']
+springMonths=monthOptions.loc[monthOptions['Season']=='Spring']['Month']
+summerMonths=monthOptions.loc[monthOptions['Season']=='Summer']['Month']
+fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
+
+container=st.sidebar.container()
+winter=st.sidebar.checkbox("Winter")
+spring=st.sidebar.checkbox("Spring")
+summer=st.sidebar.checkbox("Summer")
+fall=st.sidebar.checkbox("Fall")
+
+if winter:
+    month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
+    
+elif spring:
+    month_select = container.multiselect('Select month(s):',springMonths, springMonths)
+    
+elif summer:
+    month_select = container.multiselect('Select month(s):',summerMonths, summerMonths)
+        
+elif fall:
+    month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
+else:
+    month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
+
+monthNum_select=pandas.DataFrame(month_select)
+monthNum_select=monthOptions.loc[monthOptions['Month'].isin(month_select)]['Num']
+    
+def monthfilter():
+    return data[data['Month'].isin(monthNum_select)]
+
+data=monthfilter()
 
 #%%select stat
 #statistic
@@ -139,6 +179,11 @@ end_date1=pandas.to_datetime(end_date)
 data_sites['date'] = pandas.to_datetime(data_sites['date'])
 
 
+#%%threshold filter
+thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%stat_select,step=1)
+
+thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%stat_select,step=1)
+
 #%%FILTERED DATA
 data_sites_years=data_sites[(data_sites['date']>start_date1)&(data_sites['date']<=end_date1)]
 
@@ -192,7 +237,7 @@ sumSitesDisplay=sumSites1.style\
 
 st.header("Site Comparison")
 st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
-st.markdown("Date range for Selection: %s through %s"%(start_date, end_date))
+st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
 # download data
@@ -207,5 +252,157 @@ st.download_button(
      label="Download Summary Table as CSV",
      data=csv,
      file_name='Summary_Table.csv',
+     mime='text/csv',
+ )
+
+#%%Temp CY Median / Temp POR Median
+
+compData=data_sites_years[['site',stat_selection.iloc[0],'CY']]
+selectCY=compData['CY'].drop_duplicates()
+selectSite=compData['site'].drop_duplicates()
+
+compList=[]
+for CYrow in selectCY:
+    tempCYdata=compData[compData['CY']==CYrow]
+    try:
+        for siterow in selectSite:
+            tempSiteData=tempCYdata[tempCYdata['site']==siterow]
+            tempSiteCYPeak=tempSiteData[stat_selection.iloc[0]].median()
+            tempPORmed=sumSites[sumSites.index==siterow]['POR Stat'][0]
+            tempMedNorm=tempSiteCYPeak/tempPORmed
+            compList.append([siterow,CYrow,tempMedNorm])
+    except:
+        compList.append([siterow,CYrow,None])
+compListDF=pandas.DataFrame(compList)
+compListDF.columns=['Site','CY','NormMed']
+
+#%%transpose to get days as columns
+#compListDF=pandas.read_csv("temp.csv")
+
+list=compListDF['CY'].drop_duplicates()
+finalSites=compListDF['Site'].drop_duplicates()
+list=list.sort_values()
+yearList=pandas.DataFrame(index=finalSites)
+for n in list:
+    #n=1979
+    temp1=compListDF[compListDF['CY']==n]
+    temp1=temp1.set_index('Site')
+    temp2=temp1.iloc[:,[1]].copy()
+    temp2.columns=[n]
+    yearList[n]=temp2
+#yearList=yearList.fillna("NaN")
+
+#%%colormap
+def background_gradient(s, m=None, M=None, cmap='bwr',low=0, high=0):
+    #print(s.shape)
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
+
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+    return ret 
+
+yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
+
+#select_col=yearList.columns[:]
+yearList1=yearList.style\
+    .set_properties(**{'width':'10000px'})\
+    .apply(background_gradient, axis=None)\
+    .format('{:,.0%}')
+
+    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
+st.header("%s CY Median / %s POR Median"%(stat_select,stat_select))
+st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
+yearList1
+
+# download data
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(yearList)
+
+st.download_button(
+     label="Download Temperature Comparison as CSV",
+     data=csv,
+     file_name='Temp_comp.csv',
+     mime='text/csv',
+ )
+#%%FOR THRESHOLD
+#%%calc statistic for all months
+compListCount=[]
+for CYrow in selectCY:
+    tempCYdata=compData[compData['CY']==CYrow]
+    try:
+        for siterow in selectSite:
+            tempSiteData=tempCYdata[tempCYdata['site']==siterow]
+            tempSiteData=tempSiteData.drop(columns=['site','CY'])
+            count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
+            compListCount.append([siterow,CYrow,count])
+    except:
+        compListCount.append([siterow,CYrow,None])
+        
+compListCountDF=pandas.DataFrame(compListCount)
+compListCountDF.columns=['Site','CY','Count']
+
+#%%transpose to get Months as columns
+
+countList=pandas.DataFrame(index=finalSites)
+for n in list:
+    #n=1979
+    temp1=compListCountDF[compListCountDF['CY']==n]
+    temp1=temp1.set_index('Site')
+    temp2=temp1.iloc[:,[1]].copy()
+    temp2.columns=[n]
+    countList[n]=temp2
+countList = countList.reindex(sorted(countList.columns,reverse=True), axis=1)
+
+#%%colormap
+def background_gradient(s, m=None, M=None, cmap='OrRd',low=0, high=0):
+    #print(s.shape)
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
+
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+    return ret 
+
+#select_col=yearList.columns[:]
+countList1=countList.style\
+    .set_properties(**{'width':'10000px'})\
+    .apply(background_gradient, axis=None)\
+
+    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
+st.header("Count of days with %s between %s and %s median %s"%(stat_select,thresholdLow, thresholdHigh, stat_select))
+st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
+countList1
+
+# download data
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(countList)
+
+st.download_button(
+     label="Download Temperature Count Comparison as CSV",
+     data=csv,
+     file_name='Temp_count_comp.csv',
      mime='text/csv',
  )

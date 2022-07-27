@@ -41,7 +41,6 @@ paramsDF=pandas.DataFrame(params)
 paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
 paramsSelect=paramsDF['long']
 
-
 #get site list
 sites=data_raw['site'].drop_duplicates()
 
@@ -84,9 +83,9 @@ data_param_site_date=data_param_site[(data_param_site['CY']>=startYear)&(data_pa
 
 
 #%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select)
+thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=1)
 
-thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select)
+thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1)
 
 #%%calc statistic for all months
 yearList=data_param_site_date['CY'].drop_duplicates()
@@ -132,7 +131,7 @@ data4_sort=data4.sort_index(ascending=True)
 for (columnName, columnData) in data4_sort.iteritems():
     tempMK=mk.original_test(columnData)
     if tempMK[0]=='no trend':
-        manK.append(-9999)
+        manK.append(float('nan'))
     else:
         manK.append(tempMK[7].round(2))  
         
@@ -140,7 +139,7 @@ manK=pandas.DataFrame(manK).T
 sumStats=pandas.concat([medianData, manK],ignore_index=True)
 sumStats.columns=sumStats.iloc[0]
 sumStats=sumStats[1:]
-sumStats=sumStats.rename({1:'Median',2:'Trend Slope'})
+sumStats=sumStats.rename({1:'Median',2:'Trend'})
 
 
 #%%colormap
@@ -164,7 +163,7 @@ def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
     return ret 
     
 tableData=data4.style\
-    .format(precision=2)\
+    .format(precision=1)\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)
 
@@ -188,12 +187,12 @@ st.download_button(
      mime='text/csv',
  )
 
-
 sumStats1=sumStats.style\
-    .format(precision=2)\
+    .format('{:,.1f}')\
     .set_properties(**{'width':'10000px'})
+
+st.markdown("Trend (Theil-Sen Slope (inches/year or days/year) if Mann-Kendall trend test is significant; otherwise nan)")
 sumStats1
-st.markdown("(note '-9999' indicates no trend)")
 
 # download data
 @st.cache
