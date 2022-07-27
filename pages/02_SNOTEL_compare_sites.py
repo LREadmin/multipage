@@ -88,9 +88,9 @@ combo_data2=pandas.merge(combo_data2,manKPOR,on="Site")
 system=combo_data2['System'].drop_duplicates()
 
 container=st.sidebar.container()
-all=st.sidebar.checkbox("Select both systems")
+systembox=st.sidebar.checkbox("Select both systems")
 
-if all:
+if systembox:
     system_select = container.multiselect('Select your system(s):', system, system)
     
 else: 
@@ -113,7 +113,6 @@ if all:
 else:
     multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites.iloc[0])
 
-    
 def multisitefilter():
     return system_data[system_data['Site'].isin(multi_site_select)]
     
