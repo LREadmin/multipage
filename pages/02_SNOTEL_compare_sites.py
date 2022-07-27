@@ -105,9 +105,9 @@ system_data=systemfilter()
 sites=system_data['Site'].drop_duplicates()
 
 container=st.sidebar.container()
-all=st.sidebar.checkbox("Select all")
+siteBox=st.sidebar.checkbox("Select all")
 
-if all:
+if siteBox:
     multi_site_select = container.multiselect('Select one or more sites:', sites, sites)
 
 else:
