@@ -205,7 +205,7 @@ summary1=summary.style\
           ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
 .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
-st.markdown("Compares Peak SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
+st.markdown("Compares SWE Statistic (median of annual peak SWE values, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
 summary1
 
 # download data
