@@ -169,14 +169,12 @@ for row in siteNames['Site']:
         tempMK=temp[['WY','SWE_in']]
         tempMKMedian=tempMK.groupby(tempMK['WY']).median()
         tempManK=mk.original_test(tempMKMedian)
-        try:
-            tempManK[0]=='no trend'
-            manK.append(float('nan'))
-        except:
-            manK.append(tempManK[7].round(2))   
     except:
+        pass
+    if tempManK[0]=='no trend':
         manK.append(float('nan'))
-    #slope value 
+    else:
+        manK.append(tempManK[7].round(2))   
     
     temp1=temp[['Site','System','por_start','por_end','MedianPOR','ManKPOR']]
     temp1=temp1.drop_duplicates()
