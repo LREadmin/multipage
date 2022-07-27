@@ -150,31 +150,46 @@ end_date1=pandas.to_datetime(end_date,utc=True)
 
 final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_data['Date']<=end_date1)]
 
+#%%for selected period
 summary=pandas.DataFrame()
+siteSelect=final_data['Site'].drop_duplicates()
 
 manK=[]
 median=[]
-for row in multi_site_select:
+for row in siteNames['Site']:
     temp=final_data[final_data['Site']==row]
     tempMedian=temp[['WY','SWE_in']]
     temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
     median.append(temp_median)
     
     #Man Kendall Test
-    tempMK=temp[['WY','SWE_in']]
-    tempMKMedian=tempMK.groupby(tempMK['WY']).median()
-    tempManK=mk.original_test(tempMKMedian)
+    try:
+        tempMK=temp[['WY','SWE_in']]
+        tempMKMedian=tempMK.groupby(tempMK['WY']).median()
+        tempManK=mk.original_test(tempMKMedian)
+    except:
+        pass
     if tempManK[0]=='no trend':
-        manK.append(None)
+        manK.append(float('nan'))
     else:
         manK.append(tempManK[7].round(2))       #slope value 
     
     temp1=temp[['Site','System','por_start','por_end','MedianPOR','ManKPOR']]
     temp1=temp1.drop_duplicates()
     summary=pandas.concat([summary,temp1],ignore_index=True)
+
+summary=summary.set_index(siteSelect)
     
 median=pandas.DataFrame(median)
+median=median.set_index(siteNames['Site'])
+median.columns=(['Select WY Stat'])
+median=median[median.index.isin(siteSelect)]
+
 manK=pandas.DataFrame(manK)
+manK=manK.set_index(siteNames['Site'])
+manK.columns=(['Select WY Trend'])
+manK=manK[manK.index.isin(siteSelect)]
+
 summary=pandas.concat([summary,median,manK],axis=1)
 
 summary.columns=['Site','System','POR Start','POR End','POR Stat','POR Trend','Select WY Stat','Select WY Trend']
@@ -182,15 +197,11 @@ summary["POR Start"] = pandas.to_datetime(summary["POR Start"]).dt.strftime('%Y-
 summary["POR End"] = pandas.to_datetime(summary["POR End"]).dt.strftime('%Y-%m-%d')
 
 summary=summary.set_index('Site')
-if len(summary)==1:
-    summary1=summary.style\
-        .format({'POR Stat':"{:.1f}",'Select WY Stat':"{:.1f}"})\
-        .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])  
-else:
-    summary1=summary.style\
-    .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
-              ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
-    .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
+
+summary1=summary.style\
+.format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
+          ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
+.set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
 summary1

@@ -102,7 +102,6 @@ if all:
 
 else:
     multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites.iloc[0])
-
     
 def multisitefilter():
     return data[data['site'].isin(multi_site_select)]
@@ -151,47 +150,45 @@ medstatSelect=[]
 
 siteSelect=data_sites_years['site'].drop_duplicates()
 
-for site in siteSelect:
+for site in sites:
     dataBySite=data_sites_years[data_sites_years['site']==site]
     
     #get medians
     dataBySiteParam=dataBySite[stat_selection]
     tempstat=dataBySiteParam.median()
-    medstatSelect.append(tempstat)
+    medstatSelect.append(tempstat[0])
     
     #Man Kendall Test
-    dataforMKSelect=dataBySite[[stat_selection.iloc[0],'CY']]
-    tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['CY']).median()
-    tempPORManK=mk.original_test(tempPORMKMedian)
+    try:
+        dataforMKSelect=dataBySite[[stat_selection.iloc[0],'CY']]
+        tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['CY']).median()
+        tempPORManK=mk.original_test(tempPORMKMedian)
+    except:
+        pass
     if tempPORManK[0]=='no trend':
-        manKPORSelect.append([site,None])
+        manKPORSelect.append(float('nan'))
     else:
-        manKPORSelect.append([site,tempPORManK[7].round(2)])       #slope value 
+        manKPORSelect.append(tempPORManK[7].round(2))       #slope value 
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
-manKPORSelect=manKPORSelect.set_index([0])
+manKPORSelect=manKPORSelect.set_index([sites])
 manKPORSelect.columns=(['Select CY Trend'])
+manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
 medstatSelectdf=pandas.DataFrame(medstatSelect)
-medstatSelectdf=medstatSelectdf.set_index([siteSelect])
-
-medstatSelectdf.columns=['Select CY Stat']
+medstatSelectdf=medstatSelectdf.set_index([sites])
+medstatSelectdf.columns=(['Select CY Stat'])
+medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
 sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
 sumSites=sumSites.drop("Site",axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
-if len(sumSites1)==1:
-    sumSitesDisplay=sumSites1.style\
-        .format({'POR Stat':"{:.1f}",
-                  'Select CY Stat':"{:.1f}"})\
-        .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
-else:
-    sumSitesDisplay=sumSites1.style\
-        .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
-                  ,'Select CY Stat':"{:.1f}",'Select CY Trend':"{:.2f}"})\
-        .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
+sumSitesDisplay=sumSites1.style\
+    .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
+              ,'Select CY Stat':"{:.1f}",'Select CY Trend':"{:.2f}"})\
+    .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
 st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
