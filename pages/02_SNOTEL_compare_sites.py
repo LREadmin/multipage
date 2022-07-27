@@ -205,7 +205,7 @@ summary1=summary.style\
           ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
 .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
-st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
+st.markdown("Compares Peak SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
 summary1
 
 # download data
@@ -294,7 +294,7 @@ yearList1=yearList.style\
     .format('{:,.0%}',subset=select_col)
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("SNOTEL WY Median / SNOTEL POR Median")
+st.header("SNOTEL WY Peak SWE / SNOTEL POR Peak SWE Median")
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearList1
 
