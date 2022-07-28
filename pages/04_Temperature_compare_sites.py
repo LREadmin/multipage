@@ -109,10 +109,10 @@ for site in sites:
     dataforMK=dataBySite[[stat_selection.iloc[0],'CY']]
     tempPORMKMedian=dataforMK.groupby(dataforMK['CY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
-    if tempPORManK[0]=='no trend':
+    if tempPORManK[2]>0.1:
         manKPOR.append([site,None])
     else:
-        manKPOR.append([site,tempPORManK[7].round(2)])       #slope value 
+        manKPOR.append([site,tempPORManK[7]])       #slope value 
 
 manKPOR=pandas.DataFrame(manKPOR)
 manKPOR=manKPOR.set_index([sites])
@@ -210,10 +210,10 @@ for site in sites:
         tempPORManK=mk.original_test(tempPORMKMedian)
     except:
         pass
-    if tempPORManK[0]=='no trend':
+    if tempPORManK[2]>0.1:
         manKPORSelect.append(float('nan'))
     else:
-        manKPORSelect.append(tempPORManK[7].round(2))       #slope value 
+        manKPORSelect.append(tempPORManK[7])       #slope value 
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
 manKPORSelect=manKPORSelect.set_index([sites])

@@ -82,10 +82,10 @@ for row in siteNames['Site']:
     tempPOR=temp[['WY','SWE_in']]
     tempPORMKMedian=tempPOR.groupby(tempPOR['WY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
-    if tempPORManK[0]=='no trend':
+    if tempPORManK[2]>0.1:
         manKPOR.append([row,float('nan')])
     else:
-        manKPOR.append([row,tempPORManK[7].round(2)])       #slope value 
+        manKPOR.append([row,tempPORManK[7]])       #slope value 
         
 medianPOR=pandas.DataFrame(median)
 medianPOR.columns=(['Site','MedianPOR'])
@@ -189,10 +189,10 @@ for row in siteSelect:
         tempMK=temp[['WY','SWE_in']]
         tempMKMedian=tempMK.groupby(tempMK['WY']).median()
         tempManK=mk.original_test(tempMKMedian)
-        if tempManK[0]=='no trend':
+        if tempPORManK[2]>0.1:
             manK.append(float('nan'))
         else:
-            manK.append(tempManK[7].round(2))  
+            manK.append(tempManK[7])  
     except:
          manK.append(float('nan'))
     

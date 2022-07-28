@@ -130,10 +130,10 @@ manK=[]
 data4_sort=data4.sort_index(ascending=True)
 for (columnName, columnData) in data4_sort.iteritems():
     tempMK=mk.original_test(columnData)
-    if tempMK[0]=='no trend':
+    if tempMK[2]>0.1:
         manK.append(float('nan'))
     else:
-        manK.append(tempMK[7].round(2))  
+        manK.append(tempMK[7])  
         
 manK=pandas.DataFrame(manK).T
 sumStats=pandas.concat([medianData, manK],ignore_index=True)

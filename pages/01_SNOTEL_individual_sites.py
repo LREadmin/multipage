@@ -125,6 +125,8 @@ endYear=end_date.year
 data['Date']=pandas.to_datetime(data['Date'])
 data['CY']=pandas.DatetimeIndex(data['Date']).year
 data['CalDay']=data['Date'].dt.dayofyear
+data['Month']=data['Date'].dt.month
+data['MonthDay']=data['Date'].dt.day
 
 #drop date
 data2=data.iloc[:,[2,3,4]].copy()
@@ -220,10 +222,10 @@ else:
         try:
             tempManK=mk.original_test(merge[row])
             ManKraw.append(tempManK)
-            if ManKraw[0][0]=='no trend':
+            if tempManK[2]>0.1:
                 trendraw.append(float('nan'))
             else:
-                trendraw.append(ManKraw[0][6])  
+                trendraw.append(tempManK[7])  
         except:
             ManKraw.append(float('nan'))
             trendraw.append(float('nan'))
@@ -303,10 +305,10 @@ st.pyplot(plt)
 
 st.header("Summary Statistic Table")
 sumDisplay=merge1.style\
-    .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.1f}"})\
+    .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.1f}","First Zero SWE Day":"{:.1f}","Melt Day Count":"{:.1f}"})\
     .set_properties(**{'width':'10000px'})
 
-st.markdown("Trend (Theil-Sen Slope (inches/year or days/year) if Mann-Kendall trend test is significant; otherwise nan)")
+st.markdown("Trend (Theil-Sen Slope (inches/year or days/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 sumDisplay
 
 if len(merge1)==1:
