@@ -48,10 +48,7 @@ end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
 #%%
 pandas.to_datetime(data_raw['Date'])
-#sites = data_raw['Site'].drop_duplicates()
 site_selected = st.sidebar.selectbox('Select your site:', siteNames)
-
-site_selected='High Lonesome'
 
 def filterdata():
     return data_raw.loc[data_raw['Site']==site_selected]
@@ -77,7 +74,7 @@ def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
 
-csv = convert_df(data)
+csv = convert_df(data1)
 
 st.download_button(
      label="Download POR SNOTEL data as CSV",
@@ -96,8 +93,8 @@ max_date = datetime.datetime.today() #today
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]))
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
 
-startYear=2013
-endYear=2013
+# startYear=2013
+# endYear=2013
 
 def startDate():
     return "%s-%s-0%s"%(int(startYear-1),10,1)
@@ -134,6 +131,13 @@ data2=data.iloc[:,[2,3,4]].copy()
 
 #%%add WY col
 data2['WY']=numpy.where(data2['CalDay']>=274,data2['CY']+1,data2['CY'])
+
+#check for full WY and keep if current WY
+fullWYcheck=data2.groupby(data2['WY']).count()
+fullWYcheck.drop(fullWYcheck [ (fullWYcheck['SWE_in'] <365) & (fullWYcheck.index < int(end_dateRaw[:4])) ].index,inplace=True)
+
+#%%drop incomplete WYs
+data2= data2 [data2['WY'].isin(fullWYcheck.index)]
 
 #create year list
 years=[]
@@ -224,7 +228,6 @@ else:
             ManKraw.append(float('nan'))
             trendraw.append(float('nan'))
     ManK=pandas.DataFrame(ManKraw)
-    ManK.columns=['trend']
     trend=pandas.DataFrame(trendraw)
     ManK['params']=params
     ManK['slope1']=trend
