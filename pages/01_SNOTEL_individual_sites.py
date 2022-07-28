@@ -64,6 +64,8 @@ data1=data1.set_index('Site')
 data1['Date']=data1['Date'].str[:-15]
 
 data1=data1.sort_values(by="Date", ascending=False)
+data1=data1.style\
+    .format({"SWE_in":"{:.1f}"})
 
 if st.checkbox('show SNOTEL data for full POR'):    
     st.dataframe(data1)
