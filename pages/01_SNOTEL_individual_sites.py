@@ -51,6 +51,8 @@ pandas.to_datetime(data_raw['Date'])
 #sites = data_raw['Site'].drop_duplicates()
 site_selected = st.sidebar.selectbox('Select your site:', siteNames)
 
+site_selected='High Lonesome'
+
 def filterdata():
     return data_raw.loc[data_raw['Site']==site_selected]
 
@@ -94,8 +96,8 @@ max_date = datetime.datetime.today() #today
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]))
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
 
-# startYear=2021
-# endYear=2021
+startYear=2013
+endYear=2013
 
 def startDate():
     return "%s-%s-0%s"%(int(startYear-1),10,1)
@@ -211,14 +213,18 @@ else:
     trendraw=[]
     ManKraw=[]
     for row in params:
-        print(row)
-        tempManK=mk.original_test(merge[row])
-        ManKraw.append(tempManK)
-        if ManKraw[0][0]=='no trend':
-            trendraw.append(None)
-        else:
-            trendraw.append(ManKraw[0][6])       #slope value 
+        try:
+            tempManK=mk.original_test(merge[row])
+            ManKraw.append(tempManK)
+            if ManKraw[0][0]=='no trend':
+                trendraw.append(float('nan'))
+            else:
+                trendraw.append(ManKraw[0][6])  
+        except:
+            ManKraw.append(float('nan'))
+            trendraw.append(float('nan'))
     ManK=pandas.DataFrame(ManKraw)
+    ManK.columns=['trend']
     trend=pandas.DataFrame(trendraw)
     ManK['params']=params
     ManK['slope1']=trend
@@ -226,15 +232,6 @@ else:
     ManK=ManK[['trend','slope1','params']].T
     ManK.columns=ManK.iloc[2]
     ManK=ManK.drop(['params','trend'])
-    
-    # trend=[]
-    # for row in ManK:
-    #     print(row)
-    #     if row['trend']=="no trend":
-    #         row['slope']==-9999
-    #     else:
-    #         row['slope']
-    #     trend.append(row['slope'])
     
     merge1=pandas.concat([median, ManK],ignore_index=True)
     merge1=merge1.rename(index={0: 'Median',1:'Trend'})
