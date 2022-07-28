@@ -53,11 +53,6 @@ combo_data1=pandas.merge(combo_data,siteNames,on="Site",how='inner')
 combo_data2=combo_data1
 combo_data2=combo_data2.set_index('Site')
 
-# por_start=combo_data2.groupby(combo_data2.index).min()['Date']
-# por_end=combo_data2.groupby(combo_data2.index).max()['Date']
-# por_record=pandas.concat([por_start,por_end],axis=1)
-# por_record.columns=(['por_start','por_end'])
-
 #get WY
 combo_data2['Date']=pandas.to_datetime(combo_data2['Date'])
 combo_data2['CalDay']=combo_data2['Date'].dt.dayofyear
@@ -104,9 +99,9 @@ manKPOR=manKPOR.set_index('Site')
 system=combo_data2['System'].drop_duplicates()
 
 container=st.sidebar.container()
-systembox=st.sidebar.checkbox("Select both systems")
+all=st.sidebar.checkbox("Select both systems")
 
-if systembox:
+if all:
     system_select = container.multiselect('Select your system(s):', system, system)
     
 else: 
@@ -115,24 +110,27 @@ else:
 def systemfilter():
     return combo_data2[combo_data2['System'].isin(system_select)]
 
+system_select
 system_data=systemfilter()
 
 #%% multi site selection
-sites=system_data.index.drop_duplicates()
+tempSD=system_data.reset_index()
+sites=tempSD['Site'].drop_duplicates()
 
 container=st.sidebar.container()
-siteBox=st.sidebar.checkbox("Select all")
+all=st.sidebar.checkbox("Select all")
 
-if siteBox:
+if all:
     multi_site_select = container.multiselect('Select one or more sites:', sites, sites)
 
 else:
-    multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites[0])
+    multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites.iloc[0])
 
 def multisitefilter():
     return system_data[system_data.index.isin(multi_site_select)]
     
 system_site_data=multisitefilter()
+#system_site_data=system_site_data.set_index('Site')
 
 #%%start and end dates needed for initial data fetch
 startY=1950
