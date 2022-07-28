@@ -110,7 +110,6 @@ else:
 def systemfilter():
     return combo_data2[combo_data2['System'].isin(system_select)]
 
-system_select
 system_data=systemfilter()
 
 #%% multi site selection
@@ -130,7 +129,6 @@ def multisitefilter():
     return system_data[system_data.index.isin(multi_site_select)]
     
 system_site_data=multisitefilter()
-#system_site_data=system_site_data.set_index('Site')
 
 #%%start and end dates needed for initial data fetch
 startY=1950
