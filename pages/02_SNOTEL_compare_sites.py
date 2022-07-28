@@ -189,7 +189,7 @@ for row in siteSelect:
         tempMK=temp[['WY','SWE_in']]
         tempMKMedian=tempMK.groupby(tempMK['WY']).median()
         tempManK=mk.original_test(tempMKMedian)
-        if tempPORManK[2]>0.1:
+        if tempManK[2]>0.1:
             manK.append(float('nan'))
         else:
             manK.append(tempManK[7])  
@@ -231,7 +231,7 @@ summary1=summary.style\
 .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
           ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})
 
-st.markdown("Compares SWE Statistic (median of annual peak SWE values, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant; otherwise nan)")
+st.markdown("Compares SWE Statistic (median of annual peak SWE values, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 summary1
 
 # download data
