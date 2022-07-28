@@ -57,7 +57,7 @@ combo_data2=combo_data2.set_index('Site')
 combo_data2['Date']=pandas.to_datetime(combo_data2['Date'])
 combo_data2['CalDay']=combo_data2['Date'].dt.dayofyear
 combo_data2['CY']=pandas.DatetimeIndex(combo_data2['Date']).year
-combo_data2['WY']=numpy.where(combo_data2['CalDay']>274,combo_data2['CY']+1,combo_data2['CY'])
+combo_data2['WY']=numpy.where(combo_data2['CalDay']>=274,combo_data2['CY']+1,combo_data2['CY'])
 
 #check for full WY and keep if current WY
 fullWYcheck=combo_data2.groupby([combo_data2.index,combo_data2['WY']]).count().reset_index()
