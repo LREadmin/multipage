@@ -147,7 +147,7 @@ paramsDF['title']=["WY Peak SWE / Median of Annual Peak SWE (for Select WY Range
                    "Peak SWE Day",
                    "First Zero SWE Day",
                    "Melt Day Count"]
-paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.1f}"]
+paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.0f}"]
 paramsSelect=paramsDF['long']
 
 params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
