@@ -63,20 +63,22 @@ combo_data2['WY']=numpy.where(combo_data2['CalDay']>=274,combo_data2['CY']+1,com
 fullWYcheck=combo_data2.groupby([combo_data2.index,combo_data2['WY']]).count().reset_index()
 fullWYcheck.drop(fullWYcheck [ (fullWYcheck['Date'] <365) & (fullWYcheck['WY'] < int(end_dateRaw[:4])) ].index,inplace=True)
 fullWYcheck=fullWYcheck.set_index('Site')
-#%%drop incomplete WYs
-#combo_data2= combo_data2 [combo_data2.isin([fullWYcheck.index,fullWYcheck['WY']])]
 
 #%% get POR median
 manKPOR=[]
 median=[]
-#siteNames['Site']='Fremont Pass'
+por_record=[]
+
 for row in siteNames['Site']:
     temp=combo_data2[combo_data2.index==row]
     tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
     temp=temp[temp['WY'].isin(tempfullWYcheck['WY'])]
-    tempMedian=temp[['WY','SWE_in']]
+    tempMedian=temp[['WY','Date','SWE_in']]
     temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
     median.append([row,temp_median])
+    por_start=str(tempMedian['Date'].min())
+    por_end=str(tempMedian['Date'].max())
+    por_record.append([row,por_start,por_end])
     
     #Man Kendall Test
     tempPOR=temp[['WY','SWE_in']]
@@ -90,6 +92,11 @@ for row in siteNames['Site']:
 medianPOR=pandas.DataFrame(median)
 medianPOR.columns=(['Site','MedianPOR'])
 medianPOR=medianPOR.set_index('Site')
+
+por_record=pandas.DataFrame(por_record)
+por_record=por_record.set_index([0])
+por_record.columns=(['por_start','por_end'])
+
 manKPOR=pandas.DataFrame(manKPOR)
 manKPOR.columns=(['Site','ManKPOR'])
 manKPOR=manKPOR.set_index('Site')
@@ -131,6 +138,25 @@ def multisitefilter():
     
 system_site_data=multisitefilter()
 
+#%% filter for parameter
+#get parameter list
+
+paramsDF=pandas.DataFrame(['NormMed','Peak SWE Day','First Zero SWE Day','First Zero SWE Day'])
+paramsDF['long']=['Median Peak SWE Statistic','Peak SWE Day','First Zero SWE Day','Melt Day Count']
+paramsDF['title']=["WY Peak SWE / Median of Annual Peak SWE (for Select WY Range)",
+                   "Peak SWE Day",
+                   "First Zero SWE Day",
+                   "Melt Day Count"]
+paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.1f}"]
+paramsSelect=paramsDF['long']
+
+params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
+#params_select = str('Peak SWE Day')
+param=paramsDF.loc[paramsDF['long']==params_select][0]
+title=paramsDF['title'][paramsDF['long']==params_select]
+format_Dec=paramsDF['format'][paramsDF['long']==params_select]
+
+
 #%%start and end dates needed for initial data fetch
 startY=1950
 startM=10
@@ -142,6 +168,8 @@ min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
+st.sidebar.header("Define Select WY Range")
+    
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]), value=1950)
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
 
@@ -164,11 +192,7 @@ final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_
 #%%for selected period
 summary=pandas.DataFrame()
 siteSelect=final_data.index.drop_duplicates()
-# por_start=combo_data2.groupby(combo_data2.index).min()['Date']
-# por_end=combo_data2.groupby(combo_data2.index).max()['Date']
-# por_record=pandas.concat([por_start,por_end],axis=1)
-# por_record.columns=(['por_start','por_end'])
-por_record=[]
+
 tempManK=[]
 manK=[]
 median=[]
@@ -178,11 +202,8 @@ for row in siteSelect:
     tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
     tempMedian=tempMedian[tempMedian['WY'].isin(tempfullWYcheck['WY'])]
     temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
-    por_start=str(tempMedian['Date'].min())
-    por_end=str(tempMedian['Date'].max())
     
     median.append(temp_median)
-    por_record.append([row,por_start,por_end])
     
     #Man Kendall Test
     try:
@@ -201,20 +222,19 @@ for row in siteSelect:
     summary=pandas.concat([summary,temp1],ignore_index=True)
 
 summary=summary.set_index(siteSelect)
-    
+
+  
 median=pandas.DataFrame(median)
 median=median.set_index(siteSelect)
 median.columns=(['Select WY Stat'])
 median=median[median.index.isin(siteSelect)]
 
-por_record=pandas.DataFrame(por_record)
-por_record=por_record.set_index([0])
-por_record.columns=(['por_start','por_end'])
-
 manK=pandas.DataFrame(manK)
 manK=manK.set_index(siteSelect)
 manK.columns=(['Select WY Trend'])
 manK=manK[manK.index.isin(siteSelect)]
+
+#%%combine POR with Selected stats
 
 por_record=por_record[por_record.index.isin(siteSelect)]
 manKPOR=manKPOR[manKPOR.index.isin(siteSelect)]
@@ -253,7 +273,7 @@ final_data['CalDay']=final_data['Date'].dt.dayofyear
 final_data['CY']=pandas.DatetimeIndex(final_data['Date']).year
 final_data['WY']=numpy.where(final_data['CalDay']>=274,final_data['CY']+1,final_data['CY'])
 
-compData=final_data[['SWE_in','WY']]
+compData=final_data[['SWE_in','CalDay','WY']]
 selectWY=compData['WY'].drop_duplicates()
 selectSite=compData.index.drop_duplicates()
 
@@ -264,19 +284,32 @@ for WYrow in selectWY:
         for siterow in selectSite:
             tempSiteData=tempWYdata[tempWYdata.index==siterow]
             tempfullWYcheck=fullWYcheck[fullWYcheck.index==siterow]
-            tempSiteData=tempSiteData[tempSiteData['WY'].isin(tempfullWYcheck['WY'])]
+            tempSiteData=tempSiteData[tempSiteData['WY'].isin(tempfullWYcheck['WY'])]    
+            
+            #peak SWE
             tempSiteWYPeak=tempSiteData['SWE_in'].max()
-            tempPORmed=medianPOR[medianPOR.index==siterow]
+                     
+            #POR Median Peak SWE
+            tempPORmed=median[median.index==siterow]
             tempMedNorm=tempSiteWYPeak/tempPORmed.iloc[0][0]
-            compList.append([siterow,WYrow,tempMedNorm])
+            
+            #peak SWE day
+            tempSiteWYPeakDay=tempSiteData.loc[tempSiteData['SWE_in']==tempSiteWYPeak].iloc[-1][1]
+            
+            # #first Zero SWE day
+            tempZeroAll=tempSiteData[(tempSiteData['SWE_in']==0)&(tempSiteData['CalDay']>tempSiteWYPeakDay)]
+            tempZeroAll=tempZeroAll.sort_values(by=['CalDay'])
+            tempZeroDay=tempZeroAll['CalDay'].iloc[0]
+            
+            compList.append([siterow,WYrow,tempSiteWYPeak,tempMedNorm,tempSiteWYPeakDay,tempZeroDay])
     except:
-        compList.append([siterow,WYrow,None])
+        compList.append([siterow,WYrow,None,None,None,None])
 compListDF=pandas.DataFrame(compList)
-compListDF.columns=['Site','WY','NormMed']
-#compListDF=compListDF.sort_values(by='WY',ascending=False)
+compListDF.columns=['Site','WY','Peak SWE (in)','NormMed','Peak SWE Day','First Zero SWE Day']
+compListDF['Melt Day Count']=compListDF['First Zero SWE Day']-compListDF['Peak SWE Day']
 
-#%%transpose to get days as columns
-#compListDF=pandas.read_csv("temp.csv")
+
+#%%transpose to get days as columns and prent % peak of median
 
 list=compListDF['WY'].drop_duplicates()
 finalSites=compListDF['Site'].drop_duplicates()
@@ -286,7 +319,7 @@ for n in list:
     #n=1979
     temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
-    temp2=temp1.iloc[:,[1]].copy()
+    temp2=temp1.loc[:,[param.iloc[0]]].copy()
     temp2.columns=[n]
     yearList[n]=temp2
 #yearList=yearList.fillna("NaN")
@@ -309,17 +342,15 @@ def background_gradient(s, m=None, M=None, cmap='Blues',low=0, high=0):
 
 yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
 
-siteSystem=system_site_data['System'].drop_duplicates()
-yearList.insert(0,'System',siteSystem[0])
+yearList.insert(0,'System',summary["System"])
 
 select_col=yearList.columns[1:]
 yearList1=yearList.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None,subset=select_col)\
-    .format('{:,.0%}',subset=select_col)
-
-    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("SNOTEL WY Peak SWE / SNOTEL POR Peak SWE Median")
+    .format('%s'%format_Dec.iloc[0],subset=select_col)
+   
+st.header("%s"%title.iloc[0])
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -335,5 +366,60 @@ st.download_button(
      label="Download SNOTEL Comparison as CSV",
      data=csv,
      file_name='SNOTEL_comp.csv',
+     mime='text/csv',
+ )
+
+#%%transpose to get days as columns and present actual SWE value
+yearListPeak=pandas.DataFrame(index=finalSites)
+for n in list:
+    #n=1979
+    temp1=compListDF[compListDF['WY']==n]
+    temp1=temp1.set_index('Site')
+    temp2=temp1.loc[:,['Peak SWE (in)']].copy()
+    temp2.columns=[n]
+    yearListPeak[n]=temp2
+
+#%%colormap
+def background_gradient(s, m=None, M=None, cmap='Blues',low=0, high=0):
+    #print(s.shape)
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
+
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+    return ret 
+
+yearListPeak = yearListPeak.reindex(sorted(yearListPeak.columns,reverse=True), axis=1)
+
+yearListPeak.insert(0,'System',summary["System"])
+
+yearListPeak1=yearListPeak.style\
+    .set_properties(**{'width':'10000px'})\
+    .apply(background_gradient, axis=None,subset=select_col)\
+    .format('{:.1f}',subset=select_col)
+
+st.header("WY Peak SWE (inches)")
+st.markdown("Date range: %s through %s"%(start_date, end_date))
+yearListPeak1
+
+# download data
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(yearListPeak)
+
+st.download_button(
+     label="Download SNOTEL Peak SWE Comparison as CSV",
+     data=csv,
+     file_name='SNOTEL_peakSWE_comp.csv',
      mime='text/csv',
  )

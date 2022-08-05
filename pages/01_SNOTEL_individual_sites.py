@@ -132,6 +132,8 @@ data['MonthDay']=data['Date'].dt.day
 data2=data.iloc[:,[2,3,4]].copy()
 
 #%%add WY col
+##In leap years, December 31 is the 366th day. Therefore, WY 2021 (for example) 
+##  will show up on the raster hydrograph with 366 days because it includes days from a leap year (2020). 
 data2['WY']=numpy.where(data2['CalDay']>=274,data2['CY']+1,data2['CY'])
 
 #check for full WY and keep if current WY
