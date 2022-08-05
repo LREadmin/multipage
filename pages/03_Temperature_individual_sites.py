@@ -42,7 +42,10 @@ paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
 paramsSelect=paramsDF['long']
 
 #get site list
-sites=data_raw['site'].drop_duplicates()
+sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
+sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
+               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
+               'Strontia (ST)','Williams Fork (WF)']
 
 #%% filter first for parameters
 params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
@@ -57,10 +60,12 @@ data_param=paramfilter()
 data1=data_param[[param.iloc[0],'Month','site','CY']]
 
 #%% filter second for site
-site_select = st.sidebar.selectbox('Select one site:', sites)
+site_select_long = st.sidebar.selectbox('Select one site:', sites['long'])
+
+site_select=sites['site'][sites['long']==site_select_long]
 
 def sitefilter():
-    return data1.loc[data1['site'] == site_select]
+    return data1.loc[data1['site'] == site_select.iloc[0]]
 
 data_param_site=sitefilter()
 
@@ -183,7 +188,7 @@ csv = convert_df(data4)
 st.download_button(
      label="Download Table Data as CSV",
      data=csv,
-     file_name='Stats_Data_%s_%s.csv'%(params_select,site_select),
+     file_name='Stats_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
      mime='text/csv',
  )
 
@@ -205,7 +210,7 @@ csv = convert_df(sumStats)
 st.download_button(
      label="Download Table Data as CSV",
      data=csv,
-     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select),
+     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
      mime='text/csv',
  )
 

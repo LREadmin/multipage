@@ -132,17 +132,25 @@ sumSites['POR Start']=pandas.to_datetime(sumSites["POR Start"]).dt.strftime('%Y-
 sumSites['POR End']=pandas.to_datetime(sumSites["POR End"]).dt.strftime('%Y-%m-%d')
 
 #%%make selections
-sites=data['site'].drop_duplicates()
+sites=pandas.DataFrame(data['site'].drop_duplicates())
+sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
+               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
+               'Strontia (ST)','Williams Fork (WF)']
+
+params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
+param=paramsDF.loc[paramsDF['long']==params_select][0]
 
 container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select = container.multiselect('Select one or more sites:', sites, sites)
+    multi_site_select_long = container.multiselect('Select one or more sites:', sites['long'], sites['long'])
 
 else:
-    multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites.iloc[0])
-    
+    multi_site_select_long = container.multiselect('Select one or more sites:', sites['long'],default=sites['long'].iloc[0])
+ 
+multi_site_select=sites['site'][sites['long'].isin(multi_site_select_long)]
+
 def multisitefilter():
     return data[data['site'].isin(multi_site_select)]
     
@@ -195,7 +203,7 @@ medstatSelect=[]
 
 siteSelect=data_sites_years['site'].drop_duplicates()
 
-for site in sites:
+for site in sites['site']:
     dataBySite=data_sites_years[data_sites_years['site']==site]
     
     #get medians
@@ -216,12 +224,12 @@ for site in sites:
         manKPORSelect.append(tempPORManK[7])       #slope value 
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
-manKPORSelect=manKPORSelect.set_index([sites])
+manKPORSelect=manKPORSelect.set_index([sites['site']])
 manKPORSelect.columns=(['Select CY Trend'])
 manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
 medstatSelectdf=pandas.DataFrame(medstatSelect)
-medstatSelectdf=medstatSelectdf.set_index([sites])
+medstatSelectdf=medstatSelectdf.set_index([sites['site']])
 medstatSelectdf.columns=(['Select CY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
