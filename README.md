@@ -19,3 +19,5 @@ To update SNOTEL or temperature data: run "Data_fetch.py"
 Requirements.txt file is needed for streamlit to read required libraries. The "ulmo" library (necessary for SNOTEL data fetch) is not supported by streamlit, which is why I separated out the "Data_fetch.py" script. 
 
 SiteNamesListNS.txt joins the sites in siteNamesList.txt with DW collection system (North or South)
+
+When adding new pages, put scripts in "Pages" folder. 
