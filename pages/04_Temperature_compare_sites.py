@@ -78,6 +78,18 @@ def monthfilter():
 
 data=monthfilter()
 
+#filter by day count threshold
+
+if len(month_select)==12:
+    dayCountThres=330
+    g=data.groupby(['site','CY'])
+    data=g.filter(lambda x: len(x)>=dayCountThres)
+else:
+    dayCountThres=25
+    g=data.groupby(['site','CY','Month'])
+    data=g.filter(lambda x: len(x)>=dayCountThres)
+
+#data.to_csv('temp.csv')
 #%%select stat
 #statistic
 
@@ -87,8 +99,8 @@ paramsSelect=paramsDF['long']
 stat_select= st.sidebar.selectbox(
      'Select one statistic:', paramsSelect)
 
+#stat_select='Mean Temp (F)'
 stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
-
 
 #%%calulcate params for POR
 manKPOR=[]
@@ -96,12 +108,13 @@ por=[]
 medstat=[]
 for site in sites:
     dataBySite=data[data['site']==site]
+    
     porS=dataBySite['date'].min()
     porE=dataBySite['date'].max()
     por.append([site,porS,porE])
     
     #get medians
-    dataBySiteParam=dataBySite[stat_selection]
+    dataBySiteParam=dataBySite[stat_selection.iloc[0]]
     tempstat=dataBySiteParam.median()
     medstat.append(tempstat)
     
@@ -136,9 +149,6 @@ sites=pandas.DataFrame(data['site'].drop_duplicates())
 sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
                'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
                'Strontia (ST)','Williams Fork (WF)']
-
-params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
-param=paramsDF.loc[paramsDF['long']==params_select][0]
 
 container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
@@ -205,6 +215,9 @@ siteSelect=data_sites_years['site'].drop_duplicates()
 
 for site in sites['site']:
     dataBySite=data_sites_years[data_sites_years['site']==site]
+    #filter by day count threshold
+
+    dataBySite=dataBySite.groupby('CY').filter(lambda x : len(x)>=dayCountThres)
     
     #get medians
     dataBySiteParam=dataBySite[stat_selection]
@@ -244,7 +257,7 @@ sumSitesDisplay=sumSites1.style\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
-st.markdown("Compares SWE Statistic (median, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Compares the median (in degrees) for selected temperature statistic and trend (Theil-Sen Slope in degrees/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
@@ -275,30 +288,30 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteCYPeak=tempSiteData[stat_selection.iloc[0]].median()
-            tempPORmed=sumSites[sumSites.index==siterow]['POR Stat'][0]
-            tempMedNorm=tempSiteCYPeak/tempPORmed
-            compList.append([siterow,CYrow,tempMedNorm])
+            tempSiteCY=tempSiteData[stat_selection.iloc[0]].median()
+            
+            #median for selected POR
+            tempPORmed=medstatSelectdf[medstatSelectdf.index==siterow]
+            tempMedNorm=tempSiteCY-tempPORmed.iloc[0][0]
+            
+            compList.append([siterow,CYrow,tempMedNorm,tempSiteCY])
     except:
-        compList.append([siterow,CYrow,None])
+        compList.append([siterow,CYrow,None,None])
 compListDF=pandas.DataFrame(compList)
-compListDF.columns=['Site','CY','NormMed']
+compListDF.columns=['Site','CY','NormMed','CY Value']
 
 #%%transpose to get days as columns
-#compListDF=pandas.read_csv("temp.csv")
 
 list=compListDF['CY'].drop_duplicates()
 finalSites=compListDF['Site'].drop_duplicates()
 list=list.sort_values()
 yearList=pandas.DataFrame(index=finalSites)
 for n in list:
-    #n=1979
     temp1=compListDF[compListDF['CY']==n]
     temp1=temp1.set_index('Site')
     temp2=temp1.iloc[:,[1]].copy()
     temp2.columns=[n]
     yearList[n]=temp2
-#yearList=yearList.fillna("NaN")
 
 #%%colormap
 def background_gradient(s, m=None, M=None, cmap='bwr',low=0, high=0):
@@ -323,10 +336,10 @@ yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
 yearList1=yearList.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
-    .format('{:,.0%}')
+    .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s CY Median / %s POR Median"%(stat_select,stat_select))
+st.header("%s CY Median - %s POR Median"%(stat_select,stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -344,6 +357,64 @@ st.download_button(
      file_name='Temp_comp.csv',
      mime='text/csv',
  )
+#%%transpose to get days as columns
+
+list=compListDF['CY'].drop_duplicates()
+finalSites=compListDF['Site'].drop_duplicates()
+list=list.sort_values()
+yearList=pandas.DataFrame(index=finalSites)
+for n in list:
+    temp1=compListDF[compListDF['CY']==n]
+    temp1=temp1.set_index('Site')
+    temp2=temp1.iloc[:,[2]].copy()
+    temp2.columns=[n]
+    yearList[n]=temp2
+
+#%%colormap
+def background_gradient(s, m=None, M=None, cmap='bwr',low=0, high=0):
+    #print(s.shape)
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
+
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+    return ret 
+
+yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
+
+#select_col=yearList.columns[:]
+yearList2=yearList.style\
+    .set_properties(**{'width':'10000px'})\
+    .apply(background_gradient, axis=None)\
+    .format('{:,.1f}')
+
+    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
+st.header("%s CY Median"%(stat_select))
+st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
+yearList2
+
+# download data
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+csv = convert_df(yearList)
+
+st.download_button(
+     label="Download Medians as CSV",
+     data=csv,
+     file_name='Temp_CY_value_comp.csv',
+     mime='text/csv',
+ )
+
 #%%FOR THRESHOLD
 #%%calc statistic for all months
 compListCount=[]

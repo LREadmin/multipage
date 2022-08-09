@@ -122,8 +122,6 @@ system_data=systemfilter()
 tempSD=system_data.reset_index()
 sites=tempSD['Site'].drop_duplicates()
 
-#sites=['Fremont Pass']
-
 container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 

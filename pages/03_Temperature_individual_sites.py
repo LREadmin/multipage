@@ -96,8 +96,14 @@ thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,s
 yearList=data_param_site_date['CY'].drop_duplicates()
 newParamData=[]
 newParamData1=[]
+
 for row in yearList:
     tempData=data_param_site_date[data_param_site_date['CY']==row]
+
+    #filter by day count threshold
+    dayCountThres=25
+    tempData=tempData.groupby('Month').filter(lambda x : len(x)>=dayCountThres)
+    
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]
         tempData2=tempData2.dropna()
@@ -134,11 +140,14 @@ medianData=pandas.DataFrame([monthNames,data4.median()])
 manK=[]
 data4_sort=data4.sort_index(ascending=True)
 for (columnName, columnData) in data4_sort.iteritems():
-    tempMK=mk.original_test(columnData)
-    if tempMK[2]>0.1:
+    try:
+        tempMK=mk.original_test(columnData)
+        if tempMK[2]>0.1:
+            manK.append(float('nan'))
+        else:
+            manK.append(tempMK[7])  
+    except:
         manK.append(float('nan'))
-    else:
-        manK.append(tempMK[7])  
         
 manK=pandas.DataFrame(manK).T
 sumStats=pandas.concat([medianData, manK],ignore_index=True)
@@ -163,8 +172,7 @@ def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
     cm = plt.cm.get_cmap(cmap)
     c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
     ret = c.applymap(lambda x: 'background-color: %s' % x)
-    # if data4.isnull().values.any():
-    #     return 'background-color: white'
+
     return ret 
     
 tableData=data4.style\
@@ -174,7 +182,7 @@ tableData=data4.style\
 
 #%%display
 #pandas.set_option('display.width',100)
-st.header("Median of monthly %s values" %params_select)
+st.header("Monthly Median of Daily %s Values" %params_select)
 st.dataframe(tableData)
 
 # download data
@@ -196,7 +204,7 @@ sumStats1=sumStats.style\
     .format('{:,.2f}')\
     .set_properties(**{'width':'10000px'})
 
-st.markdown("Trend (Theil-Sen Slope (inches/year or days/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Trend (Theil-Sen Slope (degrees/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 sumStats1
 
 # download data
