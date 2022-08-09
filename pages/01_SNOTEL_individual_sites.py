@@ -1,53 +1,58 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Sep 24 14:15:03 2020
-
 @author: msparacino
 """
+#%% Import Libraries
+import pandas #for dataframe
 
-import pandas
+import numpy #for math
 
-import numpy
+import matplotlib.pyplot as plt #for plotting
 
-import matplotlib.pyplot as plt
+import streamlit as st #for displaying on web app
 
-import streamlit as st
+import datetime #for date/time manipulation
 
-import datetime
+import arrow #another library for date/time manipulation
 
-import arrow
+import pymannkendall as mk #for trend anlaysis
 
-import pymannkendall as mk
-
-
-#%%
+#%% Website display information
 st.set_page_config(page_title="SNOTEL Individual Sites", page_icon="📈")
+#%% Define data download as CSV function
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
 
-#st.markdown("#Individual Sites")
-#st.sidebar.header("Plotting Demo")
-
-#%%time period
+#%% Select year type
 yearType="WY" #CY = calendar year, WY = water year
 
-#%% read all data
-sites_df=pandas.read_csv('SNOTEL_sites.csv.gz')
+#%% Read in raw data and isolate site names
 data_raw=pandas.read_csv('SNOTEL_data_raw.csv.gz')
+
+#convert date to datetime
+pandas.to_datetime(data_raw['Date'])
+
+# get site list
 with open("siteNamesList.txt") as f:
     siteNamesList=f.read().split(", ")
+
+# clean up data to isolate site names
 siteNamesList = [s.replace("[", "") for s in siteNamesList]
 siteNamesList = [s.replace("]", "") for s in siteNamesList]
 siteNamesList = [s.replace("'", "") for s in siteNamesList]
 siteNames=pandas.DataFrame(siteNamesList)
 
-#%%start and end dates needed for initial data fetch
+#%% Definte start and end dates
 startY=1950
 startM=10
 startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
 end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
-#%%
-pandas.to_datetime(data_raw['Date'])
+#%% Define and use Site Filter
+
 site_selected = st.sidebar.selectbox('Select your site:', siteNames)
 
 def filterdata():
@@ -55,7 +60,7 @@ def filterdata():
 
 data=filterdata()
 
-#rearrange columns
+# rearrange columns
 cols=data.columns.tolist()
 cols=cols[-1:] + cols[:-1]
 data=data[cols]
@@ -63,17 +68,14 @@ data1=data
 data1=data1.set_index('Site')
 data1['Date']=data1['Date'].str[:-15]
 
+# sort with current year at top
 data1=data1.sort_values(by="Date", ascending=False)
 
+# toggle check box to display data table
 if st.checkbox('show SNOTEL data for full POR'):    
     st.dataframe(data1)
     
-#%% download snotel data  
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download snotel data  as CSV
 csv = convert_df(data1)
 
 st.download_button(
@@ -159,7 +161,6 @@ if yearType=="WY":
     dataDay=daysWY
 else:
     dataDay=daysCY
-
 
 #%%transpose to get days as columns
 list=years
@@ -300,10 +301,8 @@ cb2axes=fig.add_axes([1.02,0.5,0.03,0.3])
 cbar1=fig.colorbar(peak,cax=cb2axes,shrink=.25)
 cbar1.set_label("Peak SWE (inches)")
 st.pyplot(plt)
-#save file
-#plt.savefig("%s.png"%site_selected,dpi=300,bbox_inches="tight")
 
-#%% stats tables
+#%% display summary stats tables
 
 st.header("Summary Statistic Table")
 sumDisplay=merge1.style\
@@ -313,15 +312,7 @@ sumDisplay=merge1.style\
 st.markdown("Trend (Theil-Sen Slope (inches/year or days/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 sumDisplay
 
-if len(merge1)==1:
-    pass
-
-# download sum stats data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download sum stats data
 csv = convert_df(merge1)
 
 st.download_button(
@@ -331,25 +322,21 @@ st.download_button(
      mime='text/csv',
  )
 
+#%% display yearly data table
 merge=merge.sort_values(by="WY", ascending=False)
 merge2=merge.style\
     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})\
     .set_properties(**{'width':'10000px'})
 
 st.header("Yearly Data Table")
-st.write(merge2)
+merge2
 
-# download sum stats data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download yearly data table
 csv = convert_df(merge)
 
 st.download_button(
      label="Download yearly data as CSV",
      data=csv,
-     file_name='%s_stats.csv'%site_selected,
+     file_name='%s_yearly_data.csv'%site_selected,
      mime='text/csv',
  )

@@ -1,40 +1,46 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Sep 24 14:15:03 2020
-
 @author: msparacino
 """
-import pandas
+#%% Import Libraries
+import pandas #for dataframe
 
-import streamlit as st
+import numpy #for math
 
-import datetime
+import matplotlib.pyplot as plt #for plotting
 
-import arrow
+from matplotlib import colors #for additional colors
 
-import numpy
+import streamlit as st #for displaying on web app
 
-import matplotlib.pyplot as plt
+import datetime #for date/time manipulation
 
-from matplotlib import colors
+import arrow #another library for date/time manipulation
 
-import pymannkendall as mk
+import pymannkendall as mk #for trend anlaysis
 
-#%% set working directory
+
+#%% Website display information
+#%% Define data download as CSV function
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
 st.set_page_config(page_title="SNOTEL Site Comparison", page_icon="📈")
 
 st.header("Site Comparison")
 st.sidebar.header("Site Comparison")
 
-
-#%% read measurement data
+#%% Read in raw data
 data_raw=pandas.read_csv('SNOTEL_data_raw.csv.gz')
 
-#%% get raw end date
+# get raw end date
 end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
 #%% read site data
-sites_df=pandas.read_csv('SNOTEL_sites.csv.gz')
+sites_df=pandas.read_csv('SNOTEL_sites.csv.gz') #needed for code info
+
+#needed for site/system info
 with open("siteNamesListNS.txt") as f:
     siteNamesList=f.read().split(", ")
 siteNamesList = [s.replace("[", "") for s in siteNamesList]
@@ -49,7 +55,6 @@ siteKey.columns=['code','Site']
 #%% merged df
 combo_data=pandas.merge(data_raw,siteKey,on="Site",how='inner')
 combo_data1=pandas.merge(combo_data,siteNames,on="Site",how='inner')
-#combo_data2=pandas.merge(combo_data1,sites_POR,on="code",how='inner')
 combo_data2=combo_data1
 combo_data2=combo_data2.set_index('Site')
 
@@ -64,7 +69,7 @@ fullWYcheck=combo_data2.groupby([combo_data2.index,combo_data2['WY']]).count().r
 fullWYcheck.drop(fullWYcheck [ (fullWYcheck['Date'] <365) & (fullWYcheck['WY'] < int(end_dateRaw[:4])) ].index,inplace=True)
 fullWYcheck=fullWYcheck.set_index('Site')
 
-#%% get POR median
+#%% get POR start, end, stat and trend
 manKPOR=[]
 median=[]
 por_record=[]
@@ -73,13 +78,17 @@ for row in siteNames['Site']:
     temp=combo_data2[combo_data2.index==row]
     tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
     temp=temp[temp['WY'].isin(tempfullWYcheck['WY'])]
-    tempMedian=temp[['WY','Date','SWE_in']]
-    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
-    median.append([row,temp_median])
-    por_start=str(tempMedian['Date'].min())
-    por_end=str(tempMedian['Date'].max())
+
+    # get POR start and end
+    por_start=str(temp['Date'].min())
+    por_end=str(temp['Date'].max())
     por_record.append([row,por_start,por_end])
     
+    # get median of annual peak swe
+    tempMedian=temp[['WY','SWE_in']]
+    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()
+    median.append([row,temp_median[0]])
+
     #Man Kendall Test
     tempPOR=temp[['WY','SWE_in']]
     tempPORMKMedian=tempPOR.groupby(tempPOR['WY']).median()
@@ -138,7 +147,6 @@ system_site_data=multisitefilter()
 
 #%% filter for parameter
 #get parameter list
-
 paramsDF=pandas.DataFrame(['NormMed','Peak SWE Day','First Zero SWE Day','First Zero SWE Day'])
 paramsDF['long']=['Median Peak SWE Statistic','Peak SWE Day','First Zero SWE Day','Melt Day Count']
 paramsDF['title']=["WY Peak SWE / Median of Annual Peak SWE (for Select WY Range)",
@@ -149,11 +157,9 @@ paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.0f}"]
 paramsSelect=paramsDF['long']
 
 params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
-#params_select = str('Peak SWE Day')
 param=paramsDF.loc[paramsDF['long']==params_select][0]
 title=paramsDF['title'][paramsDF['long']==params_select]
 format_Dec=paramsDF['format'][paramsDF['long']==params_select]
-
 
 #%%start and end dates needed for initial data fetch
 startY=1950
@@ -196,7 +202,7 @@ manK=[]
 median=[]
 for row in siteSelect:
     temp=final_data[final_data.index==row]
-    tempMedian=temp[['WY','Date','SWE_in']]
+    tempMedian=temp[['WY','SWE_in']]
     tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
     tempMedian=tempMedian[tempMedian['WY'].isin(tempfullWYcheck['WY'])]
     temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
@@ -233,7 +239,6 @@ manK.columns=(['Select WY Trend'])
 manK=manK[manK.index.isin(siteSelect)]
 
 #%%combine POR with Selected stats
-
 por_record=por_record[por_record.index.isin(siteSelect)]
 manKPOR=manKPOR[manKPOR.index.isin(siteSelect)]
 medianPOR=medianPOR[medianPOR.index.isin(siteSelect)]
@@ -252,11 +257,7 @@ summary1=summary.style\
 st.markdown("Compares SWE Statistic (median of annual peak SWE values, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 summary1
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+#%% download SNOTEL comparison Summary data
 
 csv = convert_df(summary)
 
@@ -308,7 +309,6 @@ compListDF['Melt Day Count']=compListDF['First Zero SWE Day']-compListDF['Peak S
 
 
 #%%transpose to get days as columns and prent % peak of median
-
 list=compListDF['WY'].drop_duplicates()
 finalSites=compListDF['Site'].drop_duplicates()
 list=list.sort_values()
@@ -320,7 +320,7 @@ for n in list:
     temp2=temp1.loc[:,[param.iloc[0]]].copy()
     temp2.columns=[n]
     yearList[n]=temp2
-#yearList=yearList.fillna("NaN")
+
 #%%colormap
 def background_gradient(s, m=None, M=None, cmap='Blues',low=0, high=0):
     #print(s.shape)
@@ -352,11 +352,7 @@ st.header("%s"%title.iloc[0])
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearList1
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+#%% download SNOTEL comparison data
 
 csv = convert_df(yearList)
 
@@ -407,11 +403,7 @@ st.header("WY Peak SWE (inches)")
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearListPeak1
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+#%% download Peak SWE comparison data
 
 csv = convert_df(yearListPeak)
 

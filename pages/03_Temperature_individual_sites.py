@@ -1,31 +1,36 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Jul 19 07:43:15 2022
-
 @author: msparacino
 """
 
-import pandas
+#%% Import Libraries
+import pandas #for dataframe
 
-import streamlit as st
+import matplotlib.pyplot as plt #for plotting
 
-import matplotlib.pyplot as plt
+from matplotlib import colors #for additional colors
 
-from matplotlib import colors
+import streamlit as st #for displaying on web app
 
-import datetime
+import datetime #for date/time manipulation
 
-import arrow
+import arrow #another library for date/time manipulation
 
-import pymannkendall as mk
+import pymannkendall as mk #for trend anlaysis
 
-#%%
+#%% Website display information
 st.set_page_config(page_title="Temperature Individual Sites", page_icon="📈")
 
-#%% read weather data
+#%% Define data download as CSV function
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+
+#%% Read in raw weather data
 data_raw=pandas.read_csv('DW_weather.csv.gz')
 
-#%% convert to date time and year
+#%% Convert to date time and year
 data_raw['date']=pandas.to_datetime(data_raw['date'])
 data_raw['CY']=data_raw['date'].dt.year
 
@@ -84,8 +89,10 @@ max_date = datetime.datetime.today() #today
 startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=1950)
 endYear = st.sidebar.number_input('Enter Ending Calendar Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
-data_param_site_date=data_param_site[(data_param_site['CY']>=startYear)&(data_param_site['CY']<=endYear)]
+def dateSelection():
+    return data_param_site[(data_param_site['CY']>=startYear)&(data_param_site['CY']<=endYear)]
 
+data_param_site_date=dateSelection()
 
 #%%threshold filter
 thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=1)
@@ -155,11 +162,8 @@ sumStats.columns=sumStats.iloc[0]
 sumStats=sumStats[1:]
 sumStats=sumStats.rename({1:'Median',2:'Trend'})
 
-
 #%%colormap
-
 def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
-    print(s.shape)
     if m is None:
         m = s.min().min()
     if M is None:
@@ -185,12 +189,7 @@ tableData=data4.style\
 st.header("Monthly Median of Daily %s Values" %params_select)
 st.dataframe(tableData)
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download table data
 csv = convert_df(data4)
 
 st.download_button(
@@ -207,16 +206,11 @@ sumStats1=sumStats.style\
 st.markdown("Trend (Theil-Sen Slope (degrees/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 sumStats1
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download Summary table data
 csv = convert_df(sumStats)
 
 st.download_button(
-     label="Download Table Data as CSV",
+     label="Download Summary Table Data as CSV",
      data=csv,
      file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
      mime='text/csv',
@@ -243,7 +237,6 @@ data5.columns=monthNames
 #%%colormap
 
 def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
-    print(s.shape)
     if m is None:
         m = s.min().min()
     if M is None:
@@ -270,12 +263,7 @@ pandas.set_option('display.width',100)
 st.header("Count of days with %s between %s and %s value" %(params_select,thresholdLow, thresholdHigh))
 st.dataframe(countTableData)
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download count data
 csv = convert_df(data5)
 
 st.download_button(

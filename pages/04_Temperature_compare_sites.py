@@ -1,41 +1,43 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jul 22 14:13:39 2022
-
 @author: msparacino
 """
+#%% Import Libraries
+import pandas #for dataframe
 
-import pandas
+import matplotlib.pyplot as plt #for plotting
 
-import streamlit as st
+from matplotlib import colors #for additional colors
 
-import matplotlib.pyplot as plt
+import streamlit as st #for displaying on web app
 
-from matplotlib import colors
+import datetime #for date/time manipulation
 
-import datetime
+import arrow #another library for date/time manipulation
 
-import arrow
-
-import pymannkendall as mk
-
-#%%
+import pymannkendall as mk #for trend anlaysis
+#%% Website display information
 st.set_page_config(page_title="Temperature Site Comparison", page_icon="📈")
 
-#%% read weather data
+#%% Define data download as CSV function
+@st.cache
+def convert_df(df):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    return df.to_csv().encode('utf-8')
+#%% Read in raw weather data
 data_raw=pandas.read_csv('DW_weather.csv.gz')
 
-#%%get site list
+#%% Get site list
 sites=data_raw['site'].drop_duplicates()
 
-#%%summary
 sumSites=pandas.DataFrame(sites)
 sumSites=sumSites.set_index(['site']) #empty dataframe with sites as index
 
 #%% add POR
 data=data_raw
-data=data_raw[['site','date','Month','maxt','mint','meant']]
-data['date']=pandas.to_datetime(data['date'])
+data=data_raw[['site','Month','maxt','mint','meant']]
+dates_new=pandas.to_datetime(data_raw.loc[:]['date'])
+data=pandas.concat([data,dates_new],axis=1)
 data['CY']=data['date'].dt.year
 
 #%%select months
@@ -194,8 +196,6 @@ end_date=endDate()
 #change dates to similar for comparison
 start_date1=pandas.to_datetime(start_date)
 end_date1=pandas.to_datetime(end_date) 
-data_sites['date'] = pandas.to_datetime(data_sites['date'])
-
 
 #%%threshold filter
 thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%stat_select,step=1)
@@ -204,7 +204,6 @@ thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%stat_select,ste
 
 #%%FILTERED DATA
 data_sites_years=data_sites[(data_sites['date']>start_date1)&(data_sites['date']<=end_date1)]
-
 
 #%% calculate params for selected period
 
@@ -261,11 +260,7 @@ st.markdown("Compares the median (in degrees) for selected temperature statistic
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+#%% download Summary Table data
 
 csv = convert_df(sumSites1)
 
@@ -343,12 +338,7 @@ st.header("%s CY Median - %s POR Median"%(stat_select,stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
-
+#%% download temp comparison data
 csv = convert_df(yearList)
 
 st.download_button(
@@ -400,11 +390,7 @@ st.header("%s CY Median"%(stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList2
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+#%% download medians data
 
 csv = convert_df(yearList)
 
@@ -471,11 +457,7 @@ st.header("Count of days with %s between %s and %s %s"%(stat_select,thresholdLow
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 countList1
 
-# download data
-@st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv().encode('utf-8')
+#%% download temp count data
 
 csv = convert_df(countList)
 
