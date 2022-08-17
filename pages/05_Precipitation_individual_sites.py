@@ -67,7 +67,7 @@ def paramfilter():
 data_param=paramfilter()
 
 #%%
-data1=data_param[[param.iloc[0],'cumm_pcpn','Month','site','CY','WY']]
+data1=data_param[[param.iloc[0],'cumm_precip','Month','site','CY','WY']]
 
 #%% filter second for site
 site_select_long = st.sidebar.selectbox('Select one site:', sites['long'])
