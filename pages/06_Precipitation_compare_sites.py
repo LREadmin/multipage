@@ -219,7 +219,7 @@ for site in sites['site']:
     dataBySite=data_sites_years[data_sites_years['site']==site]
     #filter by day count threshold
 
-    dataBySite=dataBySite.groupby('CY').filter(lambda x : len(x)>=dayCountThres)
+    dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
     
     #get medians
     dataBySiteParam=dataBySite[stat_selection]
@@ -228,8 +228,8 @@ for site in sites['site']:
     
     #Man Kendall Test
     try:
-        dataforMKSelect=dataBySite[[stat_selection.iloc[0],'CY']]
-        tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['CY']).median()
+        dataforMKSelect=dataBySite[[stat_selection.iloc[0],'WY']]
+        tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['WY']).median()
         tempPORManK=mk.original_test(tempPORMKMedian)
     except:
         pass
