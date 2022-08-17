@@ -174,7 +174,7 @@ sumStats=sumStats.rename({1:'Median',2:'Trend'})
 sumStats = sumStats[cols] 
 
 #%%colormap
-def background_gradient(s, m=None, M=None, cmap='Blues', low=-10, high=0):
+def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
     if m is None:
         m = s.min().min()
     if M is None:
