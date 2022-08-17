@@ -101,8 +101,7 @@ else:
 paramsDF=pandas.DataFrame({0:['cumm_precip'], 'long': ["Accumulated Precipitation (in)"]})
 paramsSelect=paramsDF['long']
 
-stat_select= st.sidebar.selectbox(
-     'Select one statistic:', paramsSelect)
+stat_select = "Accumulated Precipitation (in)"
 
 #stat_select='Mean Temp (F)'
 stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
