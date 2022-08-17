@@ -67,7 +67,7 @@ def paramfilter():
 data_param=paramfilter()
 
 #%%
-data1=data_param[[param.iloc[0],'Month','site','CY']]
+data1=data_param[[param.iloc[0],'pcpn','Month','site','CY']]
 
 #%% filter second for site
 site_select_long = st.sidebar.selectbox('Select one site:', sites['long'])
@@ -119,9 +119,10 @@ for row in yearList:
         tempData2=tempData[tempData['Month']==row1]
         tempData2=tempData2.dropna()
         tempData2=tempData2.drop(columns='site')
+        sumMonth=tempData2.pcpn.sum()
         median=tempData2.median()
         count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
-        newParamData.append([row,row1,median[0]])
+        newParamData.append([row,row1,sumMonth])
         newParamData1.append([row,row1,count[0]])
         
 paramDataMerge=pandas.DataFrame(newParamData,columns=['CY','Month',params_select]) #median
