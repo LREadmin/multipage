@@ -67,7 +67,7 @@ def paramfilter():
 data_param=paramfilter()
 
 #%%
-data1=data_param[[param.iloc[0],'pcpn','Month','site','CY']]
+data1=data_param[[param.iloc[0],'cumm_pcpn','Month','site','CY','WY']]
 
 #%% filter second for site
 site_select_long = st.sidebar.selectbox('Select one site:', sites['long'])
@@ -95,7 +95,7 @@ startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=
 endYear = st.sidebar.number_input('Enter Ending Calendar Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 def dateSelection():
-    return data_param_site[(data_param_site['CY']>=startYear)&(data_param_site['CY']<=endYear)]
+    return data_param_site[(data_param_site['WY']>=startYear)&(data_param_site['WY']<=endYear)]
 
 data_param_site_date=dateSelection()
 
@@ -104,12 +104,12 @@ thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,
 
 thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1, min_value=0, value=0)
 #%%calc statistic for all months
-yearList=data_param_site_date['CY'].drop_duplicates()
+yearList=data_param_site_date['WY'].drop_duplicates()
 newParamData=[]
 newParamData1=[]
 
 for row in yearList:
-    tempData=data_param_site_date[data_param_site_date['CY']==row]
+    tempData=data_param_site_date[data_param_site_date['WY']==row]
 
     #filter by day count threshold
     dayCountThres=25
@@ -119,21 +119,21 @@ for row in yearList:
         tempData2=tempData[tempData['Month']==row1]
         tempData2=tempData2.dropna()
         tempData2=tempData2.drop(columns='site')
-        sumMonth=tempData2.pcpn.sum()
+        # sumMonth=tempData2.pcpn.sum()
         median=tempData2.median() #calculate monthly median
         count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
-        newParamData.append([row,row1,sumMonth])
+        newParamData.append([row,row1,median])
         newParamData1.append([row,row1,count[0]])
         
-paramDataMerge=pandas.DataFrame(newParamData,columns=['CY','Month',params_select]) #sum pcpn
-paramDataMerge1=pandas.DataFrame(newParamData1,columns=['CY','Month',params_select]) #count
+paramDataMerge=pandas.DataFrame(newParamData,columns=['WY','Month',params_select]) #sum pcpn
+paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select]) #count
 
 #%%transpose to get months as columns
-list=paramDataMerge['CY'].drop_duplicates()
+list=paramDataMerge['WY'].drop_duplicates()
 list=list.sort_values(ascending=False)
 yearList=[]
 for n in list:
-    temp1=paramDataMerge[paramDataMerge['CY']==n]
+    temp1=paramDataMerge[paramDataMerge['WY']==n]
     temp2=temp1.iloc[:,[1,2]].copy()
     temp2=temp2.sort_values(by="Month")
     temp3=temp2.T
@@ -225,7 +225,7 @@ st.download_button(
 #%%transpose to get Months as columns
 yearList=[]
 for n in list:
-    temp1=paramDataMerge1[paramDataMerge1['CY']==n]
+    temp1=paramDataMerge1[paramDataMerge1['WY']==n]
     temp2=temp1.iloc[:,[1,2]].copy()
     temp2=temp2.sort_values(by="Month")
     temp3=temp2.T

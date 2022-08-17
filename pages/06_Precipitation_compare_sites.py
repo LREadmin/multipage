@@ -99,7 +99,7 @@ else:
 #%%select stat
 #statistic
 
-paramsDF=pandas.DataFrame({0:['pcpn'], 'long': ["Accumulated Precipitation (in)"]})
+paramsDF=pandas.DataFrame({0:['cumm_precip'], 'long': ["Accumulated Precipitation (in)"]})
 paramsSelect=paramsDF['long']
 
 stat_select = "Accumulated Precipitation (in)"
@@ -119,7 +119,7 @@ for site in sites:
     por.append([site,porS,porE])
     
     #get medians
-    dataBySiteParam=dataBySite[stat_selection.iloc[0]]
+    dataBySiteParam=dataBySite['cumm_precip'] #accumulated precipitation by water year
     tempstat=dataBySiteParam.median()
     medstat.append(tempstat)
     
@@ -255,7 +255,7 @@ sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
 sumSitesDisplay=sumSites1.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
-              ,'Select CY Stat':"{:.1f}",'Select CY Trend':"{:.2f}"})\
+              ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
@@ -276,13 +276,13 @@ st.download_button(
 
 #%%Temp CY Median / Temp POR Median
 
-compData=data_sites_years[['site',stat_selection.iloc[0],'CY']]
-selectCY=compData['CY'].drop_duplicates()
+compData=data_sites_years[['site',stat_selection.iloc[0],'WY']]
+selectCY=compData['WY'].drop_duplicates()
 selectSite=compData['site'].drop_duplicates()
 
 compList=[]
 for CYrow in selectCY:
-    tempCYdata=compData[compData['CY']==CYrow]
+    tempCYdata=compData[compData['WY']==CYrow]
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
@@ -296,16 +296,16 @@ for CYrow in selectCY:
     except:
         compList.append([siterow,CYrow,None,None])
 compListDF=pandas.DataFrame(compList)
-compListDF.columns=['Site','CY','NormMed','CY Value']
+compListDF.columns=['Site','WY','NormMed','WY Value']
 
 #%%transpose to get days as columns
 
-list=compListDF['CY'].drop_duplicates()
+list=compListDF['WY'].drop_duplicates()
 finalSites=compListDF['Site'].drop_duplicates()
 list=list.sort_values()
 yearList=pandas.DataFrame(index=finalSites)
 for n in list:
-    temp1=compListDF[compListDF['CY']==n]
+    temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
     temp2=temp1.iloc[:,[1]].copy()
     temp2.columns=[n]
@@ -337,7 +337,7 @@ yearList1=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s CY Median - %s POR Median"%(stat_select,stat_select))
+st.header("%s WY Median - %s POR Median"%(stat_select,stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -352,12 +352,12 @@ st.download_button(
  )
 #%%transpose to get days as columns
 
-list=compListDF['CY'].drop_duplicates()
+list=compListDF['WY'].drop_duplicates()
 finalSites=compListDF['Site'].drop_duplicates()
 list=list.sort_values()
 yearList=pandas.DataFrame(index=finalSites)
 for n in list:
-    temp1=compListDF[compListDF['CY']==n]
+    temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
     temp2=temp1.iloc[:,[2]].copy()
     temp2.columns=[n]
@@ -389,7 +389,7 @@ yearList2=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s CY Median"%(stat_select))
+st.header("%s WY Median"%(stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList2
 
@@ -400,7 +400,7 @@ csv = convert_df(yearList)
 st.download_button(
      label="Download Medians as CSV",
      data=csv,
-     file_name='Pcpn_CY_value_comp.csv',
+     file_name='Cumm_Pcpn_WY_value_comp.csv',
      mime='text/csv',
  )
 
@@ -408,25 +408,25 @@ st.download_button(
 #%%calc statistic for all months
 compListCount=[]
 for CYrow in selectCY:
-    tempCYdata=compData[compData['CY']==CYrow]
+    tempCYdata=compData[compData['WY']==CYrow]
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteData=tempSiteData.drop(columns=['site','CY'])
+            tempSiteData=tempSiteData.drop(columns=['site','WY'])
             count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
             compListCount.append([siterow,CYrow,count])
     except:
         compListCount.append([siterow,CYrow,None])
         
 compListCountDF=pandas.DataFrame(compListCount)
-compListCountDF.columns=['Site','CY','Count']
+compListCountDF.columns=['Site','WY','Count']
 
 #%%transpose to get Months as columns
 
 countList=pandas.DataFrame(index=finalSites)
 for n in list:
     #n=1979
-    temp1=compListCountDF[compListCountDF['CY']==n]
+    temp1=compListCountDF[compListCountDF['WY']==n]
     temp1=temp1.set_index('Site')
     temp2=temp1.iloc[:,[1]].copy()
     temp2.columns=[n]
