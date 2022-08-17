@@ -251,7 +251,7 @@ data5 = data5[cols]
 
 #%%colormap
 
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='Blues', low=0.2, high=0):
     if m is None:
         m = s.min().min()
     if M is None:
