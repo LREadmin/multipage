@@ -120,10 +120,10 @@ for row in yearList:
         tempData2=tempData2.dropna()
         tempData2=tempData2.drop(columns='site')
         # sumMonth=tempData2.pcpn.sum()
-        monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly median
+        monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
         count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
         newParamData.append([row,row1,monthlyCumPrecip])
-        newParamData1.append([row,row1,count[0]])
+        newParamData1.append([row,row1,count[1]])
         
 paramDataMerge=pandas.DataFrame(newParamData,columns=['WY','Month',params_select]) #sum pcpn
 paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select]) #count
@@ -275,7 +275,7 @@ countTableData=data5.style\
 
 #%%display
 pandas.set_option('display.width',100)
-st.header("Count of days with %s between %s and %s value" %(params_select,thresholdLow, thresholdHigh))
+st.header("Count of days with Precipitation between %s and %s value" %(params_select,thresholdLow, thresholdHigh))
 st.dataframe(countTableData)
 
 #%% download count data
