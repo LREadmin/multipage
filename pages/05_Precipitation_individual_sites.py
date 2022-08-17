@@ -120,12 +120,12 @@ for row in yearList:
         tempData2=tempData2.dropna()
         tempData2=tempData2.drop(columns='site')
         sumMonth=tempData2.pcpn.sum()
-        median=tempData2.median()
+        median=tempData2.median() #calculate monthly median
         count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
         newParamData.append([row,row1,sumMonth])
         newParamData1.append([row,row1,count[0]])
         
-paramDataMerge=pandas.DataFrame(newParamData,columns=['CY','Month',params_select]) #median
+paramDataMerge=pandas.DataFrame(newParamData,columns=['CY','Month',params_select]) #sum pcpn
 paramDataMerge1=pandas.DataFrame(newParamData1,columns=['CY','Month',params_select]) #count
 
 #%%transpose to get months as columns
