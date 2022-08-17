@@ -91,8 +91,8 @@ min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
-startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=1950)
-endYear = st.sidebar.number_input('Enter Ending Calendar Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=1950)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 def dateSelection():
     return data_param_site[(data_param_site['WY']>=startYear)&(data_param_site['WY']<=endYear)]
@@ -197,7 +197,7 @@ tableData=data4.style\
     .format(precision=1)
 #%%display
 #pandas.set_option('display.width',100)
-st.header("Monthly %s " %params_select)
+st.header("Monthly Median of  %s " %params_select)
 st.dataframe(tableData)
 
 #%% download table data
