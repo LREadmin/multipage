@@ -58,7 +58,7 @@ sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin
                'Strontia (ST)','Williams Fork (WF)']
 
 #%% filter first for parameters
-params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
+params_select = "Accumulated Precipitation (in)"
 param=paramsDF.loc[paramsDF['long']==params_select][0]
 
 def paramfilter():
