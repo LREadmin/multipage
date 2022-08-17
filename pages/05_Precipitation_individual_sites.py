@@ -45,10 +45,10 @@ monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','D
 
 #get parameter list
 params=data_raw.columns
-params=params[params.isin(["pcpn","cumm_precip"])==True]
+params=params[params.isin(["cumm_precip"])==True]
 
 paramsDF=pandas.DataFrame(params)
-paramsDF['long']=['Precipitation (in)',"Accumulated Precipitation (in)"]
+paramsDF['long']=["Accumulated Precipitation (in)"]
 paramsSelect=paramsDF['long']
 
 #get site list

@@ -38,7 +38,7 @@ sumSites=sumSites.set_index(['site']) #empty dataframe with sites as index
 
 #%% add POR
 data=data_raw
-data=data_raw[['site','Month','pcpn','cumm_precip']]
+data=data_raw[['site','Month','cumm_precip']]
 dates_new=pandas.to_datetime(data_raw.loc[:]['date'])
 data=pandas.concat([data,dates_new],axis=1)
 data['CY']=data['date'].dt.year
@@ -98,7 +98,7 @@ else:
 #%%select stat
 #statistic
 
-paramsDF=pandas.DataFrame({0:['pcpn','cumm_precip'], 'long': ['Precipitation (in)',"Accumulated Precipitation (in)"]})
+paramsDF=pandas.DataFrame({0:['cumm_precip'], 'long': ["Accumulated Precipitation (in)"]})
 paramsSelect=paramsDF['long']
 
 stat_select= st.sidebar.selectbox(
