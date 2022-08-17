@@ -275,7 +275,7 @@ countTableData=data5.style\
 
 #%%display
 pandas.set_option('display.width',100)
-st.header("Count of days with Precipitation between %s and %s value" %(params_select,thresholdLow, thresholdHigh))
+st.header("Count of days with Precipitation (in) between %s and %s value" %(thresholdLow, thresholdHigh))
 st.dataframe(countTableData)
 
 #%% download count data
