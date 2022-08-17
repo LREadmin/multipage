@@ -175,14 +175,8 @@ sumStats = sumStats[cols]
 
 #%%colormap
 
-# min_val, max_val = 0.3,1.0
-# n = 10
-# orig_cmap = plt.cm.Blues
-# colors = orig_cmap(np.linspace(min_val, max_val, n))
-# cmap = matplotlib.colors.LinearSegmentedColormap.from_list("mycmap", colors)
 
-
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0.3, high=1):
+def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
     if m is None:
         m = s.min().min()
     if M is None:
@@ -200,7 +194,7 @@ def background_gradient(s, m=None, M=None, cmap='Blues', low=0.3, high=1):
 
 # pandas.set_option("display.precision", 1)
 tableData=data4.style\
-    .set_properties(**{'width':'10000px'})\
+    .set_properties(**{'width':'10000px','color':'grey'})\
     .apply(background_gradient, axis=None)\
     .format(precision=1)
 #%%display
