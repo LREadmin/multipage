@@ -191,7 +191,7 @@ tableData=data4.style\
     .format(precision=1)
 #%%display
 #pandas.set_option('display.width',100)
-st.header("Monthly Median of Daily %s Values" %params_select)
+st.header("Monthly %s Values" %params_select)
 st.dataframe(tableData)
 
 #%% download table data
