@@ -176,7 +176,7 @@ sumStats = sumStats[cols]
 #%%colormap
 
 
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='Blues', low=0.3, high=0):
     if m is None:
         m = s.min().min()
     if M is None:
@@ -194,7 +194,7 @@ def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
 
 # pandas.set_option("display.precision", 1)
 tableData=data4.style\
-    .set_properties(**{'width':'10000px','color':'grey'})\
+    .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
     .format(precision=1)
 #%%display
