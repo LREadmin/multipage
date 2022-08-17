@@ -467,6 +467,6 @@ csv = convert_df(countList)
 st.download_button(
      label="Download Precipitation Count Comparison as CSV",
      data=csv,
-     file_name='Temp_count_comp.csv',
+     file_name='Pcpn_count_comp.csv',
      mime='text/csv',
  )
