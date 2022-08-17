@@ -199,7 +199,7 @@ tableData=data4.style\
     .format(precision=1)
 #%%display
 #pandas.set_option('display.width',100)
-st.header("Monthly WY %s " %params_select)
+st.header("Monthly %s " %params_select)
 st.dataframe(tableData)
 
 #%% download table data
