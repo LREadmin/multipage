@@ -192,12 +192,12 @@ def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
 
 # pandas.set_option("display.precision", 1)
 tableData=data4.style\
-    .set_properties(**{'width':'10000px'})\
+    .set_properties(**{'width':'10000px', 'color':'black'})\
     .apply(background_gradient, axis=None)\
     .format(precision=1)
 #%%display
 #pandas.set_option('display.width',100)
-st.header("Monthly Median of  %s " %params_select)
+st.header("Monthly WY %s " %params_select)
 st.dataframe(tableData)
 
 #%% download table data
