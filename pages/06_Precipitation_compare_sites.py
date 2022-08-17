@@ -38,7 +38,7 @@ sumSites=sumSites.set_index(['site']) #empty dataframe with sites as index
 
 #%% add POR
 data=data_raw
-data=data_raw[['site','Month','cumm_precip']]
+data=data_raw[['site','Month','pcpn','cumm_precip','WY']]
 dates_new=pandas.to_datetime(data_raw.loc[:]['date'])
 data=pandas.concat([data,dates_new],axis=1)
 data['CY']=data['date'].dt.year
@@ -83,22 +83,23 @@ def monthfilter():
 
 data=monthfilter()
 
+
 #filter by day count threshold
 
 if len(month_select)==12:
     dayCountThres=330
-    g=data.groupby(['site','CY'])
+    g=data.groupby(['site','WY'])
     data=g.filter(lambda x: len(x)>=dayCountThres)
 else:
     dayCountThres=25
-    g=data.groupby(['site','CY','Month'])
+    g=data.groupby(['site','WY','Month'])
     data=g.filter(lambda x: len(x)>=dayCountThres)
 
 #data.to_csv('temp.csv')
 #%%select stat
 #statistic
 
-paramsDF=pandas.DataFrame({0:['cumm_precip'], 'long': ["Accumulated Precipitation (in)"]})
+paramsDF=pandas.DataFrame({0:['pcpn'], 'long': ["Accumulated Precipitation (in)"]})
 paramsSelect=paramsDF['long']
 
 stat_select = "Accumulated Precipitation (in)"
@@ -123,8 +124,8 @@ for site in sites:
     medstat.append(tempstat)
     
     #Man Kendall Test
-    dataforMK=dataBySite[[stat_selection.iloc[0],'CY']]
-    tempPORMKMedian=dataforMK.groupby(dataforMK['CY']).median()
+    dataforMK=dataBySite[[stat_selection.iloc[0],'WY']]
+    tempPORMKMedian=dataforMK.groupby(dataforMK['WY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[2]>0.1:
         manKPOR.append([site,None])
@@ -207,7 +208,7 @@ thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%stat_select,ste
 #%%FILTERED DATA
 data_sites_years=data_sites[(data_sites['date']>start_date1)&(data_sites['date']<=end_date1)]
 
-#%% calculate params for selected period
+#%% calculate params for selected period for Site Comparison Table
 
 manKPORSelect=[]
 medstatSelect=[]
@@ -239,12 +240,12 @@ for site in sites['site']:
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
 manKPORSelect=manKPORSelect.set_index([sites['site']])
-manKPORSelect.columns=(['Select CY Trend'])
+manKPORSelect.columns=(['Select WY Trend'])
 manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
 medstatSelectdf=pandas.DataFrame(medstatSelect)
 medstatSelectdf=medstatSelectdf.set_index([sites['site']])
-medstatSelectdf.columns=(['Select CY Stat'])
+medstatSelectdf.columns=(['Select WY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
 sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
@@ -258,7 +259,7 @@ sumSitesDisplay=sumSites1.style\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
-st.markdown("Compares the median (in inches) for selected precipitation statistic and trend (Theil-Sen Slope in degrees/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Compares the median (in inches) for selected precipitation statistic and trend (Theil-Sen Slope in inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 

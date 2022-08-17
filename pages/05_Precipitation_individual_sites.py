@@ -208,7 +208,7 @@ sumStats1=sumStats.style\
     .format('{:,.2f}')\
     .set_properties(**{'width':'10000px'})
 
-st.markdown("Trend (Theil-Sen Slope (degrees/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 sumStats1
 
 #%% download Summary table data
