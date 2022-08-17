@@ -434,7 +434,7 @@ for n in list:
 countList = countList.reindex(sorted(countList.columns,reverse=True), axis=1)
 
 #%%colormap
-def background_gradient(s, m=None, M=None, cmap='Blues',low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='Blues',low=0.2, high=0):
     #print(s.shape)
     if m is None:
         m = s.min().min()
