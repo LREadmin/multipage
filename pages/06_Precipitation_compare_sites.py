@@ -201,9 +201,9 @@ start_date1=pandas.to_datetime(start_date)
 end_date1=pandas.to_datetime(end_date) 
 
 #%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.5,min_value=0, value=100)
+thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=1,min_value=0, value=100)
 
-thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.5,min_value=0, value=0)
+thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=1,min_value=0, value=0)
 
 #%%FILTERED DATA
 data_sites_years=data_sites[(data_sites['date']>start_date1)&(data_sites['date']<=end_date1)]
