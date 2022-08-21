@@ -99,7 +99,7 @@ else:
 #%%select stat
 #statistic
 
-paramsDF=pandas.DataFrame({0:['cumm_precip'], 'long': ["Accumulated Precipitation (in)"]})
+paramsDF=pandas.DataFrame({0:['pcpn'], 'long': ["Accumulated Precipitation (in)"]})
 paramsSelect=paramsDF['long']
 
 stat_select = "Accumulated Precipitation (in)"
@@ -118,14 +118,18 @@ for site in sites:
     porE=dataBySite['date'].max()
     por.append([site,porS,porE])
     
-    #get medians
-    dataBySiteParam=dataBySite['cumm_precip'] #accumulated precipitation by water year
-    tempstat=dataBySiteParam.max()
+    #get medians for POR of accumulated monthly pcpn
+    dataBySiteParam=dataBySite['pcpn'] #accumulated precipitation by water year
+    tempMonth_CY=dataBySite[['pcpn','Month','WY']]
+    tempCY=tempMonth_CY.groupby(['WY','Month']).sum()
+    tempstat=tempCY['pcpn'].median()
     medstat.append(tempstat)
     
+
     #Man Kendall Test
-    dataforMK=dataBySite[[stat_selection.iloc[0],'WY']]
-    tempPORMKMedian=dataforMK.groupby(dataforMK['WY']).median()
+    dataforMK=dataBySite[[stat_selection.iloc[0],'WY','Month']]
+    tempPORMKMedian=dataforMK.groupby(['WY','Month']).sum().reset_index()[['WY','pcpn']]
+    tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[2]>0.1:
         manKPOR.append([site,None])
@@ -187,12 +191,12 @@ startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=sta
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 def startDate():
-    return "%s-0%s-0%s"%(int(startYear),1,1)
+    return "%s-%s-%s"%(int(startYear-1),10,1)
 
 start_date=startDate()
 
 def endDate():
-    return "%s-%s-%s"%(int(endYear),12,31)
+    return "%s-%s-%s"%(int(endYear),9,30)
 
 end_date=endDate()
 
@@ -223,13 +227,17 @@ for site in sites['site']:
     
     #get medians
     dataBySiteParam=dataBySite[stat_selection]
-    tempstat=dataBySiteParam.median()
-    medstatSelect.append(tempstat[0])
+    #get medians for POR of accumulated monthly pcpn
+    tempMonth_CY=dataBySite[['pcpn','Month','WY']]
+    tempCY=tempMonth_CY.groupby(['WY','Month']).sum()
+    tempstat=tempCY['pcpn'].median()
+    medstatSelect.append(tempstat)
     
+
     #Man Kendall Test
     try:
-        dataforMKSelect=dataBySite[[stat_selection.iloc[0],'WY']]
-        tempPORMKMedian=dataforMKSelect.groupby(dataforMKSelect['WY']).median()
+        tempPORMKMedian=dataforMK.groupby(['WY','Month']).sum().reset_index()[['WY','pcpn']]
+        tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
         tempPORManK=mk.original_test(tempPORMKMedian)
     except:
         pass
@@ -274,7 +282,7 @@ st.download_button(
      mime='text/csv',
  )
 
-#%%Temp CY Median / Temp POR Median
+#%%Temp Current WY Median - WY Stat Median
 
 compData=data_sites_years[['site',stat_selection.iloc[0],'WY']]
 selectCY=compData['WY'].drop_duplicates()
@@ -286,17 +294,22 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteCY=tempSiteData[stat_selection.iloc[0]].median()
+            tempSiteCY_1=tempSiteData[['pcpn','Month','WY']]
+            tempSiteCY_2=tempSiteCY_1.groupby(['WY','Month']).sum()
+            tempSiteCY=tempSiteCY_2[stat_selection.iloc[0]].median()
             
-            #median for selected POR
+            #sum for year
+            tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
+            
+            #median for all selected WYs stat
             tempPORmed=medstatSelectdf[medstatSelectdf.index==siterow]
             tempMedNorm=tempSiteCY-tempPORmed.iloc[0][0]
             
-            compList.append([siterow,CYrow,tempMedNorm,tempSiteCY])
+            compList.append([siterow,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum])
     except:
-        compList.append([siterow,CYrow,None,None])
+        compList.append([siterow,CYrow,None,None,None])
 compListDF=pandas.DataFrame(compList)
-compListDF.columns=['Site','WY','NormMed','WY Value']
+compListDF.columns=['Site','WY','NormMed','WY Value','Total_Precip']
 
 #%%transpose to get days as columns
 
@@ -337,7 +350,7 @@ yearList1=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s WY Median - %s POR Median"%(stat_select,stat_select))
+st.header("%s WY Median - %s Selected WY Median"%(stat_select,stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -359,7 +372,7 @@ yearList=pandas.DataFrame(index=finalSites)
 for n in list:
     temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
-    temp2=temp1.iloc[:,[2]].copy()
+    temp2=temp1.iloc[:,[3]].copy()
     temp2.columns=[n]
     yearList[n]=temp2
 
@@ -389,7 +402,7 @@ yearList2=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s WY Median"%(stat_select))
+st.header("%s in WY "%(stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList2
 
@@ -398,7 +411,7 @@ yearList2
 csv = convert_df(yearList)
 
 st.download_button(
-     label="Download Medians as CSV",
+     label="Download Annual Totals as CSV",
      data=csv,
      file_name='Cumm_Pcpn_WY_value_comp.csv',
      mime='text/csv',
@@ -413,6 +426,13 @@ for CYrow in selectCY:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
             tempSiteData=tempSiteData.drop(columns=['site','WY'])
+            
+            # tempSiteCY_1=tempSiteData[['pcpn','WY']]
+            # tempSiteCYSum=tempSiteCY_1.groupby(['WY']).sum()
+            
+            # #sum for year
+            # tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
+            
             count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
             compListCount.append([siterow,CYrow,count])
     except:
@@ -456,7 +476,7 @@ countList1=countList.style\
     .apply(background_gradient, axis=None)\
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Count of days with %s between %s and %s %s"%(stat_select,thresholdLow, thresholdHigh, stat_select))
+st.header("Count of days with Precipitation between %s in and %s in"%(thresholdLow, thresholdHigh))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 countList1
 
