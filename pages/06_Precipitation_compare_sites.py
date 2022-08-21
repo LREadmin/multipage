@@ -205,7 +205,7 @@ start_date1=pandas.to_datetime(start_date)
 end_date1=pandas.to_datetime(end_date) 
 
 #%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=1,min_value=0, value=100)
+thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=1,min_value=0, value=4)
 
 thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=1,min_value=0, value=0)
 
@@ -425,7 +425,7 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteData=tempSiteData.drop(columns=['site','WY'])
+            tempSiteData=tempSiteData.drop(columns=['site','WY','Month'])
             
             # tempSiteCY_1=tempSiteData[['pcpn','WY']]
             # tempSiteCYSum=tempSiteCY_1.groupby(['WY']).sum()
