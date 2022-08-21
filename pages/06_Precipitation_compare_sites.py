@@ -284,7 +284,7 @@ st.download_button(
 
 #%%Temp Current WY Median - WY Stat Median
 
-compData=data_sites_years[['site',stat_selection.iloc[0],'WY']]
+compData=data_sites_years[['site',stat_selection.iloc[0],'WY','Month']]
 selectCY=compData['WY'].drop_duplicates()
 selectSite=compData['site'].drop_duplicates()
 
