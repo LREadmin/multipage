@@ -100,9 +100,9 @@ def dateSelection():
 data_param_site_date=dateSelection()
 
 #%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=0.5, min_value=0, value=4)
+thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=1, min_value=0, value=4)
 
-thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=0.5, min_value=0, value=0)
+thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1, min_value=0, value=0)
 #%%calc statistic for all months
 yearList=data_param_site_date['WY'].drop_duplicates()
 newParamData=[]
