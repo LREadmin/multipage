@@ -147,10 +147,6 @@ data4['Years']=years
 data4=data4.set_index('Years')
 data4.columns=monthNames
 
-#reorganize by water year
-cols = ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep']
-data4 = data4[cols] 
-
 medianData=pandas.DataFrame([monthNames,data4.median()])
 
 manK=[]
@@ -171,7 +167,6 @@ sumStats.columns=sumStats.iloc[0]
 sumStats=sumStats[1:]
 sumStats=sumStats.rename({1:'Median',2:'Trend'})
 
-sumStats = sumStats[cols] 
 
 #%%colormap
 
@@ -247,7 +242,6 @@ data5['Years']=years
 data5=data5.set_index('Years')
 data5.columns=monthNames
 
-data5 = data5[cols] 
 
 #%%colormap
 
