@@ -122,7 +122,7 @@ for row in yearList:
         tempData2=tempData2.drop(columns='site')
         # sumMonth=tempData2.pcpn.sum()
         monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
-        count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
+        count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
         newParamData.append([row,row1,monthlyCumPrecip])
         newParamData1.append([row,row1,count[1]])
         

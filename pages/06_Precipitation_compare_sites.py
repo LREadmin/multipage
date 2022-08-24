@@ -495,7 +495,7 @@ for CYrow in selectCY:
         # #sum for year
         # tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
         
-        count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
+        count=tempSiteData[(tempSiteData <= thresholdHigh)&(tempSiteData >= thresholdLow)].count()[0]
         if (len(tempSiteData)==0):
             compListCount.append([site_long,CYrow,None])
         else:
