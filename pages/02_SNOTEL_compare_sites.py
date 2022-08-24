@@ -78,7 +78,7 @@ paramsDF['title']=["Peak SWE",
                    "Peak SWE Day",
                    "First Zero SWE Day",
                    "Melt Day Count"]
-paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.0f}"]
+paramsDF['format']=["{:.1f}","{:.0f}","{:.0f}","{:.0f}"]
 paramsSelect=paramsDF['long']
 
 params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
@@ -390,7 +390,7 @@ select_col=yearList.columns[1:]
 yearList1=yearList.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None,subset=select_col)\
-    .format('{:,.0%}',subset=select_col)
+    .format("{:,.0%}",subset=select_col)
    
 st.header("WY SWE Parameter / Median of Annual SWE Parameter (for Select WY Range)")
 st.markdown("Date range: %s through %s"%(start_date, end_date))
@@ -441,7 +441,7 @@ yearListPeak.insert(0,'System',summary["System"])
 yearListPeak1=yearListPeak.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None,subset=select_col)\
-    .format('{:.1f}',subset=select_col)
+    .format(paramsDF[paramsDF.long==param[0]].format.iloc[0],subset=select_col)
 
 st.header("WY "+ param.iloc[0])
 st.markdown("Date range: %s through %s"%(start_date, end_date))

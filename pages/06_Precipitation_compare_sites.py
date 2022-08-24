@@ -412,7 +412,7 @@ yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
 yearList1=yearList.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
-    .format('{:,.1f}')
+    .format("{:,.0%}")
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
 st.header("Update to Cumulative Precipitation in WY / Median Cumulative Precipitation in Selected WYs (%)")
