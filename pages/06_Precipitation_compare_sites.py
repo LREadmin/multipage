@@ -495,12 +495,15 @@ for CYrow in selectCY:
         count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
         compListCount.append([site_long,CYrow,count])
 # except:
-    compListCount.append([site_long,CYrow,None])
+    # compListCount.append([site_long,CYrow,None])
     
 compListCountDF=pandas.DataFrame(compListCount)
 compListCountDF.columns=['Site','WY','Count']
 
 #%%transpose to get Months as columns
+list=compListCountDF['WY'].drop_duplicates()
+finalSites=compListCountDF['Site'].drop_duplicates()
+list=list.sort_values()
 
 countList=pandas.DataFrame(index=finalSites)
 for n in list:
