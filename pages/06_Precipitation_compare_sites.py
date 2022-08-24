@@ -148,7 +148,6 @@ medstatdf=medstatdf.set_index([sites])
 medstatdf.columns=['POR Stat']
 
 sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
-
 sumSites['POR Start']=pandas.to_datetime(sumSites["POR Start"]).dt.strftime('%Y-%m-%d')
 sumSites['POR End']=pandas.to_datetime(sumSites["POR End"]).dt.strftime('%Y-%m-%d')
 
@@ -256,7 +255,7 @@ medstatSelectdf.columns=(['Select WY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
 sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
-# sumSites=sumSites.drop("Site",axis=1)
+sumSites=sumSites.drop("Site",axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
