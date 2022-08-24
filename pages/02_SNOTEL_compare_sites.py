@@ -237,7 +237,7 @@ for row in siteSelect:
     tempSiteWYPeak['FirstZeroSWEDay']=numpy.nan
     tempSiteWYPeak['MeltDays']=numpy.nan
     
-    for i in range(final_data.WY.min(),final_data.WY.max()+1):
+    for i in range(temp.WY.min(),temp.WY.max()+1):
          #peak SWE day
          tempWY=temp[temp.WY==i]
          tempSiteWYPeak.PeakSWEDay.loc[i]=tempWY.loc[tempWY['SWE_in']==tempSiteWYPeak.loc[i][0]].CalDay[0]
