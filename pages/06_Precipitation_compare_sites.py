@@ -495,7 +495,7 @@ for CYrow in selectCY:
         count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
         compListCount.append([site_long,CYrow,count])
 # except:
-    compListCount.append([site_long,CYrow,None])
+    # compListCount.append([site_long,CYrow,None])
     
 compListCountDF=pandas.DataFrame(compListCount)
 compListCountDF.columns=['Site','WY','Count']
