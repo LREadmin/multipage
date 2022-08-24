@@ -121,7 +121,7 @@ for site in sites:
     #get medians for POR of accumulated monthly pcpn
     dataBySiteParam=dataBySite['pcpn'] #accumulated precipitation by water year
     tempMonth_CY=dataBySite[['pcpn','Month','WY']]
-    tempCY=tempMonth_CY.groupby(['WY','Month']).sum()
+    tempCY=tempMonth_CY.groupby(['WY']).sum()
     tempstat=tempCY['pcpn'].median()
     medstat.append(tempstat)
     
@@ -129,7 +129,7 @@ for site in sites:
     #Man Kendall Test
     dataforMK=dataBySite[[stat_selection.iloc[0],'WY','Month']]
     tempPORMKMedian=dataforMK.groupby(['WY','Month']).sum().reset_index()[['WY','pcpn']]
-    tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
+    tempPORMKMedian=tempPORMKMedian.groupby(['WY']).sum()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[2]>0.1:
         manKPOR.append([site,None])
@@ -229,15 +229,15 @@ for site in sites['site']:
     dataBySiteParam=dataBySite[stat_selection]
     #get medians for POR of accumulated monthly pcpn
     tempMonth_CY=dataBySite[['pcpn','Month','WY']]
-    tempCY=tempMonth_CY.groupby(['WY','Month']).sum()
+    tempCY=tempMonth_CY.groupby(['WY']).sum()
     tempstat=tempCY['pcpn'].median()
     medstatSelect.append(tempstat)
     
 
     #Man Kendall Test
     try:
-        tempPORMKMedian=dataforMK.groupby(['WY','Month']).sum().reset_index()[['WY','pcpn']]
-        tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
+        tempPORMKMedian=dataforMK.groupby(['WY']).sum().reset_index()[['WY','pcpn']]
+        # tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
         tempPORManK=mk.original_test(tempPORMKMedian)
     except:
         pass
@@ -267,7 +267,7 @@ sumSitesDisplay=sumSites1.style\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
-st.markdown("Compares the median (in inches) for selected precipitation statistic and trend (Theil-Sen Slope in inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Compares the cumulative precipitation (in inches) and trends (Theil-Sen Slope in inches/year)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
@@ -350,7 +350,7 @@ yearList1=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s WY Median - %s Selected WY Median"%(stat_select,stat_select))
+st.header("Update to Cumulative Precipitation in WY - Median Cumulative Precipitation in Selected WYs")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
