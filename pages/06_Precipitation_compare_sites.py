@@ -484,7 +484,7 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteData=tempSiteData[['WY','pcpn']]
+            tempSiteData=tempSiteData[['WY','pcpn']].set_index('WY')
             
             # tempSiteCY_1=tempSiteData[['pcpn','WY']]
             # tempSiteCYSum=tempSiteCY_1.groupby(['WY']).sum()
