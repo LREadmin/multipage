@@ -113,10 +113,10 @@ por=[]
 medstat=[]
 for site in sites:
     dataBySite=data[data['site']==site]
-    
+    site_long=sites[sites.site==site].long.iloc[0]
     porS=dataBySite['date'].min()
     porE=dataBySite['date'].max()
-    por.append([site,porS,porE])
+    por.append([site_long,porS,porE])
     
     #get medians for POR of accumulated monthly pcpn
     dataBySiteParam=dataBySite['pcpn'] #accumulated precipitation by water year
