@@ -233,11 +233,11 @@ for site in sites['site']:
     tempstat=tempCY['pcpn'].median()
     medstatSelect.append(tempstat)
     
-
+    dataforMK=dataBySite[['pcpn','WY','Month']]
     #Man Kendall Test
     try:
         tempPORMKMedian=dataforMK.groupby(['WY']).sum().reset_index()[['WY','pcpn']]
-        # tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
+        tempPORMKMedian=tempPORMKMedian.groupby(['WY']).median()
         tempPORManK=mk.original_test(tempPORMKMedian)
     except:
         pass
@@ -294,8 +294,8 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteCY_1=tempSiteData[['pcpn','Month','WY']]
-            tempSiteCY_2=tempSiteCY_1.groupby(['WY','Month']).sum()
+            tempSiteCY_1=tempSiteData[['pcpn''WY']]
+            tempSiteCY_2=tempSiteCY_1.groupby(['WY']).sum()
             tempSiteCY=tempSiteCY_2[stat_selection.iloc[0]].median()
             
             #sum for year
