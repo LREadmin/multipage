@@ -496,7 +496,7 @@ for CYrow in selectCY:
         if (len(tempSiteData)==0):
             compListCount.append([site_long,CYrow,None])
         else:
-            compListCount.append([site_long,CYrow,count])
+            compListCount.append([site_long,CYrow,int(count)])
 # except:
     # compListCount.append([site_long,CYrow,None])
     
