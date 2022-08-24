@@ -69,46 +69,24 @@ fullWYcheck=combo_data2.groupby([combo_data2.index,combo_data2['WY']]).count().r
 fullWYcheck.drop(fullWYcheck [ (fullWYcheck['Date'] <365) & (fullWYcheck['WY'] < int(end_dateRaw[:4])) ].index,inplace=True)
 fullWYcheck=fullWYcheck.set_index('Site')
 
-#%% get POR start, end, stat and trend
-manKPOR=[]
-median=[]
-por_record=[]
 
-for row in siteNames['Site']:
-    temp=combo_data2[combo_data2.index==row]
-    tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
-    temp=temp[temp['WY'].isin(tempfullWYcheck['WY'])]
+#%% filter for parameter
+#get parameter list
+paramsDF=pandas.DataFrame(['NormMed','Peak SWE Day','First Zero SWE Day','Melt Day Count'])
+paramsDF['long']=['Median Peak SWE Statistic','Peak SWE Day','First Zero SWE Day','Melt Day Count']
+paramsDF['title']=["WY Peak SWE / Median of Annual Peak SWE (for Select WY Range)",
+                   "Peak SWE Day",
+                   "First Zero SWE Day",
+                   "Melt Day Count"]
+paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.0f}"]
+paramsSelect=paramsDF['long']
 
-    # get POR start and end
-    por_start=str(temp['Date'].min())
-    por_end=str(temp['Date'].max())
-    por_record.append([row,por_start,por_end])
-    
-    # get median of annual peak swe
-    tempMedian=temp[['WY','SWE_in']]
-    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()
-    median.append([row,temp_median[0]])
+params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
+param=paramsDF.loc[paramsDF['long']==params_select][0]
+title=paramsDF['title'][paramsDF['long']==params_select]
+format_Dec=paramsDF['format'][paramsDF['long']==params_select]
 
-    #Man Kendall Test
-    tempPOR=temp[['WY','SWE_in']]
-    tempPORMKMedian=tempPOR.groupby(tempPOR['WY']).median()
-    tempPORManK=mk.original_test(tempPORMKMedian)
-    if tempPORManK[2]>0.1:
-        manKPOR.append([row,float('nan')])
-    else:
-        manKPOR.append([row,tempPORManK[7]])       #slope value 
-        
-medianPOR=pandas.DataFrame(median)
-medianPOR.columns=(['Site','MedianPOR'])
-medianPOR=medianPOR.set_index('Site')
 
-por_record=pandas.DataFrame(por_record)
-por_record=por_record.set_index([0])
-por_record.columns=(['por_start','por_end'])
-
-manKPOR=pandas.DataFrame(manKPOR)
-manKPOR.columns=(['Site','ManKPOR'])
-manKPOR=manKPOR.set_index('Site')
 
 #%%System Selection
 system=combo_data2['System'].drop_duplicates()
@@ -145,21 +123,7 @@ def multisitefilter():
     
 system_site_data=multisitefilter()
 
-#%% filter for parameter
-#get parameter list
-paramsDF=pandas.DataFrame(['NormMed','Peak SWE Day','First Zero SWE Day','First Zero SWE Day'])
-paramsDF['long']=['Median Peak SWE Statistic','Peak SWE Day','First Zero SWE Day','Melt Day Count']
-paramsDF['title']=["WY Peak SWE / Median of Annual Peak SWE (for Select WY Range)",
-                   "Peak SWE Day",
-                   "First Zero SWE Day",
-                   "Melt Day Count"]
-paramsDF['format']=["{:,.0%}","{:.0f}","{:.0f}","{:.0f}"]
-paramsSelect=paramsDF['long']
 
-params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
-param=paramsDF.loc[paramsDF['long']==params_select][0]
-title=paramsDF['title'][paramsDF['long']==params_select]
-format_Dec=paramsDF['format'][paramsDF['long']==params_select]
 
 #%%start and end dates needed for initial data fetch
 startY=1950
@@ -193,7 +157,67 @@ end_date1=pandas.to_datetime(end_date,utc=True)
 
 final_data=system_site_data[(system_site_data['Date']>start_date1)&(system_site_data['Date']<=end_date1)]
 
-#%%for selected period
+
+#%% get POR start, end, stat and trend
+manKPOR=[]
+median=[]
+por_record=[]
+siteSelect=final_data.index.drop_duplicates()
+
+for row in siteSelect:
+    temp=combo_data2[combo_data2.index==row] #full dataset
+    tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
+    temp=temp[temp['WY'].isin(tempfullWYcheck['WY'])]
+
+    # get POR start and end
+    por_start=str(temp['Date'].min())
+    por_end=str(temp['Date'].max())
+    por_record.append([row,por_start,por_end])
+    
+    # get median of parameter
+    #median annual SWE Peak
+    tempMedian=temp[['WY','SWE_in']]
+    
+    
+    #peak SWE
+    tempSiteWYPeak=tempMedian.groupby(tempMedian['WY']).max()
+    tempSiteWYPeak['PeakSWEDay']=numpy.nan
+    tempSiteWYPeak['FirstZeroSWEDay']=numpy.nan
+    tempSiteWYPeak['MeltDays']=numpy.nan
+    for i in range(tempMedian.WY.min(),tempMedian.WY.max()+1):
+         #peak SWE day
+         tempWY=temp[temp.WY==i]
+         tempSiteWYPeak.PeakSWEDay.loc[i]=tempWY.loc[tempWY['SWE_in']==tempSiteWYPeak.loc[i][0]].CalDay[0]
+         tempZeroDay=tempWY[(tempWY['SWE_in']==0)&(tempWY['CalDay']>tempSiteWYPeak.loc[i][0])].sort_values(by=['CalDay'])
+         tempSiteWYPeak.FirstZeroSWEDay.loc[i]=tempZeroDay.iloc[0].CalDay
+         tempSiteWYPeak.MeltDays.loc[i]=tempSiteWYPeak.FirstZeroSWEDay.loc[i]-tempSiteWYPeak.PeakSWEDay.loc[i]
+
+    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()
+    median.append([row,temp_median[0]])
+             
+    
+    #Man Kendall Test
+    tempPOR=temp[['WY','SWE_in']]
+    tempPORMKMedian=tempPOR.groupby(tempPOR['WY']).median()
+    tempPORManK=mk.original_test(tempPORMKMedian)
+    if tempPORManK[2]>0.1:
+        manKPOR.append([row,float('nan')])
+    else:
+        manKPOR.append([row,tempPORManK[7]])       #slope value 
+        
+medianPOR=pandas.DataFrame(median)
+medianPOR.columns=(['Site','MedianPOR'])
+medianPOR=medianPOR.set_index('Site')
+
+por_record=pandas.DataFrame(por_record)
+por_record=por_record.set_index([0])
+por_record.columns=(['por_start','por_end'])
+
+manKPOR=pandas.DataFrame(manKPOR)
+manKPOR.columns=(['Site','ManKPOR'])
+manKPOR=manKPOR.set_index('Site')
+
+#%%for selected period get WY Stat
 summary=pandas.DataFrame()
 siteSelect=final_data.index.drop_duplicates()
 
@@ -300,12 +324,13 @@ for WYrow in selectWY:
             tempZeroAll=tempZeroAll.sort_values(by=['CalDay'])
             tempZeroDay=tempZeroAll['CalDay'].iloc[0]
             
-            compList.append([siterow,WYrow,tempSiteWYPeak,tempMedNorm,tempSiteWYPeakDay,tempZeroDay])
+            #melt day count
+            compList.append([siterow,WYrow,tempSiteWYPeak,tempMedNorm,tempSiteWYPeakDay,tempZeroDay, tempZeroDay-tempSiteWYPeakDay])
     except:
-        compList.append([siterow,WYrow,None,None,None,None])
+        compList.append([siterow,WYrow,None,None,None,None,None])
 compListDF=pandas.DataFrame(compList)
-compListDF.columns=['Site','WY','Peak SWE (in)','NormMed','Peak SWE Day','First Zero SWE Day']
-compListDF['Melt Day Count']=compListDF['First Zero SWE Day']-compListDF['Peak SWE Day']
+compListDF.columns=['Site','WY','Peak SWE (in)','NormMed','Peak SWE Day','First Zero SWE Day','Melt Day Count']
+# compListDF['Melt Day Count']=compListDF['First Zero SWE Day']-compListDF['Peak SWE Day']
 
 
 #%%transpose to get days as columns and prent % peak of median
@@ -408,7 +433,7 @@ yearListPeak1
 csv = convert_df(yearListPeak)
 
 st.download_button(
-     label="Download SNOTEL Peak SWE Comparison as CSV",
+     label="Download SnowTel Yearly Values as CSV",
      data=csv,
      file_name='SNOTEL_peakSWE_comp.csv',
      mime='text/csv',
