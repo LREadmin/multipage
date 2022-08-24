@@ -104,18 +104,11 @@ stat_select= st.sidebar.selectbox(
 #stat_select='Mean Temp (F)'
 stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
 
-#sites
-sites=pandas.DataFrame(data['site'].drop_duplicates())
-sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
-               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
-               'Strontia (ST)','Williams Fork (WF)']
-
-
 #%%calulcate params for POR
 manKPOR=[]
 por=[]
 medstat=[]
-for site in sites.site:
+for site in sites:
     dataBySite=data[data['site']==site]
     
     porS=dataBySite['date'].min()
@@ -137,23 +130,27 @@ for site in sites.site:
         manKPOR.append([site,tempPORManK[7]])       #slope value 
 
 manKPOR=pandas.DataFrame(manKPOR)
-manKPOR=manKPOR.set_index([sites.long])
+manKPOR=manKPOR.set_index([sites])
 manKPOR.columns=(['Site','POR Trend'])
-
+    
 pordf=pandas.DataFrame(por)
-pordf=pordf.set_index([sites.long])
-pordf.columns=["Site","POR Start","POR End"]
+pordf=pordf.set_index([0])
+pordf.columns=["POR Start","POR End"]
 
 medstatdf=pandas.DataFrame(medstat)
-medstatdf=medstatdf.set_index([sites.long])
+medstatdf=medstatdf.set_index([sites])
 medstatdf.columns=['POR Stat']
 
 sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
-# sumSites=sumSites.drop("Site",axis=1)
+
 sumSites['POR Start']=pandas.to_datetime(sumSites["POR Start"]).dt.strftime('%Y-%m-%d')
 sumSites['POR End']=pandas.to_datetime(sumSites["POR End"]).dt.strftime('%Y-%m-%d')
 
 #%%make selections
+sites=pandas.DataFrame(data['site'].drop_duplicates())
+sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
+               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
+               'Strontia (ST)','Williams Fork (WF)']
 
 container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
@@ -239,20 +236,19 @@ for site in sites['site']:
         manKPORSelect.append(tempPORManK[7])       #slope value 
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
-manKPORSelect=manKPORSelect.set_index([sites['long']])
+manKPORSelect=manKPORSelect.set_index([sites['site']])
 manKPORSelect.columns=(['Select CY Trend'])
 manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
 medstatSelectdf=pandas.DataFrame(medstatSelect)
-medstatSelectdf=medstatSelectdf.set_index([sites['long']])
+medstatSelectdf=medstatSelectdf.set_index([sites['site']])
 medstatSelectdf.columns=(['Select CY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
-sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1) 
-sumSites1=sumSites[sumSites.Site.isin(multi_site_select)]     
+sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
 sumSites=sumSites.drop("Site",axis=1)
 
-
+sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
 sumSitesDisplay=sumSites1.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
