@@ -441,7 +441,7 @@ yearListPeak.insert(0,'System',summary["System"])
 yearListPeak1=yearListPeak.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None,subset=select_col)\
-    .format(paramsDF[paramsDF.long==param[0]].format.iloc[0],subset=select_col)
+    .format(paramsDF[paramsDF.long==param.iloc[0]].format.iloc[0],subset=select_col)
 
 st.header("WY "+ param.iloc[0])
 st.markdown("Date range: %s through %s"%(start_date, end_date))
