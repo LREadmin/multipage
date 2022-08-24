@@ -217,7 +217,7 @@ for site in sites['site']:
     #filter by day count threshold
 
     dataBySite=dataBySite.groupby('CY').filter(lambda x : len(x)>=dayCountThres)
-    
+
     #get medians
     dataBySiteParam=dataBySite[stat_selection]
     tempstat=dataBySiteParam.median()
@@ -282,6 +282,7 @@ for CYrow in selectCY:
     tempCYdata=compData[compData['CY']==CYrow]
     try:
         for siterow in selectSite:
+            site_long=sites[sites.site==siterow].long.iloc[0]
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
             tempSiteCY=tempSiteData[stat_selection.iloc[0]].median()
             
@@ -289,9 +290,9 @@ for CYrow in selectCY:
             tempPORmed=medstatSelectdf[medstatSelectdf.index==siterow]
             tempMedNorm=tempSiteCY-tempPORmed.iloc[0][0]
             
-            compList.append([siterow,CYrow,tempMedNorm,tempSiteCY])
+            compList.append([site_long,CYrow,tempMedNorm,tempSiteCY])
     except:
-        compList.append([siterow,CYrow,None,None])
+        compList.append([site_long,CYrow,None,None])
 compListDF=pandas.DataFrame(compList)
 compListDF.columns=['Site','CY','NormMed','CY Value']
 
@@ -334,7 +335,7 @@ yearList1=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("%s CY Median - %s POR Median"%(stat_select,stat_select))
+st.header("%s CY Median - %s Selected CY Median"%(stat_select,stat_select))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -408,12 +409,13 @@ for CYrow in selectCY:
     tempCYdata=compData[compData['CY']==CYrow]
     try:
         for siterow in selectSite:
+            site_long=sites[sites.site==siterow].long.iloc[0]
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
             tempSiteData=tempSiteData.drop(columns=['site','CY'])
             count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
-            compListCount.append([siterow,CYrow,count])
+            compListCount.append([site_long,CYrow,count])
     except:
-        compListCount.append([siterow,CYrow,None])
+        compListCount.append([site_long,CYrow,None])
         
 compListCountDF=pandas.DataFrame(compListCount)
 compListCountDF.columns=['Site','CY','Count']

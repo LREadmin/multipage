@@ -455,7 +455,7 @@ yearListPeak1
 csv = convert_df(yearListPeak)
 
 st.download_button(
-     label="Download SnowTel Yearly Values as CSV",
+     label="Download SNOTEL Yearly Values as CSV",
      data=csv,
      file_name='SNOTEL_peakSWE_comp.csv',
      mime='text/csv',
