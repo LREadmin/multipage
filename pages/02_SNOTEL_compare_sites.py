@@ -245,7 +245,7 @@ for row in siteSelect:
          tempSiteWYPeak.FirstZeroSWEDay.loc[i]=tempZeroDay.iloc[0].CalDay
          tempSiteWYPeak.MeltDays.loc[i]=tempSiteWYPeak.FirstZeroSWEDay.loc[i]-tempSiteWYPeak.PeakSWEDay.loc[i]
 
-    cols={'Median Peak SWE Statistic':'SWE_in','Peak SWE Day':'PeakSWEDay','First Zero SWE Day':'FirstZeroSWEDay',
+    cols={'Peak SWE (in)':'SWE_in','Peak SWE Day':'PeakSWEDay','First Zero SWE Day':'FirstZeroSWEDay',
           'Melt Day Count':'MeltDays'}
 
     temp_median=tempSiteWYPeak[cols[params_select]].median()
