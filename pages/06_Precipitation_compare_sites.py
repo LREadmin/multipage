@@ -317,7 +317,7 @@ for CYrow in selectCY:
             compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
             
     # except:
-        compList.append([site_long,CYrow,None,None,None,None])
+        # compList.append([site_long,CYrow,None,None,None,None])
 compListDF=pandas.DataFrame(compList)
 compListDF.columns=['Site','WY','NormMed','WY Value','Total_Precip','Perc_Precip']
 
