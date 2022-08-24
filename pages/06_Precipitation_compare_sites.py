@@ -294,6 +294,7 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
+            site_long=sites[sites.site==siterow].long.iloc[0]
             tempSiteCY_1=tempSiteData[['pcpn','WY']]
             tempSiteCY=tempSiteCY_1.groupby(['WY']).sum()
             # tempSiteCY=tempSiteCY_2[stat_selection.iloc[0]].median()
@@ -305,9 +306,9 @@ for CYrow in selectCY:
             tempPORmed=medstatSelectdf[medstatSelectdf.index==siterow]
             tempMedNorm=tempSiteCYSum-tempPORmed.iloc[0][0]
             
-            compList.append([siterow,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum])
+            compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum])
     except:
-        compList.append([siterow,CYrow,None,None,None])
+        compList.append([site_long,CYrow,None,None,None])
 compListDF=pandas.DataFrame(compList)
 compListDF.columns=['Site','WY','NormMed','WY Value','Total_Precip']
 
