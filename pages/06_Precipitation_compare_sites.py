@@ -355,7 +355,7 @@ yearList1=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Update to Cumulative Precipitation in WY - Median Cumulative Precipitation in Selected WYs")
+st.header("Update to Cumulative Precipitation in WY - Median Cumulative Precipitation in Selected WYs (in)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -484,7 +484,7 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteData=tempSiteData.drop(columns=['site','WY','Month'])
+            tempSiteData=tempSiteData[['WY','pcpn']]
             
             # tempSiteCY_1=tempSiteData[['pcpn','WY']]
             # tempSiteCYSum=tempSiteCY_1.groupby(['WY']).sum()
