@@ -443,7 +443,7 @@ yearListPeak1=yearListPeak.style\
     .apply(background_gradient, axis=None,subset=select_col)\
     .format('{:.1f}',subset=select_col)
 
-st.header("WY "+ paramsSelect)
+st.header("WY "+ param.iloc[0])
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearListPeak1
 
