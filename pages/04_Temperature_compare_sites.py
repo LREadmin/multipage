@@ -256,8 +256,8 @@ for i in range(0,len(sumSites1)):
     site_long=sites[sites.site==idx].long.iloc[0]
     sumSites1.long.iloc[i]=site_long
     
-sumSites2=sumSites1.set_index('long')
-sumSitesDisplay=sumSites2.style\
+sumSites1=sumSites1.set_index('long')
+sumSitesDisplay=sumSites1.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
               ,'Select CY Stat':"{:.1f}",'Select CY Trend':"{:.2f}"})\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
