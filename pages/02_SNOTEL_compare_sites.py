@@ -236,6 +236,7 @@ for row in siteSelect:
     tempSiteWYPeak['PeakSWEDay']=numpy.nan
     tempSiteWYPeak['FirstZeroSWEDay']=numpy.nan
     tempSiteWYPeak['MeltDays']=numpy.nan
+    
     for i in range(final_data.WY.min(),final_data.WY.max()+1):
          #peak SWE day
          tempWY=temp[temp.WY==i]
@@ -266,8 +267,7 @@ for row in siteSelect:
     # tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
     # tempMedian=tempMedian[tempMedian['WY'].isin(tempfullWYcheck['WY'])]
     # temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
-    
-    median.append(temp_median)
+    # median.append(temp_median)
     
     #Man Kendall Test
    
