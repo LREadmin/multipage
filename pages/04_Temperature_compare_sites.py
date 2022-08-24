@@ -249,9 +249,10 @@ sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)
 sumSites.reset_index()
 sumSites['long']=sites.long  
 sumSites.set_index(['long'])
-sumSites=sumSites.drop("Site",axis=1)
+# sumSites=sumSites.drop("Site",axis=1)
 
-sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
+sumSites1=sumSites[sumSites.Site.isin(multi_site_select)]
+sumSites1=sumSites1.drop("Site",axis=1)
 
 sumSitesDisplay=sumSites1.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
