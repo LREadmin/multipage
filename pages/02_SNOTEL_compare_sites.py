@@ -261,16 +261,6 @@ for row in siteSelect:
         manK.append(float('nan'))
     else:
         manK.append(tempManK[7])  
-   
-    
-    
-    # tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
-    # tempMedian=tempMedian[tempMedian['WY'].isin(tempfullWYcheck['WY'])]
-    # temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
-    # median.append(temp_median)
-    
-    #Man Kendall Test
-   
     
     temp1=temp['System']
     temp1=temp1.drop_duplicates()
@@ -302,10 +292,10 @@ summary["POR Start"] = pandas.to_datetime(summary["POR Start"]).dt.strftime('%Y-
 summary["POR End"] = pandas.to_datetime(summary["POR End"]).dt.strftime('%Y-%m-%d')
 
 summary1=summary.style\
-.format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
-          ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})
+.format({'POR Stat':paramsDF[paramsDF.long==params_select].format.iloc[0],'POR Trend':paramsDF[paramsDF.long==params_select].format.iloc[0]
+          ,'Select WY Stat':paramsDF[paramsDF.long==params_select].format.iloc[0],'Select WY Trend':paramsDF[paramsDF.long==params_select].format.iloc[0]})
 
-st.markdown("Compares SWE Statistic (median of annual peak SWE values, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Compares SWE Statistic (median of annual parameter values, inches) and trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 summary1
 
 #%% download SNOTEL comparison Summary data
