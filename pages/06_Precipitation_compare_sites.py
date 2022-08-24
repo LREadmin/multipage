@@ -72,8 +72,8 @@ elif summer:
         
 elif fall:
     month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
-elif winter and spring:
-    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
+# elif winter and spring:
+#     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
     
 else:
     month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
