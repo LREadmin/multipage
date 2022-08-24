@@ -45,7 +45,7 @@ data['CY']=data['date'].dt.year
 
 #%%select months
 
-monthOptions=pandas.DataFrame({'Month':['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+monthOptions=pandas.DataFrame({'Month':['Jan','Feb','Mar','A','M','J','Jul','Aug','Sep','Oct','Nov','Dec'],
                                'Season':['Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer','Fall','Fall','Fall'],
                                'Num':[1,2,3,4,5,6,7,8,9,10,11,12]})
 monthSelect=monthOptions['Month']
@@ -61,10 +61,10 @@ spring=st.sidebar.checkbox("Spring")
 summer=st.sidebar.checkbox("Summer")
 fall=st.sidebar.checkbox("Fall")
 
-if spring:
+if winter:
     month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
     
-elif winter:
+elif spring:
     month_select = container.multiselect('Select month(s):',springMonths, springMonths)
     
 elif summer:
