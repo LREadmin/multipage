@@ -360,8 +360,11 @@ for n in list:
     temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
     temp2=temp1.loc[:,[param.iloc[0]]].copy()
-    temp3=temp1.loc[:,['NormMed']].copy()
-    temp2.iloc[0][0]=temp2.iloc[0][0]/temp3.iloc[0][0]
+    temp2['Med']=numpy.nan
+    temp2['NormMed']=numpy.nan
+    temp2.Med=temp1.loc[:,['NormMed']].copy()
+    temp2['NormMed']=temp2[param.iloc[0]]/temp2.Med
+    temp2=temp2[['NormMed']]
     temp2.columns=[n]
     yearList[n]=temp2
 
