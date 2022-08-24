@@ -245,7 +245,10 @@ medstatSelectdf=medstatSelectdf.set_index([sites['site']])
 medstatSelectdf.columns=(['Select CY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
-sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
+sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)
+sumSites.reset_index()
+sumSites['long']=sites.long  
+sumSites.set_index(['long'])
 sumSites=sumSites.drop("Site",axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
