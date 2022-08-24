@@ -72,9 +72,6 @@ elif summer:
         
 elif fall:
     month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
-# elif winter and spring:
-#     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
-    
 else:
     month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
 
@@ -86,16 +83,15 @@ def monthfilter():
 
 data=monthfilter()
 
-
 #filter by day count threshold
 
 if len(month_select)==12:
     dayCountThres=330
-    g=data.groupby(['site','WY'])
+    g=data.groupby(['site','CY'])
     data=g.filter(lambda x: len(x)>=dayCountThres)
 else:
     dayCountThres=25
-    g=data.groupby(['site','WY','Month'])
+    g=data.groupby(['site','CY','Month'])
     data=g.filter(lambda x: len(x)>=dayCountThres)
 
 #data.to_csv('temp.csv')
