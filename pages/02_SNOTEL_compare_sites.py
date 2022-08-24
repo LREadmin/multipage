@@ -413,7 +413,7 @@ for n in list:
     #n=1979
     temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
-    temp2=temp1.loc[:,['Peak SWE (in)']].copy()
+    temp2=temp1.loc[:,[param.iloc[0]]].copy()
     temp2.columns=[n]
     yearListPeak[n]=temp2
 
@@ -443,7 +443,7 @@ yearListPeak1=yearListPeak.style\
     .apply(background_gradient, axis=None,subset=select_col)\
     .format('{:.1f}',subset=select_col)
 
-st.header("WY Peak SWE (inches)")
+st.header("WY "+ paramsSelect)
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearListPeak1
 
