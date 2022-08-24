@@ -192,12 +192,15 @@ for row in siteSelect:
          tempSiteWYPeak.FirstZeroSWEDay.loc[i]=tempZeroDay.iloc[0].CalDay
          tempSiteWYPeak.MeltDays.loc[i]=tempSiteWYPeak.FirstZeroSWEDay.loc[i]-tempSiteWYPeak.PeakSWEDay.loc[i]
 
-    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()
+    cols={'Median Peak SWE Statistic':'SWE_in','Peak SWE Day':'PeakSWEDay','First Zero SWE Day':'FirstZeroSWEDay',
+          'Melt Day Count':'MeltDays'}
+
+    temp_median=tempSiteWYPeak[cols[params_select]].median()
     median.append([row,temp_median[0]])
              
-    
+    temp1=tempSiteWYPeak.reset_index()
     #Man Kendall Test
-    tempPOR=temp[['WY','SWE_in']]
+    tempPOR=temp1[['WY',cols[params_select]]]
     tempPORMKMedian=tempPOR.groupby(tempPOR['WY']).median()
     tempPORManK=mk.original_test(tempPORMKMedian)
     if tempPORManK[2]>0.1:
@@ -227,23 +230,47 @@ median=[]
 for row in siteSelect:
     temp=final_data[final_data.index==row]
     tempMedian=temp[['WY','SWE_in']]
-    tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
-    tempMedian=tempMedian[tempMedian['WY'].isin(tempfullWYcheck['WY'])]
-    temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
+    
+    #peak SWE
+    tempSiteWYPeak=tempMedian.groupby(tempMedian['WY']).max()
+    tempSiteWYPeak['PeakSWEDay']=numpy.nan
+    tempSiteWYPeak['FirstZeroSWEDay']=numpy.nan
+    tempSiteWYPeak['MeltDays']=numpy.nan
+    for i in range(final_data.WY.min(),final_data.WY.max()+1):
+         #peak SWE day
+         tempWY=temp[temp.WY==i]
+         tempSiteWYPeak.PeakSWEDay.loc[i]=tempWY.loc[tempWY['SWE_in']==tempSiteWYPeak.loc[i][0]].CalDay[0]
+         tempZeroDay=tempWY[(tempWY['SWE_in']==0)&(tempWY['CalDay']>tempSiteWYPeak.loc[i][0])].sort_values(by=['CalDay'])
+         tempSiteWYPeak.FirstZeroSWEDay.loc[i]=tempZeroDay.iloc[0].CalDay
+         tempSiteWYPeak.MeltDays.loc[i]=tempSiteWYPeak.FirstZeroSWEDay.loc[i]-tempSiteWYPeak.PeakSWEDay.loc[i]
+
+    cols={'Median Peak SWE Statistic':'SWE_in','Peak SWE Day':'PeakSWEDay','First Zero SWE Day':'FirstZeroSWEDay',
+          'Melt Day Count':'MeltDays'}
+
+    temp_median=tempSiteWYPeak[cols[params_select]].median()
+    median.append(temp_median)
+             
+    temp_1=tempSiteWYPeak.reset_index()
+    #Man Kendall Test
+    tempMK=temp_1[['WY',cols[params_select]]]
+    tempMKMedian=tempPOR.groupby(tempPOR['WY']).median()
+    tempManK=mk.original_test(tempPORMKMedian)
+   
+    if tempManK[2]>0.1:
+        manK.append(float('nan'))
+    else:
+        manK.append(tempManK[7])  
+   
+    
+    
+    # tempfullWYcheck=fullWYcheck[fullWYcheck.index==row]
+    # tempMedian=tempMedian[tempMedian['WY'].isin(tempfullWYcheck['WY'])]
+    # temp_median=tempMedian.groupby(tempMedian['WY']).max().median()[0]
     
     median.append(temp_median)
     
     #Man Kendall Test
-    try:
-        tempMK=temp[['WY','SWE_in']]
-        tempMKMedian=tempMK.groupby(tempMK['WY']).median()
-        tempManK=mk.original_test(tempMKMedian)
-        if tempManK[2]>0.1:
-            manK.append(float('nan'))
-        else:
-            manK.append(tempManK[7])  
-    except:
-         manK.append(float('nan'))
+   
     
     temp1=temp['System']
     temp1=temp1.drop_duplicates()
