@@ -481,22 +481,22 @@ st.download_button(
 compListCount=[]
 for CYrow in selectCY:
     tempCYdata=compData[compData['WY']==CYrow]
-    try:
-        for siterow in selectSite:
-            tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteData=tempSiteData[['WY','pcpn']].set_index('WY')
-            
-            # tempSiteCY_1=tempSiteData[['pcpn','WY']]
-            # tempSiteCYSum=tempSiteCY_1.groupby(['WY']).sum()
-            
-            # #sum for year
-            # tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
-            
-            count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
-            compListCount.append([siterow,CYrow,count])
-    except:
-        compListCount.append([siterow,CYrow,None])
+    # try:
+    for siterow in selectSite:
+        tempSiteData=tempCYdata[tempCYdata['site']==siterow]
+        tempSiteData=tempSiteData[['WY','pcpn']].set_index('WY')
+        site_long=sites[sites.site==siterow].long.iloc[0]
+        # tempSiteCY_1=tempSiteData[['pcpn','WY']]
+        # tempSiteCYSum=tempSiteCY_1.groupby(['WY']).sum()
         
+        # #sum for year
+        # tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
+        
+        count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
+        compListCount.append([site_long,CYrow,count])
+# except:
+    compListCount.append([site_long,CYrow,None])
+    
 compListCountDF=pandas.DataFrame(compListCount)
 compListCountDF.columns=['Site','WY','Count']
 
