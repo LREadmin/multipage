@@ -331,7 +331,7 @@ for WYrow in selectWY:
                      
             #POR Median Peak SWE
             tempPORmed=median[median.index==siterow]
-            tempMedNorm=tempSiteWYPeak/tempPORmed.iloc[0][0]
+            tempMedNorm=tempPORmed.iloc[0][0]
             
             #peak SWE day
             tempSiteWYPeakDay=tempSiteData.loc[tempSiteData['SWE_in']==tempSiteWYPeak].iloc[-1][1]
@@ -360,6 +360,8 @@ for n in list:
     temp1=compListDF[compListDF['WY']==n]
     temp1=temp1.set_index('Site')
     temp2=temp1.loc[:,[param.iloc[0]]].copy()
+    temp3=temp1.loc[:,['NormMed']].copy()
+    temp2.iloc[0][0]=temp2.iloc[0][0]/temp3.iloc[0][0]
     temp2.columns=[n]
     yearList[n]=temp2
 
@@ -390,7 +392,7 @@ yearList1=yearList.style\
     .apply(background_gradient, axis=None,subset=select_col)\
     .format('%s'%format_Dec.iloc[0],subset=select_col)
    
-st.header("%s"%title.iloc[0])
+st.header("WY SWE Parameter / Median of Annual SWE Parameter (for Select WY Range)")
 st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearList1
 
