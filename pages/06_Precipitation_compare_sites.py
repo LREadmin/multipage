@@ -113,10 +113,10 @@ por=[]
 medstat=[]
 for site in sites:
     dataBySite=data[data['site']==site]
-    site_long=sites[sites.site==site].long.iloc[0]
+    
     porS=dataBySite['date'].min()
     porE=dataBySite['date'].max()
-    por.append([site_long,porS,porE])
+    por.append([site,porS,porE])
     
     #get medians for POR of accumulated monthly pcpn
     dataBySiteParam=dataBySite['pcpn'] #accumulated precipitation by water year
@@ -222,7 +222,7 @@ siteSelect=data_sites_years['site'].drop_duplicates()
 for site in sites['site']:
     dataBySite=data_sites_years[data_sites_years['site']==site]
     #filter by day count threshold
-    
+
     dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
     
     #get medians
@@ -495,7 +495,7 @@ for CYrow in selectCY:
         count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
         compListCount.append([site_long,CYrow,count])
 # except:
-    # compListCount.append([site_long,CYrow,None])
+    compListCount.append([site_long,CYrow,None])
     
 compListCountDF=pandas.DataFrame(compListCount)
 compListCountDF.columns=['Site','WY','Count']
