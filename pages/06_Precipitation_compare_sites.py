@@ -493,7 +493,10 @@ for CYrow in selectCY:
         # tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
         
         count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
-        compListCount.append([site_long,CYrow,count])
+        if (len(tempSiteData)==0):
+            compListCount.append([site_long,CYrow,None])
+        else:
+            compListCount.append([site_long,CYrow,count])
 # except:
     # compListCount.append([site_long,CYrow,None])
     
