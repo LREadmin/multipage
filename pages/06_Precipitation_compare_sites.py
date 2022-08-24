@@ -222,7 +222,7 @@ siteSelect=data_sites_years['site'].drop_duplicates()
 for site in sites['site']:
     dataBySite=data_sites_years[data_sites_years['site']==site]
     #filter by day count threshold
-
+    site_long=sites[sites.site==site].long.iloc[0]
     dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
     
     #get medians
@@ -247,12 +247,12 @@ for site in sites['site']:
         manKPORSelect.append(tempPORManK[7])       #slope value 
 
 manKPORSelect=pandas.DataFrame(manKPORSelect)
-manKPORSelect=manKPORSelect.set_index([sites['site']])
+manKPORSelect=manKPORSelect.set_index([sites['long']])
 manKPORSelect.columns=(['Select WY Trend'])
 manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
 medstatSelectdf=pandas.DataFrame(medstatSelect)
-medstatSelectdf=medstatSelectdf.set_index([sites['site']])
+medstatSelectdf=medstatSelectdf.set_index([sites['long']])
 medstatSelectdf.columns=(['Select WY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
