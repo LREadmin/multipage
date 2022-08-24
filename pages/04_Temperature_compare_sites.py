@@ -139,10 +139,10 @@ for site in sites.site:
 manKPOR=pandas.DataFrame(manKPOR)
 manKPOR=manKPOR.set_index([sites.long])
 manKPOR.columns=(['Site','POR Trend'])
-    
+
 pordf=pandas.DataFrame(por)
 pordf=pordf.set_index([sites.long])
-pordf.columns=["POR Start","POR End"]
+pordf.columns=["Site","POR Start","POR End"]
 
 medstatdf=pandas.DataFrame(medstat)
 medstatdf=medstatdf.set_index([sites.long])
