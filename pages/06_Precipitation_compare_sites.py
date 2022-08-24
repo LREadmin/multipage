@@ -72,6 +72,9 @@ elif summer:
         
 elif fall:
     month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
+elif winter and spring:
+    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
+    
 else:
     month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
 
@@ -547,7 +550,7 @@ countList1=countList.style\
     .apply(background_gradient, axis=None)\
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Count of days with Precipitation between %s in and %s in"%(thresholdLow, thresholdHigh))
+st.header("Count of days with Precipitation between %s and %s in"%(thresholdLow, thresholdHigh))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 countList1
 
