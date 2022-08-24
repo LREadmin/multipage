@@ -61,10 +61,10 @@ spring=st.sidebar.checkbox("Spring")
 summer=st.sidebar.checkbox("Summer")
 fall=st.sidebar.checkbox("Fall")
 
-if winter:
+if spring:
     month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
     
-elif spring:
+elif winter:
     month_select = container.multiselect('Select month(s):',springMonths, springMonths)
     
 elif summer:
