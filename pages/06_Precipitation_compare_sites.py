@@ -72,6 +72,10 @@ elif summer:
         
 elif fall:
     month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
+    
+elif winter and fall:
+    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths, fallMonths]), pandas.concat([winterMonths, fallMonths]))
+    
 else:
     month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
 
@@ -265,7 +269,7 @@ sumSitesDisplay=sumSites1.style\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
-st.markdown("Compares the cumulative precipitation (in inches) and trends (Theil-Sen Slope in inches/year)")
+st.markdown("Compares the cumulative precipitation (in inches) and trends (Theil-Sen Slope in inches/month)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
