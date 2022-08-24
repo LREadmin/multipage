@@ -196,7 +196,7 @@ for row in siteSelect:
           'Melt Day Count':'MeltDays'}
 
     temp_median=tempSiteWYPeak[cols[params_select]].median()
-    median.append([row,temp_median[0]])
+    median.append([row,temp_median])
              
     temp1=tempSiteWYPeak.reset_index()
     #Man Kendall Test
