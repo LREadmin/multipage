@@ -72,9 +72,9 @@ fullWYcheck=fullWYcheck.set_index('Site')
 
 #%% filter for parameter
 #get parameter list
-paramsDF=pandas.DataFrame(['NormMed','Peak SWE Day','First Zero SWE Day','Melt Day Count'])
-paramsDF['long']=['Median Peak SWE Statistic','Peak SWE Day','First Zero SWE Day','Melt Day Count']
-paramsDF['title']=["WY Peak SWE / Median of Annual Peak SWE (for Select WY Range)",
+paramsDF=pandas.DataFrame(['Peak SWE (in)','Peak SWE Day','First Zero SWE Day','Melt Day Count'])
+paramsDF['long']=['Peak SWE (in)','Peak SWE Day','First Zero SWE Day','Melt Day Count']
+paramsDF['title']=["Peak SWE",
                    "Peak SWE Day",
                    "First Zero SWE Day",
                    "Melt Day Count"]
@@ -390,7 +390,7 @@ select_col=yearList.columns[1:]
 yearList1=yearList.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None,subset=select_col)\
-    .format('%s'%format_Dec.iloc[0],subset=select_col)
+    .format('{:,.0%}',subset=select_col)
    
 st.header("WY SWE Parameter / Median of Annual SWE Parameter (for Select WY Range)")
 st.markdown("Date range: %s through %s"%(start_date, end_date))
