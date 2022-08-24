@@ -291,10 +291,14 @@ selectSite=compData['site'].drop_duplicates()
 compList=[]
 for CYrow in selectCY:
     tempCYdata=compData[compData['WY']==CYrow]
-    try:
-        for siterow in selectSite:
-            tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            site_long=sites[sites.site==siterow].long.iloc[0]
+    # try:
+    for siterow in selectSite:
+        site_long=sites[sites.site==siterow].long.iloc[0]
+        tempSiteData=tempCYdata[tempCYdata['site']==siterow]
+        if len(tempSiteData)==0:
+            compList.append([site_long,CYrow,None,None,None,None])
+        else:
+            
             tempSiteCY_1=tempSiteData[['pcpn','WY']]
             tempSiteCY=tempSiteCY_1.groupby(['WY']).sum()
             # tempSiteCY=tempSiteCY_2[stat_selection.iloc[0]].median()
@@ -302,22 +306,17 @@ for CYrow in selectCY:
             #sum for year
             tempSiteCYSum=tempSiteCY[stat_selection.iloc[0]].sum()
             
-
+    
             #median for all selected WYs stat
             tempPORmed=medstatSelectdf[medstatSelectdf.index==siterow]
             tempMedNorm=tempSiteCYSum-tempPORmed.iloc[0][0]
             
             #cumulative in WY / cumulative median at the site) (so answers will be in % rather than in) 
             precip_perc=(tempSiteCYSum/tempPORmed.iloc[0][0])*100
-            
-            #if outside por
-            # if len(tempSiteCY)==0:
-            #     compList.append([site_long,CYrow,None,None,None,None])
-            # else:
-            #     compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
-            
+    
             compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
-    except:
+            
+    # except:
         compList.append([site_long,CYrow,None,None,None,None])
 compListDF=pandas.DataFrame(compList)
 compListDF.columns=['Site','WY','NormMed','WY Value','Total_Precip','Perc_Precip']
