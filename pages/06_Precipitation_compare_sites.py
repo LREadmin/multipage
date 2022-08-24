@@ -294,16 +294,16 @@ for CYrow in selectCY:
     try:
         for siterow in selectSite:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
-            tempSiteCY_1=tempSiteData[['pcpn''WY']]
-            tempSiteCY_2=tempSiteCY_1.groupby(['WY']).sum()
-            tempSiteCY=tempSiteCY_2[stat_selection.iloc[0]].median()
+            tempSiteCY_1=tempSiteData[['pcpn','WY']]
+            tempSiteCY=tempSiteCY_1.groupby(['WY']).sum()
+            # tempSiteCY=tempSiteCY_2[stat_selection.iloc[0]].median()
             
             #sum for year
-            tempSiteCYSum=tempSiteCY_2[stat_selection.iloc[0]].sum()
+            tempSiteCYSum=tempSiteCY[stat_selection.iloc[0]].sum()
             
             #median for all selected WYs stat
             tempPORmed=medstatSelectdf[medstatSelectdf.index==siterow]
-            tempMedNorm=tempSiteCY-tempPORmed.iloc[0][0]
+            tempMedNorm=tempSiteCYSum-tempPORmed.iloc[0][0]
             
             compList.append([siterow,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum])
     except:
