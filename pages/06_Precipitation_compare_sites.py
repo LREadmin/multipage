@@ -311,10 +311,10 @@ for CYrow in selectCY:
             precip_perc=(tempSiteCYSum/tempPORmed.iloc[0][0])*100
             
             #if outside por
-            if len(tempSiteCY)==0:
-                compList.append([site_long,CYrow,None,None,None,None])
-            else:
-                compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
+            # if len(tempSiteCY)==0:
+            #     compList.append([site_long,CYrow,None,None,None,None])
+            # else:
+            #     compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
             
             compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
     except:
