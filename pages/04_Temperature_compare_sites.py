@@ -245,16 +245,19 @@ medstatSelectdf=medstatSelectdf.set_index([sites['site']])
 medstatSelectdf.columns=(['Select CY Stat'])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
-sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)
-sumSites.reset_index()
-sumSites['long']=sites.long  
-sumSites.set_index(['long'])
-# sumSites=sumSites.drop("Site",axis=1)
+sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
+sumSites=sumSites.drop("Site",axis=1)
 
-sumSites1=sumSites[sumSites.Site.isin(multi_site_select)]
-sumSites1=sumSites1.drop("Site",axis=1)
+sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
+sumSites1['long']=""
 
-sumSitesDisplay=sumSites1.style\
+for i in range(0,len(sumSites1)):
+    idx=sumSites1.index[i]
+    site_long=sites[sites.site==idx].long.iloc[0]
+    sumSites1.long.iloc[i]=site_long
+    
+sumSites2=sumSites1.set_index('long')
+sumSitesDisplay=sumSites2.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
               ,'Select CY Stat':"{:.1f}",'Select CY Trend':"{:.2f}"})\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
