@@ -368,6 +368,59 @@ st.download_button(
      file_name='pcpn_comp.csv',
      mime='text/csv',
  )
+
+#%%percentage table
+
+list=compListDF['WY'].drop_duplicates()
+finalSites=compListDF['Site'].drop_duplicates()
+list=list.sort_values()
+yearList=pandas.DataFrame(index=finalSites)
+for n in list:
+    temp1=compListDF[compListDF['WY']==n]
+    temp1=temp1.set_index('Site')
+    temp2=temp1.iloc[:,[4]].copy() #Percent change
+    temp2.columns=[n]
+    yearList[n]=temp2
+
+#%%colormap
+def background_gradient(s, m=None, M=None, cmap='bwr',low=0, high=0):
+    #print(s.shape)
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
+
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+    return ret 
+
+yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
+
+#select_col=yearList.columns[:]
+yearList1=yearList.style\
+    .set_properties(**{'width':'10000px'})\
+    .apply(background_gradient, axis=None)\
+    .format('{:,.1f}')
+
+    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
+st.header("Update to Cumulative Precipitation in WY / Median Cumulative Precipitation in Selected WYs (%)")
+st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
+yearList1
+
+#%% download temp comparison data
+csv = convert_df(yearList)
+
+st.download_button(
+     label="Download Percentage Precipitation Comparison as CSV",
+     data=csv,
+     file_name='pcpn_perc_comp.csv',
+     mime='text/csv',
+ )
 #%%transpose to get days as columns
 
 list=compListDF['WY'].drop_duplicates()
@@ -422,58 +475,7 @@ st.download_button(
      mime='text/csv',
  )
 
-#%%percentage table
 
-list=compListDF['WY'].drop_duplicates()
-finalSites=compListDF['Site'].drop_duplicates()
-list=list.sort_values()
-yearList=pandas.DataFrame(index=finalSites)
-for n in list:
-    temp1=compListDF[compListDF['WY']==n]
-    temp1=temp1.set_index('Site')
-    temp2=temp1.iloc[:,[4]].copy() #Percent change
-    temp2.columns=[n]
-    yearList[n]=temp2
-
-#%%colormap
-def background_gradient(s, m=None, M=None, cmap='bwr',low=0, high=0):
-    #print(s.shape)
-    if m is None:
-        m = s.min().min()
-    if M is None:
-        M = s.max().max()
-    rng = M - m
-    norm = colors.Normalize(m - (rng * low),
-                            M + (rng * high))
-    normed = s.apply(norm)
-
-    cm = plt.cm.get_cmap(cmap)
-    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
-    ret = c.applymap(lambda x: 'background-color: %s' % x)
-    return ret 
-
-yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
-
-#select_col=yearList.columns[:]
-yearList1=yearList.style\
-    .set_properties(**{'width':'10000px'})\
-    .apply(background_gradient, axis=None)\
-    .format('{:,.1f}')
-
-    #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Update to Cumulative Precipitation in WY / Median Cumulative Precipitation in Selected WYs (%)")
-st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
-yearList1
-
-#%% download temp comparison data
-csv = convert_df(yearList)
-
-st.download_button(
-     label="Download Percentage Precipitation Comparison as CSV",
-     data=csv,
-     file_name='pcpn_perc_comp.csv',
-     mime='text/csv',
- )
 #%%FOR THRESHOLD
 #%%calc statistic for all months
 compListCount=[]
