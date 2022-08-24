@@ -263,6 +263,14 @@ sumSites=sumSites.drop("Site",axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
+sumSites1['long']=""
+
+for i in range(0,len(sumSites1)):
+    idx=sumSites1.index[i]
+    site_long=sites[sites.site==idx].long.iloc[0]
+    sumSites1.long.iloc[i]=site_long
+    
+sumSites1=sumSites1.set_index('long')
 sumSitesDisplay=sumSites1.style\
     .format({'POR Stat':"{:.1f}",'POR Trend':"{:.2f}"
               ,'Select WY Stat':"{:.1f}",'Select WY Trend':"{:.2f}"})\
