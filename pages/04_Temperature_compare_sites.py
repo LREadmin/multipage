@@ -84,7 +84,7 @@ elif fall and summer and spring and (winter==False):
 elif fall and summer and winter and (spring==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,summerMonths,fallMonths]), pandas.concat([winterMonths,summerMonths,fallMonths]))
 elif spring and summer and winter and (fall==False):
-    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths,summerlMonths]), pandas.concat([winterMonths,springMonths,summerlMonths]))
+    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths,summerMonths]), pandas.concat([winterMonths,springMonths,summerMonths]))
 elif spring and fall and summer and winter:
     month_select = container.multiselect('Select month(s):',pandas.concat([springMonths,winterMonths,summerMonths,fallMonths]), pandas.concat([springMonths,winterMonths,summerMonths,fallMonths]))
 
