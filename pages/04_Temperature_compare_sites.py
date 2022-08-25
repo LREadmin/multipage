@@ -58,6 +58,7 @@ spring=st.sidebar.checkbox("Spring")
 summer=st.sidebar.checkbox("Summer")
 fall=st.sidebar.checkbox("Fall")
 
+#multiseasons
 if winter and spring:
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
 elif winter and summer:
@@ -66,7 +67,6 @@ elif winter and fall:
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,fallMonths]), pandas.concat([winterMonths,fallMonths]))
 elif winter:
     month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
-  
 elif spring:
     month_select = container.multiselect('Select month(s):',springMonths, springMonths)
 elif fall and spring:
@@ -77,9 +77,17 @@ elif summer and fall:
     month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths]), pandas.concat([summerMonths,fallMonths]))
 elif summer:
     month_select = container.multiselect('Select month(s):',summerMonths, summerMonths)
-        
 elif fall:
     month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
+elif fall and summer and spring:
+    month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths,springMonths]), pandas.concat([summerMonths,fallMonths,springMonths]))
+elif fall and summer and winter:
+    month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths,winterMonths]), pandas.concat([summerMonths,fallMonths,winterMonths]))
+elif spring and summer and winter:
+    month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,springMonths,winterMonths]), pandas.concat([summerMonths,springMonths,winterMonths]))
+elif spring and fall and summer and winter:
+    month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,springMonths,winterMonths,fallMonths]), pandas.concat([summerMonths,springMonths,winterMonths,fallMonths]))
+
 else:
     month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
 
