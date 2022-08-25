@@ -60,12 +60,21 @@ fall=st.sidebar.checkbox("Fall")
 
 if winter and spring:
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
+elif winter and summer:
+    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,summerMonths]), pandas.concat([winterMonths,summerMonths]))
+elif winter and fall:
+    month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,fallMonths]), pandas.concat([winterMonths,fallMonths]))
 elif winter:
     month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
   
 elif spring:
     month_select = container.multiselect('Select month(s):',springMonths, springMonths)
-    
+elif fall and spring:
+    month_select = container.multiselect('Select month(s):',pandas.concat([fallMonths,springMonths]), pandas.concat([fallMonths,springMonths]))
+elif spring and summer:
+    month_select = container.multiselect('Select month(s):',pandas.concat([springMonths,summerMonths]), pandas.concat([springMonths,summerMonths]))
+elif summer and fall:
+    month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths]), pandas.concat([summerMonths,fallMonths]))
 elif summer:
     month_select = container.multiselect('Select month(s):',summerMonths, summerMonths)
         
