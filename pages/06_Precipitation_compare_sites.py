@@ -278,7 +278,7 @@ sumSitesDisplay=sumSites1.style\
 
 st.header("Site Comparison")
 st.markdown("Compares the cumulative precipitation (in inches) and trends (Theil-Sen Slope in inches/month)")
-st.markdown("Date range for selected %s months: %s through %s"%(month_select,start_date, end_date))
+st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
 #%% download Summary Table data

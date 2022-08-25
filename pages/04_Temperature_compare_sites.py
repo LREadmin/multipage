@@ -420,11 +420,10 @@ for CYrow in selectCY:
             tempSiteData=tempCYdata[tempCYdata['site']==siterow]
             tempSiteData=tempSiteData.drop(columns=['site','CY'])
             count=tempSiteData[(tempSiteData < thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
-            if count==0:
-                count=None
+            if (len(tempSiteData)==0):
+                compListCount.append([site_long,CYrow,None])
             else:
-                pass
-            compListCount.append([site_long,CYrow,count])
+                compListCount.append([site_long,CYrow,count])
     except:
         compListCount.append([site_long,CYrow,None])
         
