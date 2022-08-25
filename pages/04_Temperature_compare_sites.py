@@ -463,6 +463,7 @@ def background_gradient(s, m=None, M=None, cmap='OrRd',low=0, high=0):
 #select_col=yearList.columns[:]
 countList1=countList.style\
     .set_properties(**{'width':'10000px'})\
+    .format('{:,.0f}')\
     .apply(background_gradient, axis=None)\
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
