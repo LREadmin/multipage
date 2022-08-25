@@ -59,31 +59,31 @@ summer=st.sidebar.checkbox("Summer")
 fall=st.sidebar.checkbox("Fall")
 
 #multiseasons
-if winter and spring:
+if winter and spring and (fall==False) and (summer==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,springMonths]), pandas.concat([winterMonths,springMonths]))
-elif winter and summer:
+elif winter and summer and (fall==False) and (spring==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,summerMonths]), pandas.concat([winterMonths,summerMonths]))
-elif winter and fall:
+elif winter and fall and (spring==False) and (summer==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([winterMonths,fallMonths]), pandas.concat([winterMonths,fallMonths]))
-elif winter:
+elif winter and (fall==False) and (spring==False) and (summer==False):
     month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
-elif spring:
+elif spring and (fall==False) and (winter==False) and (summer==False):
     month_select = container.multiselect('Select month(s):',springMonths, springMonths)
-elif fall and spring:
+elif fall and spring and (winter==False) and (summer==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([fallMonths,springMonths]), pandas.concat([fallMonths,springMonths]))
-elif spring and summer:
+elif spring and summer and (winter==False) and (fall==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([springMonths,summerMonths]), pandas.concat([springMonths,summerMonths]))
-elif summer and fall:
+elif summer and fall and (winter==False) and (spring==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths]), pandas.concat([summerMonths,fallMonths]))
-elif summer:
+elif summer and (fall==False) and (winter==False) and (spring==False):
     month_select = container.multiselect('Select month(s):',summerMonths, summerMonths)
-elif fall:
+elif fall and (spring==False) and (winter==False) and (summer==False):
     month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
-elif fall and summer and spring:
+elif fall and summer and spring and (winter==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths,springMonths]), pandas.concat([summerMonths,fallMonths,springMonths]))
-elif fall and summer and winter:
+elif fall and summer and winter and (spring==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,fallMonths,winterMonths]), pandas.concat([summerMonths,fallMonths,winterMonths]))
-elif spring and summer and winter:
+elif spring and summer and winter and (fall==False):
     month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,springMonths,winterMonths]), pandas.concat([summerMonths,springMonths,winterMonths]))
 elif spring and fall and summer and winter:
     month_select = container.multiselect('Select month(s):',pandas.concat([summerMonths,springMonths,winterMonths,fallMonths]), pandas.concat([summerMonths,springMonths,winterMonths,fallMonths]))
