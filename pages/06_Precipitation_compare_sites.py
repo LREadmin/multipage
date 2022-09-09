@@ -337,7 +337,7 @@ for CYrow in selectCY:
             tempMedNorm=tempSiteCYSum-tempPORmed.iloc[0][0]
             
             #cumulative in WY / cumulative median at the site) (so answers will be in % rather than in) 
-            precip_perc=(tempSiteCYSum/tempPORmed.iloc[0][0])*100
+            precip_perc=(tempSiteCYSum/tempPORmed.iloc[0][0])
     
             compList.append([site_long,CYrow,tempMedNorm,tempSiteCY,tempSiteCYSum,precip_perc])
             
