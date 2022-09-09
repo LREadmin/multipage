@@ -292,7 +292,7 @@ sumSitesDisplay=sumSites1.style\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 st.header("Site Comparison")
-st.markdown("Compares the cumulative precipitation (in inches) and trends (Theil-Sen Slope in inches/month)")
+st.markdown("Compares the cumulative precipitation (in inches) and trends (Theil-Sen Slope in inches/year)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 sumSitesDisplay
 
@@ -385,7 +385,7 @@ yearList1=yearList.style\
     .format('{:,.1f}')
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Update to Cumulative Precipitation in WY - Median Cumulative Precipitation in Selected WYs (in)")
+st.header("Cumulative Precipitation in WY - Median Cumulative Precipitation in Selected WYs (in)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
@@ -438,7 +438,7 @@ yearList1=yearList.style\
     .format("{:,.0%}")
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Update to Cumulative Precipitation in WY / Median Cumulative Precipitation in Selected WYs (%)")
+st.header("Cumulative Precipitation in WY / Median Cumulative Precipitation in Selected WYs (%)")
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 yearList1
 
