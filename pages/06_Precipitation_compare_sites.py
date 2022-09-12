@@ -41,7 +41,7 @@ data=data_raw
 data=data_raw[['site','Month','pcpn','cumm_precip','WY']]
 dates_new=pandas.to_datetime(data_raw.loc[:]['date'])
 data=pandas.concat([data,dates_new],axis=1)
-data['CY']=data['date'].dt.year
+# data['CY']=data['date'].dt.year
 
 #%%select months
 
