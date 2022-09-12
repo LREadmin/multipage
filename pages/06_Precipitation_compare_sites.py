@@ -43,6 +43,63 @@ dates_new=pandas.to_datetime(data_raw.loc[:]['date'])
 data=pandas.concat([data,dates_new],axis=1)
 # data['CY']=data['date'].dt.year
 
+#%%select stat
+#statistic
+
+paramsDF=pandas.DataFrame({0:['pcpn'], 'long': ["Accumulated Precipitation (in)"]})
+paramsSelect=paramsDF['long']
+
+stat_select = "Accumulated Precipitation (in)"
+
+#stat_select='Mean Temp (F)'
+stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
+#%%calulcate params for POR
+manKPOR=[]
+por=[]
+medstat=[]
+for site in sites:
+    dataBySite=data[data['site']==site]
+    
+    porS=dataBySite['date'].min()
+    porE=dataBySite['date'].max()
+    por.append([site,porS,porE])
+    
+    #get medians for POR of accumulated monthly pcpn
+    dataBySiteParam=dataBySite['pcpn'] #accumulated precipitation by water year
+    tempMonth_CY=dataBySite[['pcpn','Month','WY']]
+    tempCY=tempMonth_CY.groupby(['WY']).sum()
+    tempstat=tempCY['pcpn'].median()
+    medstat.append(tempstat)
+    
+
+    #Man Kendall Test
+    dataforMK=dataBySite[[stat_selection.iloc[0],'WY','Month']]
+    tempPORMKMedian=dataforMK.groupby(['WY','Month']).sum().reset_index()[['WY','pcpn']]
+    tempPORMKMedian=tempPORMKMedian.groupby(['WY']).sum()
+    tempPORManK=mk.original_test(tempPORMKMedian)
+    if tempPORManK[2]>0.1:
+        manKPOR.append([site,None])
+    else:
+        manKPOR.append([site,tempPORManK[7]])       #slope value 
+
+manKPOR=pandas.DataFrame(manKPOR)
+manKPOR=manKPOR.set_index([sites])
+manKPOR.columns=(['Site','POR Trend'])
+    
+pordf=pandas.DataFrame(por)
+pordf=pordf.set_index([0])
+pordf.columns=["POR Start","POR End"]
+
+medstatdf=pandas.DataFrame(medstat)
+medstatdf=medstatdf.set_index([sites])
+medstatdf.columns=['POR Stat']
+
+sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
+sumSites['POR Start']=pandas.to_datetime(sumSites["POR Start"]).dt.strftime('%Y-%m-%d')
+sumSites['POR End']=pandas.to_datetime(sumSites["POR End"]).dt.strftime('%Y-%m-%d')
+
+
+
 #%%select months
 
 monthOptions=pandas.DataFrame({'Month':['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],
@@ -116,61 +173,9 @@ else:
     data=g.filter(lambda x: len(x)>=dayCountThres)
 
 #data.to_csv('temp.csv')
-#%%select stat
-#statistic
 
-paramsDF=pandas.DataFrame({0:['pcpn'], 'long': ["Accumulated Precipitation (in)"]})
-paramsSelect=paramsDF['long']
 
-stat_select = "Accumulated Precipitation (in)"
 
-#stat_select='Mean Temp (F)'
-stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
-
-#%%calulcate params for POR
-manKPOR=[]
-por=[]
-medstat=[]
-for site in sites:
-    dataBySite=data[data['site']==site]
-    
-    porS=dataBySite['date'].min()
-    porE=dataBySite['date'].max()
-    por.append([site,porS,porE])
-    
-    #get medians for POR of accumulated monthly pcpn
-    dataBySiteParam=dataBySite['pcpn'] #accumulated precipitation by water year
-    tempMonth_CY=dataBySite[['pcpn','Month','WY']]
-    tempCY=tempMonth_CY.groupby(['WY']).sum()
-    tempstat=tempCY['pcpn'].median()
-    medstat.append(tempstat)
-    
-
-    #Man Kendall Test
-    dataforMK=dataBySite[[stat_selection.iloc[0],'WY','Month']]
-    tempPORMKMedian=dataforMK.groupby(['WY','Month']).sum().reset_index()[['WY','pcpn']]
-    tempPORMKMedian=tempPORMKMedian.groupby(['WY']).sum()
-    tempPORManK=mk.original_test(tempPORMKMedian)
-    if tempPORManK[2]>0.1:
-        manKPOR.append([site,None])
-    else:
-        manKPOR.append([site,tempPORManK[7]])       #slope value 
-
-manKPOR=pandas.DataFrame(manKPOR)
-manKPOR=manKPOR.set_index([sites])
-manKPOR.columns=(['Site','POR Trend'])
-    
-pordf=pandas.DataFrame(por)
-pordf=pordf.set_index([0])
-pordf.columns=["POR Start","POR End"]
-
-medstatdf=pandas.DataFrame(medstat)
-medstatdf=medstatdf.set_index([sites])
-medstatdf.columns=['POR Stat']
-
-sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
-sumSites['POR Start']=pandas.to_datetime(sumSites["POR Start"]).dt.strftime('%Y-%m-%d')
-sumSites['POR End']=pandas.to_datetime(sumSites["POR End"]).dt.strftime('%Y-%m-%d')
 
 #%%make selections
 sites=pandas.DataFrame(data['site'].drop_duplicates())
