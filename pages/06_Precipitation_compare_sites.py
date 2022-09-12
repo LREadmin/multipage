@@ -45,15 +45,16 @@ data=pandas.concat([data,dates_new],axis=1)
 
 #%%select months
 
-monthOptions=pandas.DataFrame({'Month':['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-                               'Season':['Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer','Fall','Fall','Fall'],
-                               'Num':[1,2,3,4,5,6,7,8,9,10,11,12]})
+monthOptions=pandas.DataFrame({'Month':['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],
+                               'Season':['Fall','Fall','Fall','Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer',],
+                               'Num':[10,11,12,1,2,3,4,5,6,7,8,9]})
 monthSelect=monthOptions['Month']
 
+
+fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
 winterMonths=monthOptions.loc[monthOptions['Season']=='Winter']['Month']
 springMonths=monthOptions.loc[monthOptions['Season']=='Spring']['Month']
 summerMonths=monthOptions.loc[monthOptions['Season']=='Summer']['Month']
-fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
 
 container=st.sidebar.container()
 
