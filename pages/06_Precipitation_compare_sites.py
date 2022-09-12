@@ -60,7 +60,7 @@ medstat=[]
 for site in sites:
     dataBySite=data[data['site']==site]
     #filter by day count threshold
-    dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
+    dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=330)
     
     porS=dataBySite['date'].min()
     porE=dataBySite['date'].max()
