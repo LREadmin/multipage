@@ -56,10 +56,11 @@ summerMonths=monthOptions.loc[monthOptions['Season']=='Summer']['Month']
 fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
 
 container=st.sidebar.container()
-winter=st.sidebar.checkbox("Winter")
-spring=st.sidebar.checkbox("Spring")
-summer=st.sidebar.checkbox("Summer")
+
 fall=st.sidebar.checkbox("Fall")
+summer=st.sidebar.checkbox("Summer")
+spring=st.sidebar.checkbox("Spring")
+winter=st.sidebar.checkbox("Winter")
 
 #multiseasons
 if winter and spring and (fall==False) and (summer==False):
