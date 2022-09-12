@@ -107,11 +107,11 @@ data=monthfilter()
 
 if len(month_select)==12:
     dayCountThres=330
-    g=data.groupby(['site','CY'])
+    g=data.groupby(['site','WY'])
     data=g.filter(lambda x: len(x)>=dayCountThres)
 else:
     dayCountThres=25
-    g=data.groupby(['site','CY','Month'])
+    g=data.groupby(['site','WY','Month'])
     data=g.filter(lambda x: len(x)>=dayCountThres)
 
 #data.to_csv('temp.csv')
