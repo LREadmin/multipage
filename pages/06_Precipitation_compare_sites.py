@@ -59,6 +59,8 @@ por=[]
 medstat=[]
 for site in sites:
     dataBySite=data[data['site']==site]
+    #filter by day count threshold
+    dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
     
     porS=dataBySite['date'].min()
     porE=dataBySite['date'].max()
@@ -245,8 +247,8 @@ siteSelect=data_sites_years['site'].drop_duplicates()
 
 for site in sites['site']:
     dataBySite=data_sites_years[data_sites_years['site']==site]
+   
     #filter by day count threshold
-
     dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
     
     #get medians
