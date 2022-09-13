@@ -135,11 +135,9 @@ medstat=[]
 for site in sites:
     dataBySite=data[data['site']==site]
     
-    #filter by day count threshold
-    if len(month_select)==12:
-        dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
-    else:
-        pass
+    #filter by WY at least 330 days to be included in POR stat
+    dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
+
     
     porS=dataBySite['date'].min()
     porE=dataBySite['date'].max()
