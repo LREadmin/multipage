@@ -98,7 +98,7 @@ data_param_site_date=dateSelection()
 
 thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=1, min_value=0, value=100)
 
-thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1, min_value=0, value=0)
+thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1, min_value=-200, value=0)
 
 #%%calc statistic for all months
 yearList=data_param_site_date['CY'].drop_duplicates()
