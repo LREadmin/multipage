@@ -35,6 +35,6 @@ st.header("Seasonal Information")
     
     *Spring = March, April and May
     
-    *Summer=June, July and August
+    *Summer = June, July and August
 """
 
