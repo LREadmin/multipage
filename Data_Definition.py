@@ -23,7 +23,7 @@ st.header("Temperature and Precipitation Data Information")
     *If less than full year is selected, months with less than 25 days are excluded
 
 
-    *According to the meteorological definition, in the Northern Hemisphere, the months included in each season are the following:
+    *According to the meteorological definition, the months included in each season are:
     
         *Fall  = September, October and November
     
