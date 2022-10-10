@@ -136,7 +136,7 @@ for site in sites:
     dataBySite=data[data['site']==site]
     
     #filter by WY at least 330 days to be included in POR stat
-    dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
+   # dataBySite=dataBySite.groupby('WY').filter(lambda x : len(x)>=dayCountThres)
 
     
     porS=dataBySite['date'].min()
