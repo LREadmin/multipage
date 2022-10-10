@@ -42,21 +42,22 @@ data['CY']=data['date'].dt.year
 
 #%%select months
 
-monthOptions=pandas.DataFrame({'Month':['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-                               'Season':['Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer','Fall','Fall','Fall'],
-                               'Num':[1,2,3,4,5,6,7,8,9,10,11,12]})
+monthOptions=pandas.DataFrame({'Month':['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug',],
+                               'Season':['Fall','Fall','Fall','Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer',],
+                               'Num':[9,10,11,12,1,2,3,4,5,6,7,8]})
 monthSelect=monthOptions['Month']
 
+fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
 winterMonths=monthOptions.loc[monthOptions['Season']=='Winter']['Month']
 springMonths=monthOptions.loc[monthOptions['Season']=='Spring']['Month']
 summerMonths=monthOptions.loc[monthOptions['Season']=='Summer']['Month']
-fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
 
 container=st.sidebar.container()
-winter=st.sidebar.checkbox("Winter")
-spring=st.sidebar.checkbox("Spring")
-summer=st.sidebar.checkbox("Summer")
+
 fall=st.sidebar.checkbox("Fall")
+summer=st.sidebar.checkbox("Summer")
+spring=st.sidebar.checkbox("Spring")
+winter=st.sidebar.checkbox("Winter")
 
 #multiseasons
 if winter and spring and (fall==False) and (summer==False):
