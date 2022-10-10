@@ -6,6 +6,7 @@ st.set_page_config(
     page_icon="👋",
 )
 
+
 st.write("# Welcome to Denver Water's Climate App! 👋")
 
 st.header("SNOTEL Data Information")
@@ -19,7 +20,6 @@ st.header("SNOTEL Data Information")
 
 st.header("Temperature Data Information")
 """
-*Months with less than 25 days are excluded from analysis
 
 *For site comparison:
     
