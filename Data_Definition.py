@@ -21,20 +21,16 @@ st.header("Temperature and Precipitation Data Information")
     *If all months are selected, years with less than 330 days are excluded
 
     *If less than full year is selected, months with less than 25 days are excluded
-"""
 
-st.header("Seasonal Information")
-"""
-*For site comparison:
-    
-*According to the meteorological definition, in the Northern Hemisphere, the months included in each season are the following:
-    
-    *Fall  = September, October and November
 
-    *Winter = December, January and Februrary
+    *According to the meteorological definition, in the Northern Hemisphere, the months included in each season are the following:
     
-    *Spring = March, April and May
+        *Fall  = September, October and November
     
-    *Summer = June, July and August
+        *Winter = December, January and Februrary
+        
+        *Spring = March, April and May
+        
+        *Summer = June, July and August
 """
 
