@@ -14,6 +14,7 @@ st.header("Static Elevation Map of the Assesment Basin and Station Locations")
 
 st.header("Temperature and Precipitation Data Information")
 """
+*Months with less than 25 days are excluded from analysis
 
 *For site comparison:
     
@@ -22,5 +23,18 @@ st.header("Temperature and Precipitation Data Information")
     *If less than full year is selected, months with less than 25 days are excluded
 """
 
-st.sidebar.success("Select a demo above.")
+st.header("Seasonal Information")
+"""
+*For site comparison:
+    
+*According to the meteorological definition, in the Northern Hemisphere, the months included in each season are the following:
+    
+    *Fall  = September, October and November
+
+    *Winter = December, January and Februrary
+    
+    *Spring = March, April and May
+    
+    *Summer=June, July and August
+"""
 
