@@ -46,9 +46,9 @@ data=pandas.concat([data,dates_new],axis=1)
 
 #%%select months
 
-monthOptions=pandas.DataFrame({'Month':['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],
+monthOptions=pandas.DataFrame({'Month':['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug',],
                                'Season':['Fall','Fall','Fall','Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer',],
-                               'Num':[10,11,12,1,2,3,4,5,6,7,8,9]})
+                               'Num':[9,10,11,12,1,2,3,4,5,6,7,8]})
 monthSelect=monthOptions['Month']
 
 

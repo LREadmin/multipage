@@ -12,7 +12,7 @@ st.write("# Welcome to Denver Water's Climate App! 👋")
 st.header("Static Elevation Map of the Assesment Basin and Station Locations")
 #add map here when DW provides it
 
-st.header("Temperature Data Information")
+st.header("Temperature and Precipitation Data Information")
 """
 
 *For site comparison:
