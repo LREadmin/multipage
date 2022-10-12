@@ -371,7 +371,7 @@ for n in list:
 
 
 
-def background_gradient(s, m=None, M=None, cmap='jet_r',low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='turbo_r',low=0, high=0):
     #print(s.shape)
     if m is None:
         m = s.min().min()
@@ -424,7 +424,7 @@ for n in list:
     yearList[n]=temp2
 
 #%%colormap
-def background_gradient(s, m=None, M=None, cmap='jet_r',low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='turbo_r',low=0, high=0):
     #print(s.shape)
     if m is None:
         m = s.min().min()
@@ -476,7 +476,7 @@ for n in list:
     yearList[n]=temp2
 
 #%%colormap
-def background_gradient(s, m=None, M=None, cmap='jet_r',low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='turbo_r',low=0, high=0):
     #print(s.shape)
     if m is None:
         m = s.min().min()
