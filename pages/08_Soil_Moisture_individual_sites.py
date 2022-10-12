@@ -44,7 +44,7 @@ elementDF=pandas.DataFrame({0:
 container=st.sidebar.container()
 paramsSelect=elementDF['long']
 
-element_select=container.multiselect('Select depth(s):',paramsSelect)
+element_select=container.multiselect('Select depth(s):',paramsSelect,default=elementDF['long'])
 
 element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
 
