@@ -27,28 +27,4 @@ st.header("SNOTEL Data Information")
 *POR = Period of Record
 """
 
-st.header("Temperature and Precipitation Data Information")
-"""
-*Months with less than 25 days are excluded from analysis
 
-*For site comparison:
-    
-    *If all months are selected, years with less than 330 days are excluded
-
-    *If less than full year is selected, months with less than 25 days are excluded
-"""
-
-st.header("Seasons Information")
-"""
-*According to the meteorological definition, in the Northern Hemisphere, the months included in each season are the following:
-    
-    *Fall  = September, October and November
-
-    *Winter = December, January and Februrary
-    
-    *Spring = March, April and May
-    
-    *Summer=June, July and August
-"""
-
-st.sidebar.success("Select a demo above.")
