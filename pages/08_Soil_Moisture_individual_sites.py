@@ -102,7 +102,7 @@ dateFiltered.set_index('Date')
 
 csv = convert_df(dateFiltered)
 st.download_button(
-     label="Download Selected Soil Moisture Data",
+     label="Download Daily Soil Moisture Data",
      data=csv,
      file_name='SMS_data.csv',
      mime='text/csv',
