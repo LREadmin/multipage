@@ -117,7 +117,7 @@ pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 pvTable=pvTable.rename(columns = months)
 
-def background_gradient(s, m=None, M=None, cmap='cool_r', low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='gist_earth', low=0, high=0):
     if m is None:
         m = s.min().min()
     if M is None:
