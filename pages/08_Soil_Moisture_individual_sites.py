@@ -108,8 +108,8 @@ st.download_button(
      mime='text/csv',
  )
 
-st.header("URL to download directly from NRCS")
-url
+# st.header("URL to download directly from NRCS")
+# url
 
 dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1)
 pvTable=pd.pivot_table(dateFiltered, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
@@ -117,7 +117,7 @@ pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 pvTable=pvTable.rename(columns = months)
 
-def background_gradient(s, m=None, M=None, cmap='gist_earth', low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0, high=0):
     if m is None:
         m = s.min().min()
     if M is None:
