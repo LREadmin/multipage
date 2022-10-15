@@ -19,6 +19,8 @@ import arrow #another library for date/time manipulation
 import pymannkendall as mk #for trend anlaysis
 
 import numpy as np
+import matplotlib.pyplot as plt #for plotting
+from matplotlib import colors #for additional colors
 #%% Define data download as CSV function
 @st.cache
 def convert_df(df):
@@ -114,5 +116,29 @@ pvTable=pd.pivot_table(dateFiltered, values=['averageSoilMoisture'],index='WY', 
 pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 pvTable=pvTable.rename(columns = months)
-pvTable
+
+def background_gradient(s, m=None, M=None, cmap='cool_r', low=0, high=0):
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
+
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+
+    return ret 
+
+# pandas.set_option("display.precision", 1)
+tableData=pvTable.style\
+    .set_properties(**{'width':'10000px','color':'white'})\
+    .apply(background_gradient, axis=None)\
+    .format(precision=1)
+
+st.dataframe(tableData)
+
 #%%
