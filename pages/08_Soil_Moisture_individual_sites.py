@@ -51,17 +51,20 @@ element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
 elementStr= ','.join(element_select)
 
 #03 Select Water Year
-start_date = "%s-%s-0%s"%(1950,10,1) 
+startY=1950
+startM=10
+startD=1
+start_date = "%s-%s-0%s"%(startY,startM,startD) 
 end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
-min_date = datetime.datetime(1950,10,1) #dates for st slider need to be in datetime format:
+min_date = datetime.datetime(startY,startM,startD) #dates for st slider need to be in datetime format:
 max_date = datetime.datetime.today() 
 
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=1950, max_value=int(end_dateRaw[:4]),value=1950)
-endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=1950, max_value=int(end_dateRaw[:4]),value=2021)
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=startY)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
 
 
-#%% SOIL MOISTURE DATA
+#%% SOIL MOISTURE DATA filtered by site, parameter and date
 #Selections
 sitecodeSMS=siteCode.replace("SNOTEL:", "" )
 sitecodeSMS=sitecodeSMS.replace("_", ":" )
@@ -72,7 +75,7 @@ headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_s
 base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
 part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
 site=sitecodeSMS
-por="%7Cid=%22%22%7Cname/POR_BEGIN,POR_END/"
+por="%7Cid=%22%22%7Cname/" + str(startYear) + "-10-01," + str(endYear) + "-09-30/"
 element=elementStr
 part2="?fitToScreen=false"
 url=base+part1+site+por+element+part2
@@ -89,10 +92,11 @@ urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
 #filter by WY
 dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
 
+
 st.header("Data")
 dateFiltered.set_index('Date')
-dateFiltered
-csv = convert_df(dateFiltered)
+
+csv = convert_df(dateFiltered.drop(['year','month']))
 st.download_button(
      label="Download Selected Soil Moisture Data",
      data=csv,
