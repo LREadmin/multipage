@@ -75,7 +75,7 @@ headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_s
 base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
 part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
 site=sitecodeSMS
-por="%7Cid=%22%22%7Cname/" + str(startYear) + "-10-01," + str(endYear) + "-09-30/"
+por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear-1) + "-09-30/"
 element=elementStr
 part2="?fitToScreen=false"
 url=base+part1+site+por+element+part2
