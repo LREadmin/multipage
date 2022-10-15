@@ -95,7 +95,7 @@ dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
 
 st.header("Data")
 dateFiltered.set_index('Date')
-
+dateFiltered
 csv = convert_df(dateFiltered)
 st.download_button(
      label="Download Selected Soil Moisture Data",
