@@ -141,4 +141,15 @@ tableData=pvTable.style\
 
 st.dataframe(tableData)
 
+#download pivot table
+csv = convert_df(pvTable)
+
+st.download_button(
+     label="Download Table Data as CSV",
+     data=csv,
+     file_name='Median_SoilMoisture_byWY.csv',
+     mime='text/csv',
+ )
+
+
 #%%
