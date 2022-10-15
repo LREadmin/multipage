@@ -18,6 +18,7 @@ import arrow #another library for date/time manipulation
 
 import pymannkendall as mk #for trend anlaysis
 
+import numpy as np
 #%% Define data download as CSV function
 @st.cache
 def convert_df(df):
@@ -30,7 +31,7 @@ def convert_to_WY(row):
     else:
         return(pd.datetime(row.year,1,1).year)
 
-
+months={1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'}
 #%% Site data
 siteNames = pd.read_csv("siteNamesListCode.csv")
 
@@ -94,8 +95,9 @@ dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
 
 
 st.header("Data")
+
 dateFiltered.set_index('Date')
-dateFiltered
+
 csv = convert_df(dateFiltered)
 st.download_button(
      label="Download Selected Soil Moisture Data",
@@ -107,4 +109,10 @@ st.download_button(
 st.header("URL to download directly from NRCS")
 url
 
+dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1)
+pvTable=pd.pivot_table(dateFiltered, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable=pvTable["averageSoilMoisture"].head()
+
+pvTable=pvTable.rename(columns = months)
+pvTable
 #%%
