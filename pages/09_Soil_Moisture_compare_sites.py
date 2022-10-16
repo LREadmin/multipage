@@ -62,15 +62,29 @@ startM=10
 startD=1
 
 #%% Site data
-siteNames = pd.read_csv("siteNamesListCode.csv")
+siteNames = pd.read_csv("siteNamesListCode.csv", dtype=str)
 
 #%% Left Filters
 
-#01 Select Site 
-site_selected = st.sidebar.selectbox('Select your site:', siteNames.iloc[:,0])
+#01 Select System
+container=st.sidebar.container()
+
+all=st.sidebar.checkbox("Select both systems")
+
+if all:
+    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].unique(), siteNames.iloc[:,2].unique())
+    siteNamesInSys=siteNames[siteNames['2']==system_selected]
+
+else: 
+    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].unique(), default=siteNames.iloc[0,2])
+    siteNamesInSys=siteNames
+
+#02 Select Site 
+
+site_selected = st.sidebar.selectbox('Select your site:', siteNamesInSys.iloc[:,0])
 siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
 
-#02 Select Depths
+#03 Select Depths
 elementDF=pd.DataFrame({0:["SMS:-2:value","SMS:-4:value", "SMS:-8:value","SMS:-20:value","SMS:-40:value"], 
                            'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
 
@@ -80,7 +94,7 @@ element_select=container.multiselect('Select depth(s):',paramsSelect,default=ele
 element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
 elementStr= ','.join(element_select)
 
-#03 Select Water Year
+#04 Select Water Year
 start_date = "%s-%s-0%s"%(startY,startM,startD) 
 end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
