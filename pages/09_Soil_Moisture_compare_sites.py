@@ -72,11 +72,12 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select both systems")
 
 if all:
-    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].unique(), siteNames.iloc[:,2].unique())
+    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].drop_duplicates(), siteNames.iloc[:,2].drop_duplicates())
 else: 
-    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].unique(), default=siteNames.iloc[0,2])
+    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].drop_duplicates(), default='North')
 
-siteNames[siteNames['2'].isin(system_selected)]
+siteNames=siteNames[siteNames['2'].isin(system_selected)]
+
 #02 Select Site 
 
 site_selected = st.sidebar.selectbox('Select your site:', siteNames.iloc[:,0])
