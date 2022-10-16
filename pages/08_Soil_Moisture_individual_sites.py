@@ -35,7 +35,7 @@ def convert_to_WY(row):
     else:
         return(pd.datetime(row.year,1,1).year)
     
-def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.01, high=1):
+def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.02, high=1):
     if m is None:
         m = s.min().min()
     if M is None:
