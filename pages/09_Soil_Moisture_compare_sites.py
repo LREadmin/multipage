@@ -73,11 +73,12 @@ all=st.sidebar.checkbox("Select both systems")
 
 if all:
     system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].unique(), siteNames.iloc[:,2].unique())
-    siteNamesInSys=siteNames[siteNames['2']==system_selected]
+    siteNamesInSys=siteNames
+   
 
 else: 
     system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].unique(), default=siteNames.iloc[0,2])
-    siteNamesInSys=siteNames
+    siteNamesInSys=siteNames[siteNames['2']==system_selected]
 
 #02 Select Site 
 
