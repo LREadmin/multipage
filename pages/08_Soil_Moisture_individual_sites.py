@@ -177,21 +177,21 @@ for i in months_list:
     except:
         manK.append(float('nan'))
 
-manKdf=pd.DataFrame(manK).transpose()
+manKdf=pd.DataFrame(manK,columns={'Trend'}).transpose()
 manKdf.columns=[months[x] for x in months_list]
 
-medianTable=medianTable.append(manKdf)
+medianTableData=medianTable.append(manKdf)
 
 #display pivot table 
-medianTableData=medianTable.style\
+displayTableData=medianTableData.style\
     .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
-    .format(precision=1)
+    .format(precision=2)
 
-st.dataframe(medianTableData)
+st.dataframe(displayTableData)
 
 #download pivot table
-csv = convert_df(medianTable)
+csv = convert_df(medianTableData)
 st.download_button(
      label="Download Statistics Table Data as CSV",
      data=csv,
