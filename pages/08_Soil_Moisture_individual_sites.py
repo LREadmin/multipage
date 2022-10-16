@@ -120,7 +120,7 @@ urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
 dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
 
 
-st.header("Data")
+st.header("Soil Moisture Percent (pct) Start of Day Values")
 
 dateFiltered.set_index('Date')
 
