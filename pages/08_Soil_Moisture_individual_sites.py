@@ -24,6 +24,7 @@ from matplotlib import colors #for additional colors
 
 import pymannkendall as mk #for trend anlaysis
 #%% Define data download as CSV function
+#functions
 @st.cache
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
@@ -50,7 +51,16 @@ def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.1, high=1)
     ret = c.applymap(lambda x: 'background-color: %s' % x)
 
     return ret 
+
+#dictionaries
 months={1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'}
+
+#constants
+dayCountThres=25
+startY=1950
+startM=10
+startD=1
+
 #%% Site data
 siteNames = pd.read_csv("siteNamesListCode.csv")
 
@@ -71,9 +81,6 @@ element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
 elementStr= ','.join(element_select)
 
 #03 Select Water Year
-startY=1950
-startM=10
-startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) 
 end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
@@ -130,7 +137,12 @@ st.download_button(
 
 #%% Create pivot table using average soil moisture and show medians by WY
 dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1)
-pvTable=pd.pivot_table(dateFiltered, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+dateFiltered_nonans = dateFiltered.dropna(subset=['averageSoilMoisture'])
+
+#filter by months with days > 25 that have average soil moisture data 
+smData=dateFiltered_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
+
+pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 pvTable=pvTable.rename(columns = months)
@@ -159,8 +171,8 @@ medianTable=pvTable.median()
 medianTable=medianTable.to_frame('Median')
 medianTable=medianTable.transpose()
 
-#calculate trends
-trendData=dateFiltered[['averageSoilMoisture','month','WY']]
+#calculate trends using data that has no nans and count of days > 25
+trendData=smData[['averageSoilMoisture','month','WY']]
 trendData=trendData.set_index('WY').sort_index(ascending=True)
 months_list=trendData.month.unique()
 # trendData=trendData.set_index('month')
@@ -183,7 +195,7 @@ manKdf.columns=[months[x] for x in months_list]
 medianTableData=medianTable.append(manKdf)
 
 #display pivot table 
-st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
 
 displayTableData=medianTableData.style\
     .set_properties(**{'width':'10000px','color':'white'})\
