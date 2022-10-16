@@ -183,6 +183,8 @@ manKdf.columns=[months[x] for x in months_list]
 medianTableData=medianTable.append(manKdf)
 
 #display pivot table 
+st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
+
 displayTableData=medianTableData.style\
     .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
