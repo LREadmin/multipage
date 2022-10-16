@@ -23,6 +23,8 @@ import arrow #another library for date/time manipulation
 
 import pymannkendall as mk #for trend anlaysis
 
+
+
 #%% Website display information
 st.set_page_config(page_title="Precipitation Individual Sites", page_icon="🌦")
 
