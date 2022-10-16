@@ -21,6 +21,8 @@ import pymannkendall as mk #for trend anlaysis
 import numpy as np
 import matplotlib.pyplot as plt #for plotting
 from matplotlib import colors #for additional colors
+
+import pymannkendall as mk #for trend anlaysis
 #%% Define data download as CSV function
 @st.cache
 def convert_df(df):
@@ -32,7 +34,22 @@ def convert_to_WY(row):
         return(pd.datetime(row.year+1,1,1).year)
     else:
         return(pd.datetime(row.year,1,1).year)
+    
+def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0, high=0):
+    if m is None:
+        m = s.min().min()
+    if M is None:
+        M = s.max().max()
+    rng = M - m
+    norm = colors.Normalize(m - (rng * low),
+                            M + (rng * high))
+    normed = s.apply(norm)
 
+    cm = plt.cm.get_cmap(cmap)
+    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
+    ret = c.applymap(lambda x: 'background-color: %s' % x)
+
+    return ret 
 months={1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'}
 #%% Site data
 siteNames = pd.read_csv("siteNamesListCode.csv")
@@ -86,7 +103,7 @@ url=base+part1+site+por+element+part2
 s=requests.get(url).text
 
 urlData=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',',error_bad_lines=False)
-#%% display
+#%% Download Daily Soil Moisture Data
 
 urlData['year']=pd.DatetimeIndex(urlData['Date']).year
 urlData['month']=pd.DatetimeIndex(urlData['Date']).month
@@ -111,29 +128,14 @@ st.download_button(
 # st.header("URL to download directly from NRCS")
 # url
 
+#%% Create pivot table using average soil moisture and show medians by WY
 dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1)
 pvTable=pd.pivot_table(dateFiltered, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 pvTable=pvTable.rename(columns = months)
 
-def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0, high=0):
-    if m is None:
-        m = s.min().min()
-    if M is None:
-        M = s.max().max()
-    rng = M - m
-    norm = colors.Normalize(m - (rng * low),
-                            M + (rng * high))
-    normed = s.apply(norm)
-
-    cm = plt.cm.get_cmap(cmap)
-    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
-    ret = c.applymap(lambda x: 'background-color: %s' % x)
-
-    return ret 
-
-# pandas.set_option("display.precision", 1)
+#display pivot table 
 tableData=pvTable.style\
     .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
@@ -143,7 +145,6 @@ st.dataframe(tableData)
 
 #download pivot table
 csv = convert_df(pvTable)
-
 st.download_button(
      label="Download Table Data as CSV",
      data=csv,
@@ -152,4 +153,49 @@ st.download_button(
  )
 
 
-#%%
+#%% Statistics Table
+
+medianTable=pvTable.median()
+medianTable=medianTable.to_frame('Median')
+medianTable=medianTable.transpose()
+
+#calculate trends
+trendData=dateFiltered[['averageSoilMoisture','month','WY']]
+trendData=trendData.set_index('WY').sort_index(ascending=True)
+months_list=trendData.month.unique()
+# trendData=trendData.set_index('month')
+manK=[]
+for i in months_list:
+    try:
+        print(str(i))
+        tempMK=mk.original_test(trendData[trendData.month==i][['averageSoilMoisture']])
+        print(tempMK)
+        if tempMK[2]>0.1:
+            manK.append(float('nan'))
+        else:
+            manK.append(tempMK[7])  
+    except:
+        manK.append(float('nan'))
+
+manKdf=pd.DataFrame(manK).transpose()
+manKdf.columns=[months[x] for x in months_list]
+
+medianTable=medianTable.append(manKdf)
+
+#display pivot table 
+medianTableData=medianTable.style\
+    .set_properties(**{'width':'10000px','color':'white'})\
+    .apply(background_gradient, axis=None)\
+    .format(precision=1)
+
+st.dataframe(medianTableData)
+
+#download pivot table
+csv = convert_df(medianTable)
+st.download_button(
+     label="Download Statistics Table Data as CSV",
+     data=csv,
+     file_name='StatisticsTablebyMonth.csv',
+     mime='text/csv',
+ )
+
