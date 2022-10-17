@@ -79,9 +79,14 @@ else:
 siteNames=siteNames[siteNames['2'].isin(system_selected)]
 
 #02 Select Site 
+all_sites=st.sidebar.checkbox("Select all sites")
+if all:
+    site_selected = container.multiselect('Select your site:', siteNames.iloc[:,0], siteNames.iloc[:,0])
+else: 
+    site_selected = container.multiselect('Select your site:', siteNames.iloc[:,0], default=siteNames.iloc[0,0])
 
-site_selected = st.sidebar.selectbox('Select your site:', siteNames.iloc[:,0])
-siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
+siteCodes=siteNames[siteNames['0'].isin(site_selected)].iloc[:,1]
+siteNames=siteNames[siteNames['0'].isin(site_selected)].iloc[:,0]
 
 #03 Select Depths
 elementDF=pd.DataFrame({0:["SMS:-2:value","SMS:-4:value", "SMS:-8:value","SMS:-20:value","SMS:-40:value"], 
@@ -106,23 +111,24 @@ endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, m
 
 #%% SOIL MOISTURE DATA filtered by site, parameter and date
 #Selections
-sitecodeSMS=siteCode.replace("SNOTEL:", "" )
-sitecodeSMS=sitecodeSMS.replace("_", ":" )
-
-headerAdj=pd.DataFrame({'ElementCount':[0,1,2,3,4,5],"HeaderRowCount":[57,58,59,60,61,62]})
-headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_select)]
-
-base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
-part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
-site=sitecodeSMS
-por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear-1) + "-09-30/"
-element=elementStr
-part2="?fitToScreen=false"
-url=base+part1+site+por+element+part2
-
-s=requests.get(url).text
-
-urlData=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',',error_bad_lines=False)
+urlData=pd.DataFrame()
+for siteCode in siteCodes:
+    sitecodeSMS=siteCode.replace("SNOTEL:", "" )
+    sitecodeSMS=sitecodeSMS.replace("_", ":" )
+    
+    headerAdj=pd.DataFrame({'ElementCount':[0,1,2,3,4,5],"HeaderRowCount":[57,58,59,60,61,62]})
+    headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_select)]
+    
+    base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
+    part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
+    site=sitecodeSMS
+    por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear-1) + "-09-30/"
+    element=elementStr
+    part2="?fitToScreen=false"
+    url=base+part1+site+por+element+part2
+    s=requests.get(url).text 
+    urlSiteData=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',',error_bad_lines=False)
+    urlData=urlData.append(urlSiteData)
 #%% Download Daily Soil Moisture Data
 
 urlData['year']=pd.DatetimeIndex(urlData['Date']).year
