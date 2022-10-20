@@ -13,6 +13,9 @@ import arrow
 import numpy
 
 import os
+
+import io
+import requests
 #%% SNOTEL site info
 #import and store site data for ALL Snotel Sites
 
@@ -23,27 +26,29 @@ sites_df = pandas.DataFrame.from_dict(sites, orient='index').dropna()
 sites_df.head()
 sites_df=sites_df.reset_index()
 
-sites_df.to_csv("SNOTEL_sites.csv.gz",index=False)
+#sites_df.to_csv("SNOTEL_sites.csv.gz",index=False)
 
-#%% SNOTEL data
+#%% Get available measurements
+ulmo.cuahsi.wof.get_site_info(wsdlurl, "SNOTEL:335_CO_SNTL")['series'].keys()
+#%% SNOTEL data SNOTEL: WTEQ_D
 variablecode='SNOTEL:WTEQ_D'
-
+     
 sitecode = [
     'SNOTEL:335_CO_SNTL',
-'SNOTEL:938_CO_SNTL',
-'SNOTEL:913_CO_SNTL',
-'SNOTEL:415_CO_SNTL',
-'SNOTEL:936_CO_SNTL',
-'SNOTEL:1186_CO_SNTL',
-'SNOTEL:485_CO_SNTL',
-'SNOTEL:505_CO_SNTL',
-'SNOTEL:1187_CO_SNTL',
-'SNOTEL:531_CO_SNTL',
-'SNOTEL:935_CO_SNTL',
-'SNOTEL:970_CO_SNTL',
-'SNOTEL:937_CO_SNTL',
-'SNOTEL:1014_CO_SNTL',
-'SNOTEL:939_CO_SNTL']
+    'SNOTEL:938_CO_SNTL',
+    'SNOTEL:913_CO_SNTL',
+    'SNOTEL:415_CO_SNTL',
+    'SNOTEL:936_CO_SNTL',
+    'SNOTEL:1186_CO_SNTL',
+    'SNOTEL:485_CO_SNTL',
+    'SNOTEL:505_CO_SNTL',
+    'SNOTEL:1187_CO_SNTL',
+    'SNOTEL:531_CO_SNTL',
+    'SNOTEL:935_CO_SNTL',
+    'SNOTEL:970_CO_SNTL',
+    'SNOTEL:937_CO_SNTL',
+    'SNOTEL:1014_CO_SNTL',
+    'SNOTEL:939_CO_SNTL']
 
 # start and end dates needed for initial data fetch
 startY=1950
@@ -76,8 +81,10 @@ def snotel_fetch(sitecode, variablecode=variablecode, start_date=start_date, end
 # SITE info
 data_raw=pandas.DataFrame()
 siteNamesList=[]
+siteNamesListCode=[]
 
 for row in sitecode:
+    print(row)
     values_df = snotel_fetch(row, variablecode, start_date, end_date)
     temp=values_df[['datetime','value']].copy()
     name=sites_df['name'][sites_df['index']==row].iloc[0]
@@ -85,13 +92,17 @@ for row in sitecode:
     
     data_raw=pandas.concat([data_raw,temp])
     siteNamesList.append(name)
+    siteNamesListCode.append([name,row])
         
 data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
 
 with open ("siteNamesList.txt","w") as output:
     output.write(str(siteNamesList))
-    
-data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
+
+siteNamesListCode=pandas.DataFrame(siteNamesListCode)
+siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
+
+#data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
 
 #%% TEMPERATURE data
 wd=os.getcwd()
@@ -105,3 +116,18 @@ for item in weather_files:
     weather=pandas.concat([weather,file])
     
 weather.to_csv("DW_weather.csv.gz",index=False)
+
+#%% SMS Data
+wd=os.getcwd()
+path=os.path.join(wd,"SMS_Data\\") #put all DW files in one directory with nothing else
+sms_files = os.listdir(path)
+
+SMS=pandas.DataFrame()
+for item in sms_files:
+    print(item)
+    file=pandas.read_csv(os.path.join(path,item))
+    file['site']=item[-7:-4]
+    sms=pandas.concat([SMS,file])
+    
+sms.to_csv("SNOTEL_SMS.csv.gz",index=False)
+
