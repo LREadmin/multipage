@@ -49,5 +49,7 @@ for site in sitecodeSMS:
     cols2 = [cols2[-1]]+cols2[:-1] 
     urlData=urlData.reindex(columns=cols2)
     
+    #%% CHANGE SAVE DIRECTORY
+    
     urlData.to_csv("C:\\Users\msparacino\streamlit\SMS_Data\POR_data_site_%s.csv"%site[:3],index=False)
     
