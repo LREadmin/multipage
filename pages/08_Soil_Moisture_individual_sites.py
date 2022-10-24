@@ -222,7 +222,7 @@ else:
     st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
     
     displayTableData=medianTableData.style\
-        .set_properties(**{'width':'10000px','color':'black'})\
+        .set_properties(**{'width':'10000px','color':'white'})\
         .format(precision=2)
     
     st.dataframe(displayTableData)
