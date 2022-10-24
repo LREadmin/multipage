@@ -51,5 +51,7 @@ for site in sitecodeSMS:
     
     urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
     
+    urlData['site']=site
+    
     urlData.to_csv("C:\\Users\msparacino\streamlit\SMS_Data\POR_data_site_%s.csv"%site[:3],index=False)
     
