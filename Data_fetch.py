@@ -122,12 +122,12 @@ wd=os.getcwd()
 path=os.path.join(wd,"SMS_Data\\") #put all DW files in one directory with nothing else
 sms_files = os.listdir(path)
 
-SMS=pandas.DataFrame()
+sms=pandas.DataFrame()
 for item in sms_files:
     print(item)
     file=pandas.read_csv(os.path.join(path,item))
-    file['site']=item[-7:-4]
-    sms=pandas.concat([SMS,file])
+    #file['site']=item[-7:-4]
+    sms=pandas.concat([sms,file],ignore_index=True)
     
 sms.to_csv("SNOTEL_SMS.csv.gz",index=False)
 
