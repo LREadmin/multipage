@@ -22,7 +22,6 @@ import numpy as np
 import matplotlib.pyplot as plt #for plotting
 from matplotlib import colors #for additional colors
 
-import pymannkendall as mk #for trend anlaysis
 #%% Define data download as CSV function
 #functions
 @st.cache
@@ -62,11 +61,16 @@ startM=10
 startD=1
 
 #%% Site data
-siteNames = pd.read_csv("siteNamesListCode.csv", dtype=str)
+siteNamesRaw = pd.read_csv("siteNamesListCode.csv", dtype=str)
+siteNames = siteNamesRaw.replace('SNOTEL:','', regex=True)
+siteNames = siteNames.replace("_", ":",regex=True)
+
+#%% Load SMS data
+data_raw=pd.read_csv('SNOTEL_SMS.csv.gz')
 
 #%% Left Filters
 
-#01 Select System
+#%% 01 Select System
 container=st.sidebar.container()
 
 all=st.sidebar.checkbox("Select both systems")
@@ -78,7 +82,7 @@ else:
 
 siteNames=siteNames[siteNames['2'].isin(system_selected)]
 
-#02 Select Site 
+#%% 02 Select Site 
 all_sites=st.sidebar.checkbox("Select all sites")
 if all:
     site_selected = container.multiselect('Select your site:', siteNames.iloc[:,0], siteNames.iloc[:,0])
@@ -88,7 +92,63 @@ else:
 siteCodes=siteNames[siteNames['0'].isin(site_selected)].iloc[:,1]
 siteNames=siteNames[siteNames['0'].isin(site_selected)].iloc[:,0]
 
-#03 Select Depths
+#%% 03 select months
+monthOptions=pd.DataFrame({'Month':['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug',],
+                               'Season':['Fall','Fall','Fall','Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer',],
+                               'Num':[9,10,11,12,1,2,3,4,5,6,7,8]})
+monthSelect=monthOptions['Month']
+
+
+fallMonths=monthOptions.loc[monthOptions['Season']=='Fall']['Month']
+winterMonths=monthOptions.loc[monthOptions['Season']=='Winter']['Month']
+springMonths=monthOptions.loc[monthOptions['Season']=='Spring']['Month']
+summerMonths=monthOptions.loc[monthOptions['Season']=='Summer']['Month']
+
+container=st.sidebar.container()
+
+fall=st.sidebar.checkbox("Fall")
+summer=st.sidebar.checkbox("Summer")
+spring=st.sidebar.checkbox("Spring")
+winter=st.sidebar.checkbox("Winter")
+
+#multiseasons
+if winter and spring and (fall==False) and (summer==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([winterMonths,springMonths]), pd.concat([winterMonths,springMonths]))
+elif winter and summer and (fall==False) and (spring==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([winterMonths,summerMonths]), pd.concat([winterMonths,summerMonths]))
+elif winter and fall and (spring==False) and (summer==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([winterMonths,fallMonths]), pd.concat([winterMonths,fallMonths]))
+elif winter and (fall==False) and (spring==False) and (summer==False):
+    month_select = container.multiselect('Select month(s):',winterMonths, winterMonths)
+elif spring and (fall==False) and (winter==False) and (summer==False):
+    month_select = container.multiselect('Select month(s):',springMonths, springMonths)
+elif fall and spring and (winter==False) and (summer==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([springMonths,fallMonths]), pd.concat([springMonths,fallMonths]))
+elif spring and summer and (winter==False) and (fall==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([springMonths,summerMonths]), pd.concat([springMonths,summerMonths]))
+elif summer and fall and (winter==False) and (spring==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([summerMonths,fallMonths]), pd.concat([summerMonths,fallMonths]))
+elif summer and (fall==False) and (winter==False) and (spring==False):
+    month_select = container.multiselect('Select month(s):',summerMonths, summerMonths)
+elif fall and (spring==False) and (winter==False) and (summer==False):
+    month_select = container.multiselect('Select month(s):',fallMonths, fallMonths)
+elif fall and summer and spring and (winter==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([springMonths,summerMonths,fallMonths]), pd.concat([springMonths,summerMonths,fallMonths]))
+elif fall and summer and winter and (spring==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([winterMonths,summerMonths,fallMonths]), pd.concat([winterMonths,summerMonths,fallMonths]))
+elif spring and summer and winter and (fall==False):
+    month_select = container.multiselect('Select month(s):',pd.concat([winterMonths,springMonths,summerMonths]), pd.concat([winterMonths,springMonths,summerMonths]))
+elif spring and fall and summer and winter:
+    month_select = container.multiselect('Select month(s):',pd.concat([springMonths,winterMonths,summerMonths,fallMonths]), pd.concat([springMonths,winterMonths,summerMonths,fallMonths]))
+
+else:
+    month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
+
+monthNum_select=pd.DataFrame(month_select)
+monthNum_select=monthOptions.loc[monthOptions['Month'].isin(month_select)]['Num']
+    
+
+#%% 04 Select Depths
 elementDF=pd.DataFrame({0:["SMS:-2:value","SMS:-4:value", "SMS:-8:value","SMS:-20:value","SMS:-40:value"], 
                            'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
 
@@ -109,26 +169,6 @@ startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=sta
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
 
 
-#%% SOIL MOISTURE DATA filtered by site, parameter and date
-#Selections
-urlData=pd.DataFrame()
-for siteCode in siteCodes:
-    sitecodeSMS=siteCode.replace("SNOTEL:", "" )
-    sitecodeSMS=sitecodeSMS.replace("_", ":" )
-    
-    headerAdj=pd.DataFrame({'ElementCount':[0,1,2,3,4,5],"HeaderRowCount":[57,58,59,60,61,62]})
-    headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_select)]
-    
-    base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
-    part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
-    site=sitecodeSMS
-    por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear-1) + "-09-30/"
-    element=elementStr
-    part2="?fitToScreen=false"
-    url=base+part1+site+por+element+part2
-    s=requests.get(url).text 
-    urlSiteData=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',',error_bad_lines=False)
-    urlData=urlData.append(urlSiteData)
 #%% Download Daily Soil Moisture Data
 
 urlData['year']=pd.DatetimeIndex(urlData['Date']).year
@@ -136,7 +176,24 @@ urlData['month']=pd.DatetimeIndex(urlData['Date']).month
 urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
 
 #filter by WY
-dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
+dateFilterWY=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
+
+#filter by month
+def monthfilter():
+    return dateFilterWY[dateFilterWY['month'].isin(monthNum_select)]
+
+data=monthfilter()
+
+#filter by day count threshold
+
+if len(month_select)==12:
+    dayCountThres=330
+    g=data.groupby(['site','WY'])
+    data=g.filter(lambda x: len(x)>=dayCountThres)
+else:
+    dayCountThres=25
+    g=data.groupby(['site','WY','Month'])
+    data=g.filter(lambda x: len(x)>=dayCountThres)
 
 
 st.header("Soil Moisture Percent (pct) Start of Day Values")
@@ -231,4 +288,3 @@ st.download_button(
      file_name='StatisticsTablebyMonth.csv',
      mime='text/csv',
  )
-
