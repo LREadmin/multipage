@@ -21,3 +21,8 @@ Requirements.txt file is needed for streamlit to read required libraries. The "u
 SiteNamesListNS.txt joins the sites in siteNamesList.txt with DW collection system (North or South)
 
 When adding new pages, put scripts in "Pages" folder. 
+
+
+To update SMS data: first run "SMS_data_fetch_all.py;" which generates the URL for full POR for sites in SiteNamesListCode and drops CSVs into SMS_Data folder.
+
+--Then run last block of "Data_fetch.py" to generate joined SNOTEL_SMS.csv.gz, which can be read into the soil moisture compare page. 
