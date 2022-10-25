@@ -212,7 +212,7 @@ else:
     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
 
 pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
-pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
+# pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 # pvTable=pvTable.rename(columns = months)
 
