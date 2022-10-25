@@ -175,9 +175,10 @@ data_sites=data_raw[data_raw.site.isin(siteCodes)]
 data_sites['year']=pd.DatetimeIndex(data_sites['Date']).year
 data_sites['month']=pd.DatetimeIndex(data_sites['Date']).month
 data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
-
 data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-5]]).mean(axis=1)
 
+
+data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
 
 #filter by WY
 dateFilterWY=data_sites[(data_sites['WY']>=startYear)&(data_sites['WY']<=endYear)]
@@ -200,13 +201,13 @@ st.download_button(
      mime='text/csv',
  )
 
-#%% Filter data by nans and thresholds
+# Filter data by nans and thresholds
 data_nonans = data.dropna(subset=['averageSoilMoisture'])
+smData=data_nonans
 
 #filter by months with days > 25 that have average soil moisture data 
 #filter years by days > 330 days
 
-smData=data_nonans
 
 # if len(month_select)==12:
 #     dayCountThres=330
@@ -215,10 +216,19 @@ smData=data_nonans
 #     dayCountThres=25
 #     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
 
+st.header("Soil Moisture Percent (pct) Start of Day Values")
+
+data.set_index('Date')
+
+csv = convert_df(data)
+st.download_button(
+     label="Download Daily Soil Moisture Data",
+     data=csv,
+     file_name='SMS_data.csv',
+     mime='text/csv',
+ )
+
 #%% POR Statistics Table
-
-data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
-
 
 pvTable_por=pd.pivot_table(data_sites_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable_por=pvTable_por["averageSoilMoisture"].head(len(pvTable_por))
@@ -286,15 +296,49 @@ st.download_button(
       file_name='StatisticsTableSoilMoistureCompareSites.csv',
       mime='text/csv',
   )
+
+#%% Create pivot table WY Soil moisture / Median SM for select water years range
+
+
+pvTable_division=pvTable_wy.copy()
+for i in range(0,len(pvTable_por)):
+    pvTable_division.iloc[i]=pvTable_wy.iloc[i]/pvTable_por["Select WY Stat"].iloc[i]
+
+pvTable_division["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,0].to_list()
+pvTable_division["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,2].to_list()
+pvTable_division=pvTable_division.set_index(["Site"],drop=True)
+
+
+# pvTable=pvTable.rename(columns = months)
+
+st.header("WY Soil Moisture / Median Soil Moisture for Select Water Years")
+
+#display pivot table 
+tableDataDiv=pvTable_division.style\
+    .set_properties(**{'width':'10000px','color':'white'})\
+    .apply(background_gradient, axis=None)\
+    .format("{:,.0%}")
+
+st.dataframe(tableDataDiv)
+
+#download pivot table
+csv = convert_df(pvTable_division)
+st.download_button(
+     label="Download WY Soil Moisture/ Median Soil Moisture Data as CSV",
+     data=csv,
+     file_name='WY_SoilMoisture_byMedianSoilMoistureWY_CompareSites.csv',
+     mime='text/csv',
+ )
+
+
+
+
 #%% Create pivot table using average soil moisture and show medians by WY
 
 
-pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
-pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
-
-pvTable["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,0].to_list()
-pvTable["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,2].to_list()
-pvTable=pvTable.set_index(["Site","System"],drop=True)
+pvTable_wy["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,0].to_list()
+pvTable_wy["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,2].to_list()
+pvTable_wy=pvTable_wy.set_index(["Site"],drop=True)
 
 
 # pvTable=pvTable.rename(columns = months)
@@ -302,7 +346,7 @@ pvTable=pvTable.set_index(["Site","System"],drop=True)
 st.header("Soil Moisture % WY Median ")
 
 #display pivot table 
-tableData=pvTable.style\
+tableData=pvTable_wy.style\
     .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
     .format(precision=1)
@@ -310,7 +354,7 @@ tableData=pvTable.style\
 st.dataframe(tableData)
 
 #download pivot table
-csv = convert_df(pvTable)
+csv = convert_df(pvTable_wy)
 st.download_button(
      label="Download Table Data as CSV",
      data=csv,
