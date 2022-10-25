@@ -295,7 +295,7 @@ for i in range(0,len(pvTable_por)):
     pvTable_division.iloc[i]=pvTable_wy.iloc[i]/pvTable_por["Select WY Stat"].iloc[i]
 
 pvTable_division["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,0].to_list()
-pvTable_division["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,2].to_list()
+# pvTable_division["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,2].to_list()
 pvTable_division=pvTable_division.set_index(["Site"],drop=True)
 
 
