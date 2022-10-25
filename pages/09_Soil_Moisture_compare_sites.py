@@ -176,6 +176,9 @@ data_sites['year']=pd.DatetimeIndex(data_sites['Date']).year
 data_sites['month']=pd.DatetimeIndex(data_sites['Date']).month
 data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
 
+data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-5]]).mean(axis=1)
+
+
 #filter by WY
 dateFilterWY=data_sites[(data_sites['WY']>=startYear)&(data_sites['WY']<=endYear)]
 
@@ -199,7 +202,6 @@ st.download_button(
 
 
 #%% Create pivot table using average soil moisture and show medians by WY
-data['averageSoilMoisture']=(data[data.columns[1:-4]]).mean(axis=1)
 data_nonans = data.dropna(subset=['averageSoilMoisture'])
 
 #filter by months with days > 25 that have average soil moisture data 
@@ -244,50 +246,75 @@ st.download_button(
  )
 
 
-#%% Statistics Table
+#%% POR Statistics Table
 
-# medianTable=pvTable.median()
-# medianTable=medianTable.to_frame('Median')
-# medianTable=medianTable.transpose()
+data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
 
-# #calculate trends using data that has no nans and count of days > 25
-# trendData=smData[['averageSoilMoisture','month','WY']]
-# trendData=trendData.set_index('WY').sort_index(ascending=True)
-# months_list=trendData.month.unique()
-# # trendData=trendData.set_index('month')
-# manK=[]
-# for i in months_list:
-#     try:
-#         print(str(i))
-#         tempMK=mk.original_test(trendData[trendData.month==i][['averageSoilMoisture']])
-#         print(tempMK)
-#         if tempMK[2]>0.1:
-#             manK.append(float('nan'))
-#         else:
-#             manK.append(tempMK[7])  
-#     except:
-#         manK.append(float('nan'))
 
-# manKdf=pd.DataFrame(manK,columns={'Trend'}).transpose()
-# manKdf.columns=[months[x] for x in months_list]
+pvTable_por=pd.pivot_table(data_sites_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable_por=pvTable_por["averageSoilMoisture"].head(len(pvTable_por))
 
-# medianTableData=medianTable.append(manKdf)
+pvTable_wy=pd.pivot_table(data_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable_wy=pvTable_wy["averageSoilMoisture"].head(len(pvTable_wy))
 
-# #display pivot table 
-# st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
 
-# displayTableData=medianTableData.style\
-#     .set_properties(**{'width':'10000px','color':'white'})\
-#     .apply(background_gradient, axis=None)\
-#     .format(precision=2)
+pvTable_por["POR Start"]=""
+pvTable_por["POR End"]=""
+pvTable_por["POR Stat"]=np.nan
+pvTable_por["POR Trend"]=np.nan
+pvTable_por["Select WY Stat"]=np.nan
+pvTable_por["Select WY Trend"]=np.nan
 
-# st.dataframe(displayTableData)
+#add por start and por end
+for i in range(0,len(pvTable_por)):
+    pvTable_por["POR Start"].iloc[i]=data_sites_nonans[data_sites_nonans.site==pvTable_por.index[i]].Date.min()
+    pvTable_por["POR End"].iloc[i]=data_sites_nonans[data_sites_nonans.site==pvTable_por.index[i]].Date.max()
+    trend_data_por=pvTable_por.iloc[i,:-6]
+    trend_data_wy=pvTable_wy.iloc[i,:-6]
+    pvTable_por["POR Stat"].iloc[i]=trend_data_por.median()
+    pvTable_por["Select WY Stat"].iloc[i]=trend_data_wy.median()
+    try:
+        tempMK=mk.original_test(trend_data_por)
+        if tempMK[2]<0.1:
+            pvTable_por["POR Trend"].iloc[i]=(tempMK[7])  
+        else:
+            pvTable_por["POR Trend"].iloc[i]=np.nan
+    except:
+        pvTable_por["POR Trend"].iloc[i]=np.nan
+    try:
+        tempMK_WY=mk.original_test(trend_data_wy)
+        if tempMK_WY[2]<0.1:
+            pvTable_por["Select WY Trend"].iloc[i]=(tempMK_WY[7])  
+        else:
+            pvTable_por["Select WY Trend"].iloc[i]=np.nan
+    except:
+        pvTable_por["Select WY Trend"].iloc[i]=np.nan
 
-# #download pivot table
-# csv = convert_df(medianTableData)
-# st.download_button(
-#      label="Download Statistics Table Data as CSV",
-#      data=csv,
-#      file_name='StatisticsTablebyMonth.csv',
-#      mime='text/csv',
-#  )
+#add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
+pvTable_por["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())].iloc[:,0].to_list()
+pvTable_por["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())].iloc[:,2].to_list()
+
+pvTable_por=pvTable_por.set_index(["Site","System","POR Start","POR End","POR Stat", "POR Trend","Select WY Stat","Select WY Trend"],drop=True)
+
+
+
+st.header("Soil Moisture % Statistics ")
+
+#display pivot table 
+st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
+
+displayTableDataPOR=pvTable_por.style\
+    .set_properties(**{'width':'10000px','color':'white'})\
+    .apply(background_gradient, axis=None)\
+    .format(precision=2)
+
+st.dataframe(displayTableDataPOR)
+
+#download pivot table
+csv = convert_df(pvTable_por)
+st.download_button(
+      label="Download Statistics Table Data as CSV",
+      data=csv,
+      file_name='StatisticsTablebyMonth.csv',
+      mime='text/csv',
+  )
