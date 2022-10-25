@@ -93,7 +93,7 @@ siteCodes=siteNames[siteNames['0'].isin(site_selected)].iloc[:,1]
 siteNames=siteNames[siteNames['0'].isin(site_selected)].iloc[:,0]
 
 #%% 03 select months
-monthOptions=pd.DataFrame({'Month':['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug',],
+monthOptions=pd.DataFrame({'Month':['Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
                                'Season':['Fall','Fall','Fall','Winter','Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer',],
                                'Num':[9,10,11,12,1,2,3,4,5,6,7,8]})
 monthSelect=monthOptions['Month']
@@ -149,7 +149,7 @@ monthNum_select=monthOptions.loc[monthOptions['Month'].isin(month_select)]['Num'
     
 
 #%% 04 Select Depths
-elementDF=pd.DataFrame({0:["SMS:-2:value","SMS:-4:value", "SMS:-8:value","SMS:-20:value","SMS:-40:value"], 
+elementDF=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
                            'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
 
 container=st.sidebar.container()
@@ -157,6 +157,7 @@ paramsSelect=elementDF['long']
 element_select=container.multiselect('Select depth(s):',paramsSelect,default=elementDF['long'])
 element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
 elementStr= ','.join(element_select)
+
 
 #04 Select Water Year
 start_date = "%s-%s-0%s"%(startY,startM,startD) 
@@ -168,32 +169,43 @@ max_date = datetime.datetime.today()
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=startY)
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
 
-
-#%% Filter raw data by sites and dates
-
 data_sites=data_raw[data_raw.site.isin(siteCodes)]
+
+
+#%% Filter raw data by sites, depths and dates
+
+#Filter by sites selected
+data_sites=data_raw[data_raw.site.isin(siteCodes)]
+
+#Filter by depths selected
+columns_selected=element_select.to_list()
+columns_selected.append('Date')
+columns_selected.append('site')
+data_sites=data_sites[columns_selected]
+
+#add WY column from date
 data_sites['year']=pd.DatetimeIndex(data_sites['Date']).year
 data_sites['month']=pd.DatetimeIndex(data_sites['Date']).month
 data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
-data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-5]]).mean(axis=1)
 
-
+#calculate averageSoilMoisture making nan for missing data on ANY of the depths 
+data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-5]]).mean(axis=1,skipna=False)
 data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
 
 #filter by WY
-dateFilterWY=data_sites[(data_sites['WY']>=startYear)&(data_sites['WY']<=endYear)]
+dateFilterWY=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
 
 #filter by month
 def monthfilter():
     return dateFilterWY[dateFilterWY['month'].isin(monthNum_select)]
 
-data=monthfilter()
+data_wy=monthfilter()
 
 st.header("Soil Moisture Percent (%) Start of Day Values")
 
-data.set_index('Date')
+data_wy.set_index('Date')
 
-csv = convert_df(data)
+csv = convert_df(data_wy)
 st.download_button(
      label="Download Daily Soil Moisture Data",
      data=csv,
@@ -202,8 +214,6 @@ st.download_button(
  )
 
 # Filter data by nans and thresholds
-data_nonans = data.dropna(subset=['averageSoilMoisture'])
-smData=data_nonans
 
 #filter by months with days > 25 that have average soil moisture data 
 #filter years by days > 330 days
@@ -223,7 +233,7 @@ smData=data_nonans
 pvTable_por=pd.pivot_table(data_sites_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable_por=pvTable_por["averageSoilMoisture"].head(len(pvTable_por))
 
-pvTable_wy=pd.pivot_table(data_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable_wy=pd.pivot_table(data_wy, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable_wy=pvTable_wy["averageSoilMoisture"].head(len(pvTable_wy))
 
 
