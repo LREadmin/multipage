@@ -294,8 +294,8 @@ for i in range(0,len(pvTable_por)):
 pvTable_por["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())].iloc[:,0].to_list()
 pvTable_por["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())].iloc[:,2].to_list()
 
-pvTable_por=pvTable_por.set_index(["Site","System","POR Start","POR End","POR Stat", "POR Trend","Select WY Stat","Select WY Trend"],drop=True)
-
+pvTable_por=pvTable_por[["Site","System","POR Start","POR End","POR Stat", "POR Trend","Select WY Stat","Select WY Trend"]]
+pvTable_por=pvTable_por.set_index(["Site"],drop=True)
 
 
 st.header("Soil Moisture % Statistics ")
