@@ -200,8 +200,7 @@ st.download_button(
      mime='text/csv',
  )
 
-
-#%% Create pivot table using average soil moisture and show medians by WY
+#%% Filter data by nans and thresholds
 data_nonans = data.dropna(subset=['averageSoilMoisture'])
 
 #filter by months with days > 25 that have average soil moisture data 
@@ -215,36 +214,6 @@ smData=data_nonans
 # else:
 #     dayCountThres=25
 #     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
-
-pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
-pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
-
-pvTable["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,0].to_list()
-pvTable["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,2].to_list()
-pvTable=pvTable.set_index(["Site","System"],drop=True)
-
-
-# pvTable=pvTable.rename(columns = months)
-
-st.header("Soil Moisture % WY Median ")
-
-#display pivot table 
-tableData=pvTable.style\
-    .set_properties(**{'width':'10000px','color':'white'})\
-    .apply(background_gradient, axis=None)\
-    .format(precision=1)
-
-st.dataframe(tableData)
-
-#download pivot table
-csv = convert_df(pvTable)
-st.download_button(
-     label="Download Table Data as CSV",
-     data=csv,
-     file_name='Median_SoilMoisture_byWY_CompareSites.csv',
-     mime='text/csv',
- )
-
 
 #%% POR Statistics Table
 
@@ -309,7 +278,6 @@ displayTableDataPOR=pvTable_por.style\
 
 st.dataframe(displayTableDataPOR)
 
-
 #download pivot table
 csv = convert_df(pvTable_por)
 st.download_button(
@@ -318,3 +286,39 @@ st.download_button(
       file_name='StatisticsTableSoilMoistureCompareSites.csv',
       mime='text/csv',
   )
+#%% Create pivot table using average soil moisture and show medians by WY
+
+
+pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
+
+pvTable["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,0].to_list()
+pvTable["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,2].to_list()
+pvTable=pvTable.set_index(["Site","System"],drop=True)
+
+
+# pvTable=pvTable.rename(columns = months)
+
+st.header("Soil Moisture % WY Median ")
+
+#display pivot table 
+tableData=pvTable.style\
+    .set_properties(**{'width':'10000px','color':'white'})\
+    .apply(background_gradient, axis=None)\
+    .format(precision=1)
+
+st.dataframe(tableData)
+
+#download pivot table
+csv = convert_df(pvTable)
+st.download_button(
+     label="Download Table Data as CSV",
+     data=csv,
+     file_name='Median_SoilMoisture_byWY_CompareSites.csv',
+     mime='text/csv',
+ )
+
+
+
+
+#%%
