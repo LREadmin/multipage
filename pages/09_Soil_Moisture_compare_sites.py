@@ -203,7 +203,9 @@ data_nonans = data.dropna(subset=['averageSoilMoisture'])
 
 #filter by months with days > 25 that have average soil moisture data 
 #filter years by days > 330 days
+
 smData=data_nonans
+
 # if len(month_select)==12:
 #     dayCountThres=330
 #     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
@@ -212,6 +214,7 @@ smData=data_nonans
 #     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
 
 pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
 # pvTable=pvTable.rename(columns = months)
 
