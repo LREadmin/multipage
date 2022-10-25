@@ -305,10 +305,10 @@ st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is 
 
 displayTableDataPOR=pvTable_por.style\
     .set_properties(**{'width':'10000px','color':'white'})\
-    .apply(background_gradient, axis=None)\
     .format(precision=2)
 
 st.dataframe(displayTableDataPOR)
+
 
 #download pivot table
 csv = convert_df(pvTable_por)
