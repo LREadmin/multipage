@@ -307,7 +307,7 @@ st.header("WY Soil Moisture / Median Soil Moisture for Select Water Years")
 tableDataDiv=pvTable_division.style\
     .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
-    .format("{:,.0%}")
+    .format(precision=1)
 
 st.dataframe(tableDataDiv)
 
