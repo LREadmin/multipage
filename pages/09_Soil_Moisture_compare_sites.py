@@ -322,13 +322,13 @@ tableDataDiv=pvTable_division.style\
 st.dataframe(tableDataDiv)
 
 #download pivot table
-csv = convert_df(pvTable_division)
-st.download_button(
-     label="Download WY Soil Moisture/ Median Soil Moisture Data as CSV",
-     data=csv,
-     file_name='WY_SoilMoisture_byMedianSoilMoistureWY_CompareSites.csv',
-     mime='text/csv',
- )
+# csv = convert_df(pvTable_division)
+# st.download_button(
+#      label="Download WY Soil Moisture/ Median Soil Moisture Data as CSV",
+#      data=csv,
+#      file_name='WY_SoilMoisture_byMedianSoilMoistureWY_CompareSites.csv',
+#      mime='text/csv',
+#  )
 
 
 
