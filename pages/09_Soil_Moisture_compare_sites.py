@@ -307,7 +307,7 @@ st.header("WY Soil Moisture / Median Soil Moisture for Select Water Years")
 tableDataDiv=pvTable_division.style\
     .set_properties(**{'width':'10000px','color':'white'})\
     .apply(background_gradient, axis=None)\
-    .format(precision=1)
+    .format("{:,.0%}")
 
 st.dataframe(tableDataDiv)
 
@@ -327,7 +327,7 @@ st.download_button(
 
 
 pvTable_wy["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,0].to_list()
-pvTable_wy["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,2].to_list()
+# pvTable_wy["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,2].to_list()
 pvTable_wy=pvTable_wy.set_index(["Site"],drop=True)
 
 
