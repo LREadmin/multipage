@@ -148,9 +148,16 @@ monthNum_select=pd.DataFrame(month_select)
 monthNum_select=monthOptions.loc[monthOptions['Month'].isin(month_select)]['Num']
     
 
+
+#%%Filter by sites selected
+data_sites=data_raw[data_raw.site.isin(siteCodes)]
+emptyDepths=data_sites.columns[data_sites.isnull().all()].to_list()
+
 #%% 04 Select Depths
+
 elementDF=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
                            'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+elementDF=elementDF[~elementDF[0].isin(emptyDepths)]
 
 container=st.sidebar.container()
 paramsSelect=elementDF['long']
@@ -169,13 +176,9 @@ max_date = datetime.datetime.today()
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=startY)
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
 
-data_sites=data_raw[data_raw.site.isin(siteCodes)]
 
 
 #%% Filter raw data by sites, depths and dates
-
-#Filter by sites selected
-data_sites=data_raw[data_raw.site.isin(siteCodes)]
 
 #Filter by depths selected
 columns_selected=element_select.to_list()
@@ -189,8 +192,9 @@ data_sites['month']=pd.DatetimeIndex(data_sites['Date']).month
 data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
 
 #calculate averageSoilMoisture making nan for missing data on ANY of the depths 
-data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-5]]).mean(axis=1,skipna=False)
+data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-1]]).mean(axis=1,skipna=False)
 data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
+
 
 #filter by WY
 dateFilterWY=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
