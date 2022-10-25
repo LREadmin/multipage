@@ -270,7 +270,7 @@ for i in range(0,len(pvTable_por)):
     pvTable_por["POR Start"].iloc[i]=data_sites_nonans[data_sites_nonans.site==pvTable_por.index[i]].Date.min()
     pvTable_por["POR End"].iloc[i]=data_sites_nonans[data_sites_nonans.site==pvTable_por.index[i]].Date.max()
     trend_data_por=pvTable_por.iloc[i,:-6]
-    trend_data_wy=pvTable_wy.iloc[i,:-6]
+    trend_data_wy=pvTable_wy.iloc[i,:]
     pvTable_por["POR Stat"].iloc[i]=trend_data_por.median()
     pvTable_por["Select WY Stat"].iloc[i]=trend_data_wy.median()
     try:
@@ -315,6 +315,6 @@ csv = convert_df(pvTable_por)
 st.download_button(
       label="Download Statistics Table Data as CSV",
       data=csv,
-      file_name='StatisticsTablebyMonth.csv',
+      file_name='StatisticsTableSoilMoistureCompareSites.csv',
       mime='text/csv',
   )
