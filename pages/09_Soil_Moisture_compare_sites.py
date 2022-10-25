@@ -61,8 +61,9 @@ startD=1
 
 #%% Site data
 siteNamesRaw = pd.read_csv("siteNamesListCode.csv", dtype=str)
-siteNames = siteNamesRaw.replace('SNOTEL:','', regex=True)
-siteNames = siteNames.replace("_", ":",regex=True)
+
+AllsiteNames = siteNamesRaw.replace('SNOTEL:','', regex=True)
+AllsiteNames = AllsiteNames.replace("_", ":",regex=True)
 
 #%% Load SMS data
 data_raw=pd.read_csv('SNOTEL_SMS.csv.gz')
@@ -75,11 +76,11 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select both systems")
 
 if all:
-    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].drop_duplicates(), siteNames.iloc[:,2].drop_duplicates())
+    system_selected = container.multiselect('Select your system(s):', AllsiteNames.iloc[:,2].drop_duplicates(), AllsiteNames.iloc[:,2].drop_duplicates())
 else: 
-    system_selected = container.multiselect('Select your system(s):', siteNames.iloc[:,2].drop_duplicates(), default='North')
+    system_selected = container.multiselect('Select your system(s):', AllsiteNames.iloc[:,2].drop_duplicates(), default='North')
 
-siteNames=siteNames[siteNames['2'].isin(system_selected)]
+siteNames=AllsiteNames[AllsiteNames['2'].isin(system_selected)]
 
 #%% 02 Select Site 
 all_sites=st.sidebar.checkbox("Select all sites")
@@ -215,6 +216,11 @@ smData=data_nonans
 
 pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
+
+pvTable["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,0].to_list()
+pvTable["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable.index.to_list())].iloc[:,2].to_list()
+pvTable=pvTable.set_index(["Site","System"],drop=True)
+
 
 # pvTable=pvTable.rename(columns = months)
 
