@@ -55,7 +55,6 @@ def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.1, high=1)
 months={1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'}
 
 #constants
-dayCountThres=25
 startY=1950
 startM=10
 startD=1
@@ -169,14 +168,15 @@ startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=sta
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
 
 
-#%% Download Daily Soil Moisture Data
+#%% Filter raw data by sites and dates
 
-urlData['year']=pd.DatetimeIndex(urlData['Date']).year
-urlData['month']=pd.DatetimeIndex(urlData['Date']).month
-urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
+data_sites=data_raw[data_raw.site.isin(siteCodes)]
+data_sites['year']=pd.DatetimeIndex(data_sites['Date']).year
+data_sites['month']=pd.DatetimeIndex(data_sites['Date']).month
+data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
 
 #filter by WY
-dateFilterWY=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
+dateFilterWY=data_sites[(data_sites['WY']>=startYear)&(data_sites['WY']<=endYear)]
 
 #filter by month
 def monthfilter():
@@ -184,23 +184,11 @@ def monthfilter():
 
 data=monthfilter()
 
-#filter by day count threshold
-
-if len(month_select)==12:
-    dayCountThres=330
-    g=data.groupby(['site','WY'])
-    data=g.filter(lambda x: len(x)>=dayCountThres)
-else:
-    dayCountThres=25
-    g=data.groupby(['site','WY','Month'])
-    data=g.filter(lambda x: len(x)>=dayCountThres)
-
-
 st.header("Soil Moisture Percent (pct) Start of Day Values")
 
-dateFiltered.set_index('Date')
+data.set_index('Date')
 
-csv = convert_df(dateFiltered)
+csv = convert_df(data)
 st.download_button(
      label="Download Daily Soil Moisture Data",
      data=csv,
@@ -208,20 +196,27 @@ st.download_button(
      mime='text/csv',
  )
 
-# st.header("URL to download directly from NRCS")
-# url
 
 #%% Create pivot table using average soil moisture and show medians by WY
-dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1)
-dateFiltered_nonans = dateFiltered.dropna(subset=['averageSoilMoisture'])
+data['averageSoilMoisture']=(data[data.columns[1:-4]]).mean(axis=1)
+data_nonans = data.dropna(subset=['averageSoilMoisture'])
 
 #filter by months with days > 25 that have average soil moisture data 
-smData=dateFiltered_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
+#filter years by days > 330 days
 
-pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+if len(month_select)==12:
+    dayCountThres=330
+    smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
+else:
+    dayCountThres=25
+    smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
+
+pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
 
-pvTable=pvTable.rename(columns = months)
+# pvTable=pvTable.rename(columns = months)
+
+st.header("Soil Moisture % WY Median ")
 
 #display pivot table 
 tableData=pvTable.style\
@@ -236,7 +231,7 @@ csv = convert_df(pvTable)
 st.download_button(
      label="Download Table Data as CSV",
      data=csv,
-     file_name='Median_SoilMoisture_byWY.csv',
+     file_name='Median_SoilMoisture_byWY_CompareSites.csv',
      mime='text/csv',
  )
 
