@@ -189,7 +189,7 @@ def monthfilter():
 
 data=monthfilter()
 
-st.header("Soil Moisture Percent (pct) Start of Day Values")
+st.header("Soil Moisture Percent (%) Start of Day Values")
 
 data.set_index('Date')
 
@@ -216,17 +216,7 @@ smData=data_nonans
 #     dayCountThres=25
 #     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
 
-st.header("Soil Moisture Percent (pct) Start of Day Values")
 
-data.set_index('Date')
-
-# csv = convert_df(data)
-# st.download_button(
-#      label="Download Daily Soil Moisture Data",
-#      data=csv,
-#      file_name='SMS_data.csv',
-#      mime='text/csv',
-#  )
 
 #%% POR Statistics Table
 
