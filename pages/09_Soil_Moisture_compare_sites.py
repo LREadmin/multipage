@@ -150,7 +150,8 @@ monthNum_select=monthOptions.loc[monthOptions['Month'].isin(month_select)]['Num'
 
 
 #%%Filter by sites selected
-data_sites=data_raw[data_raw.site.isin(siteCodes)]
+data_sites_og=data_raw[data_raw.site.isin(siteCodes)]
+data_sites=data_sites_og.copy()
 emptyDepths=data_sites.columns[data_sites.isnull().all()].to_list()
 
 #%% 04 Select Depths
@@ -359,6 +360,45 @@ st.download_button(
  )
 
 
+#%% Data Availability Table
+depths=element_select.to_list()
+pvTable_Availability=pvTable_por[['System','POR Start','POR End']]
+pvTable_Availability["2 inch"]=""
+pvTable_Availability["4 inch"]=""
+pvTable_Availability["8 inch"]=""
+pvTable_Availability["20 inch"]=""
+pvTable_Availability["40 inch"]=""
 
 
-#%%
+for i in range(0,len(pvTable_Availability)):
+    site=data_sites[data_sites_og.site==siteCodes.iloc[i]]
+    emptyDepths=site.columns[site.isnull().all()].to_list()
+    if 'minus_2inch_pct' in emptyDepths:
+        pvTable_Availability["2 inch"].iloc[i]="X"
+    else:
+        pvTable_Availability["2 inch"].iloc[i]="✓"
+    if 'minus_4inch_pct'in emptyDepths:
+        pvTable_Availability["4 inch"].iloc[i]="X"
+    else:
+        pvTable_Availability["4 inch"].iloc[i]="✓"
+    if 'minus_8inch_pct' in emptyDepths:
+        pvTable_Availability["8 inch"].iloc[i]="X"
+    else:
+        pvTable_Availability["8 inch"].iloc[i]="✓"
+    if 'minus_20inch_pct' in emptyDepths:
+        pvTable_Availability["20 inch"].iloc[i]="X"
+    else:
+        pvTable_Availability["20 inch"].iloc[i]="✓"
+    if 'minus_40inch_pct' in emptyDepths:
+        pvTable_Availability["40 inch"].iloc[i]="X"
+    else:
+        pvTable_Availability["40 inch"].iloc[i]="✓"
+
+st.header("Data Availability Table")
+#display pivot table 
+AvData=pvTable_Availability.style\
+    .set_properties(**{'width':'10000px','color':'white'})\
+    .apply(background_gradient, axis=None)\
+    .format(precision=1)
+
+st.dataframe(AvData)
