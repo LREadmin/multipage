@@ -385,14 +385,14 @@ pvTable_Availability["8 inch"]=""
 pvTable_Availability["20 inch"]=""
 pvTable_Availability["40 inch"]=""
 
-depth_cols=pvTable_Availability.columns[3:]
+depth_cols=pvTable_Availability.columns[4:]
 
 for i in range(0,len(pvTable_Availability)):
     pvTable_Availability["POR Start"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.min()
     pvTable_Availability["POR End"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.max()
+    site=data_sites_og[data_sites_og.site==siteCodes.iloc[i]]
+    emptyDepths=site.columns[site.isnull().all()].to_list()
     for j in range(0,len(depth_cols)):
-        site=data_sites_og[data_sites_og.site==siteCodes.iloc[i]]
-        emptyDepths=site.columns[site.isnull().all()].to_list()
         if depths.iloc[j] in emptyDepths:
             pvTable_Availability[depth_cols[j]].iloc[i]="X"
         else:
