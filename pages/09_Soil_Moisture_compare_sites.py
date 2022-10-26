@@ -399,6 +399,8 @@ for i in range(0,len(pvTable_Availability)):
             pvTable_Availability[depth_cols[j]].iloc[i]="✓"
   
 #add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
+pvTable_Availability=pvTable_Availability.set_index(["Site"],drop=True)
+
 
 st.header("Data Availability Table")
 #display pivot table 
