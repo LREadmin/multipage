@@ -149,6 +149,7 @@ years=list.values.tolist()
 data4['Years']=years
 data4=data4.set_index('Years')
 data4.columns=monthNames
+data4=data4[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
 
 medianData=pandas.DataFrame([monthNames,data4.median()])
 

@@ -203,7 +203,7 @@ else:
         pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
         pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
         pvTable=pvTable.rename(columns = months)
-        pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
+        pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
     
         #display pivot table 
         tableData=pvTable.style\
