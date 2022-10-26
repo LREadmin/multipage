@@ -22,6 +22,8 @@ import numpy as np
 import matplotlib.pyplot as plt #for plotting
 from matplotlib import colors #for additional colors
 
+st.set_page_config(page_title="Soil Moisture Site Comparison", page_icon="🌱")
+
 #%% Define data download as CSV function
 #functions
 @st.cache
