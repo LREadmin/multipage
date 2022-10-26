@@ -191,19 +191,25 @@ data_sites['year']=pd.DatetimeIndex(data_sites['Date']).year
 data_sites['month']=pd.DatetimeIndex(data_sites['Date']).month
 data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
 
+
 #calculate averageSoilMoisture making nan for missing data on ANY of the depths 
 data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-1]]).mean(axis=1,skipna=False)
 data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
 
+#filter by month
+data_sites_nonans=data_sites_nonans[data_sites_nonans['month'].isin(monthNum_select)]
+
+#filter by months with days > 25 that have average soil moisture data 
+#filter years by days > 330 days
+if len(month_select)==12:
+    dayCountThres=330
+    data_sites_nonans=data_sites_nonans.groupby(['WY']).filter(lambda x : len(x)>=dayCountThres)
+else:
+    dayCountThres=25
+    data_sites_nonans=data_sites_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
 
 #filter by WY
-dateFilterWY=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
-
-#filter by month
-def monthfilter():
-    return dateFilterWY[dateFilterWY['month'].isin(monthNum_select)]
-
-data_wy=monthfilter()
+data_wy=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
 
 st.header("Soil Moisture Percent (%) Start of Day Values")
 
@@ -216,20 +222,6 @@ st.download_button(
      file_name='SMS_data.csv',
      mime='text/csv',
  )
-
-# Filter data by nans and thresholds
-
-#filter by months with days > 25 that have average soil moisture data 
-#filter years by days > 330 days
-
-
-# if len(month_select)==12:
-#     dayCountThres=330
-#     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
-# else:
-#     dayCountThres=25
-#     smData=data_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
-
 
 
 #%% POR Statistics Table
