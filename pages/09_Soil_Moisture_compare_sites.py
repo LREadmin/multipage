@@ -397,8 +397,6 @@ for i in range(0,len(pvTable_Availability)):
 st.header("Data Availability Table")
 #display pivot table 
 AvData=pvTable_Availability.style\
-    .set_properties(**{'width':'10000px','color':'white'})\
-    .apply(background_gradient, axis=None)\
-    .format(precision=1)
-
+    .set_properties(**{'width':'10000px','color':'white'})
+    
 st.dataframe(AvData)
