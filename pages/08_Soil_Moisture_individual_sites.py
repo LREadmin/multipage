@@ -160,7 +160,7 @@ else:
     # url
     
     #%% Create pivot table using average soil moisture and show medians by WY
-    dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1)
+    dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1,skipna=False)
     dateFiltered_nonans = dateFiltered.dropna(subset=['averageSoilMoisture'])
         
     #filter by months with days > 25 that have average soil moisture data 
@@ -170,10 +170,11 @@ else:
     pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
     
     pvTable=pvTable.rename(columns = months)
+    pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
     
     #display pivot table 
     tableData=pvTable.style\
-        .set_properties(**{'width':'10000px','color':'white'})\
+        .set_properties(**{'width':'10000px'})\
         .apply(background_gradient, axis=None)\
         .format(precision=1)
     
@@ -222,7 +223,7 @@ else:
     st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
     
     displayTableData=medianTableData.style\
-        .set_properties(**{'width':'10000px','color':'white'})\
+        .set_properties(**{'width':'10000px'})\
         .format(precision=2)
     
     st.dataframe(displayTableData)

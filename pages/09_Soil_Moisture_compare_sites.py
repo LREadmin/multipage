@@ -280,7 +280,7 @@ st.header("Soil Moisture % Statistics ")
 st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
 
 displayTableDataPOR=pvTable_por.style\
-    .set_properties(**{'width':'10000px','color':'white'})\
+    .set_properties(**{'width':'10000px'})\
     .format(precision=2)
 
 st.dataframe(displayTableDataPOR)
@@ -312,7 +312,7 @@ st.header("WY Soil Moisture / Median Soil Moisture for Select Water Years")
 
 #display pivot table 
 tableDataDiv=pvTable_division.style\
-    .set_properties(**{'width':'10000px','color':'white'})\
+    .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
     .format("{:,.0%}")
 
@@ -344,7 +344,7 @@ st.header("Soil Moisture % WY Median ")
 
 #display pivot table 
 tableData=pvTable_wy.style\
-    .set_properties(**{'width':'10000px','color':'white'})\
+    .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
     .format(precision=1)
 
@@ -405,6 +405,6 @@ pvTable_Availability=pvTable_Availability.set_index(["Site"],drop=True)
 st.header("Data Availability Table")
 #display pivot table 
 AvData=pvTable_Availability.style\
-    .set_properties(**{'width':'10000px','color':'white'})
+    .set_properties(**{'width':'10000px'})
     
 st.dataframe(AvData)
