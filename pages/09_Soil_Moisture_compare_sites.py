@@ -361,7 +361,10 @@ st.download_button(
 
 
 #%% Data Availability Table
-depths=element_select.to_list()
+elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
+                           'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+
+depths=elementDF_og[0]
 pvTable_Availability=pvTable_por[['System','POR Start','POR End']]
 pvTable_Availability["2 inch"]=""
 pvTable_Availability["4 inch"]=""
@@ -369,30 +372,16 @@ pvTable_Availability["8 inch"]=""
 pvTable_Availability["20 inch"]=""
 pvTable_Availability["40 inch"]=""
 
-
-for i in range(0,len(pvTable_Availability)):
-    site=data_sites[data_sites_og.site==siteCodes.iloc[i]]
-    emptyDepths=site.columns[site.isnull().all()].to_list()
-    if 'minus_2inch_pct' in emptyDepths:
-        pvTable_Availability["2 inch"].iloc[i]="X"
-    else:
-        pvTable_Availability["2 inch"].iloc[i]="✓"
-    if 'minus_4inch_pct'in emptyDepths:
-        pvTable_Availability["4 inch"].iloc[i]="X"
-    else:
-        pvTable_Availability["4 inch"].iloc[i]="✓"
-    if 'minus_8inch_pct' in emptyDepths:
-        pvTable_Availability["8 inch"].iloc[i]="X"
-    else:
-        pvTable_Availability["8 inch"].iloc[i]="✓"
-    if 'minus_20inch_pct' in emptyDepths:
-        pvTable_Availability["20 inch"].iloc[i]="X"
-    else:
-        pvTable_Availability["20 inch"].iloc[i]="✓"
-    if 'minus_40inch_pct' in emptyDepths:
-        pvTable_Availability["40 inch"].iloc[i]="X"
-    else:
-        pvTable_Availability["40 inch"].iloc[i]="✓"
+depth_cols=pvTable_Availability.columns[3:]
+for j in range(0,len(depth_cols)):
+    for i in range(0,len(pvTable_Availability)):
+        site=data_sites[data_sites_og.site==siteCodes.iloc[i]]
+        emptyDepths=site.columns[site.isnull().all()].to_list()
+        if depths.iloc[j] in emptyDepths:
+            pvTable_Availability[depth_cols[j]].iloc[i]="X"
+        else:
+            pvTable_Availability[depth_cols[j]].iloc[i]="✓"
+  
 
 st.header("Data Availability Table")
 #display pivot table 
