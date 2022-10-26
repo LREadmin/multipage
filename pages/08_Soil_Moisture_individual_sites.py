@@ -165,12 +165,11 @@ else:
         
     #filter by months with days > 25 that have average soil moisture data 
     smData=dateFiltered_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
-    
-    pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
-    
-    if len(pvTable)==0:
+  
+    if len(smData)==0:
         "no data for selected depths"
     else:
+        pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
         pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
         pvTable=pvTable.rename(columns = months)
         pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
@@ -195,47 +194,47 @@ else:
     
     #%% Statistics Table
     
-    medianTable=pvTable.median()
-    medianTable=medianTable.to_frame('Median')
-    medianTable=medianTable.transpose()
+    # medianTable=pvTable.median()
+    # medianTable=medianTable.to_frame('Median')
+    # medianTable=medianTable.transpose()
     
-    #calculate trends using data that has no nans and count of days > 25
-    trendData=smData[['averageSoilMoisture','month','WY']]
-    trendData=trendData.set_index('WY').sort_index(ascending=True)
-    months_list=trendData.month.unique()
-    # trendData=trendData.set_index('month')
-    manK=[]
-    for i in months_list:
-        try:
-            print(str(i))
-            tempMK=mk.original_test(trendData[trendData.month==i][['averageSoilMoisture']])
-            print(tempMK)
-            if tempMK[2]>0.1:
-                manK.append(float('nan'))
-            else:
-                manK.append(tempMK[7])  
-        except:
-            manK.append(float('nan'))
+    # #calculate trends using data that has no nans and count of days > 25
+    # trendData=smData[['averageSoilMoisture','month','WY']]
+    # trendData=trendData.set_index('WY').sort_index(ascending=True)
+    # months_list=trendData.month.unique()
+    # # trendData=trendData.set_index('month')
+    # manK=[]
+    # for i in months_list:
+    #     try:
+    #         print(str(i))
+    #         tempMK=mk.original_test(trendData[trendData.month==i][['averageSoilMoisture']])
+    #         print(tempMK)
+    #         if tempMK[2]>0.1:
+    #             manK.append(float('nan'))
+    #         else:
+    #             manK.append(tempMK[7])  
+    #     except:
+    #         manK.append(float('nan'))
     
-    manKdf=pd.DataFrame(manK,columns={'Trend'}).transpose()
-    manKdf.columns=[months[x] for x in months_list]
+    # manKdf=pd.DataFrame(manK,columns={'Trend'}).transpose()
+    # manKdf.columns=[months[x] for x in months_list]
     
-    medianTableData=medianTable.append(manKdf)
+    # medianTableData=medianTable.append(manKdf)
     
-    #display pivot table 
-    st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
+    # #display pivot table 
+    # st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
     
-    displayTableData=medianTableData.style\
-        .set_properties(**{'width':'10000px'})\
-        .format(precision=2)
+    # displayTableData=medianTableData.style\
+    #     .set_properties(**{'width':'10000px'})\
+    #     .format(precision=2)
     
-    st.dataframe(displayTableData)
+    # st.dataframe(displayTableData)
     
-    #download pivot table
-    csv = convert_df(medianTableData)
-    st.download_button(
-         label="Download Statistics Table Data as CSV",
-         data=csv,
-         file_name='StatisticsTablebyMonth.csv',
-         mime='text/csv',
-     )
+    # #download pivot table
+    # csv = convert_df(medianTableData)
+    # st.download_button(
+    #      label="Download Statistics Table Data as CSV",
+    #      data=csv,
+    #      file_name='StatisticsTablebyMonth.csv',
+    #      mime='text/csv',
+    #  )
