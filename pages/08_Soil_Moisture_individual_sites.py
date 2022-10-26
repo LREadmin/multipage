@@ -160,7 +160,7 @@ else:
     # url
     
     #%% Create pivot table using average soil moisture and show medians by WY
-    dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1) #skipna=False
+    dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1,skipna=False)
     dateFiltered_nonans = dateFiltered.dropna(subset=['averageSoilMoisture'])
         
     #filter by months with days > 25 that have average soil moisture data 
