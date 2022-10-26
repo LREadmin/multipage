@@ -167,27 +167,30 @@ else:
     smData=dateFiltered_nonans.groupby(['month','WY']).filter(lambda x : len(x)>=dayCountThres)
     
     pvTable=pd.pivot_table(smData, values=['averageSoilMoisture'],index='WY', columns={'month'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
-    pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
     
-    pvTable=pvTable.rename(columns = months)
-  #  pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
+    if len(pvTable)==0:
+        "no data for selected depths"
+    else:
+        pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
+        pvTable=pvTable.rename(columns = months)
+        pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
     
-    #display pivot table 
-    tableData=pvTable.style\
-        .set_properties(**{'width':'10000px'})\
-        .apply(background_gradient, axis=None)\
-        .format(precision=1)
-    
-    st.dataframe(tableData)
-    
-    #download pivot table
-    csv = convert_df(pvTable)
-    st.download_button(
-         label="Download Table Data as CSV",
-         data=csv,
-         file_name='Median_SoilMoisture_byWY.csv',
-         mime='text/csv',
-     )
+        #display pivot table 
+        tableData=pvTable.style\
+            .set_properties(**{'width':'10000px'})\
+            .apply(background_gradient, axis=None)\
+            .format(precision=1)
+        
+        st.dataframe(tableData)
+        
+        #download pivot table
+        csv = convert_df(pvTable)
+        st.download_button(
+             label="Download Table Data as CSV",
+             data=csv,
+             file_name='Median_SoilMoisture_byWY.csv',
+             mime='text/csv',
+         )
     
     
     #%% Statistics Table
