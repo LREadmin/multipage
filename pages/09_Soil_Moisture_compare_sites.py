@@ -224,7 +224,54 @@ st.download_button(
      mime='text/csv',
  )
 
+#%% Data Availability Table
+elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
+                           'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
 
+depths=elementDF_og[0]
+
+data_sites_og['year']=pd.DatetimeIndex(data_sites_og['Date']).year
+
+pvTable_gen=pd.pivot_table(data_sites_og, values=['minus_2inch_pct'],index='site', columns={'year'},aggfunc='count', margins=False, margins_name='Total')
+pvTable_gen=pvTable_gen["minus_2inch_pct"].head(len(pvTable_gen))
+
+pvTable_gen["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_gen.index.to_list())].iloc[:,0].to_list()
+pvTable_gen["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_gen.index.to_list())].iloc[:,2].to_list()
+
+pvTable_Availability=pvTable_gen[['Site','System']]
+
+pvTable_Availability["POR Start"]=""
+pvTable_Availability["POR End"]=""
+
+pvTable_Availability["2 inch"]=""
+pvTable_Availability["4 inch"]=""
+pvTable_Availability["8 inch"]=""
+pvTable_Availability["20 inch"]=""
+pvTable_Availability["40 inch"]=""
+
+depth_cols=pvTable_Availability.columns[4:]
+
+for i in range(0,len(pvTable_Availability)):
+    pvTable_Availability["POR Start"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.min()
+    pvTable_Availability["POR End"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.max()
+    site=data_sites_og[data_sites_og.site==siteCodes.iloc[i]]
+    emptyDepths=site.columns[site.isnull().all()].to_list()
+    for j in range(0,len(depth_cols)):
+        if depths.iloc[j] in emptyDepths:
+            pvTable_Availability[depth_cols[j]].iloc[i]="X"
+        else:
+            pvTable_Availability[depth_cols[j]].iloc[i]="✓"
+  
+#add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
+pvTable_Availability=pvTable_Availability.set_index(["Site"],drop=True)
+
+
+st.header("Data Availability Table")
+#display pivot table 
+AvData=pvTable_Availability.style\
+    .set_properties(**{'width':'10000px'})
+    
+st.dataframe(AvData)
 #%% POR Statistics Table
 
 pvTable_por=pd.pivot_table(data_sites_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
@@ -360,51 +407,3 @@ st.download_button(
  )
 
 
-#%% Data Availability Table
-elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
-                           'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
-
-depths=elementDF_og[0]
-
-data_sites_og['year']=pd.DatetimeIndex(data_sites_og['Date']).year
-
-pvTable_gen=pd.pivot_table(data_sites_og, values=['minus_2inch_pct'],index='site', columns={'year'},aggfunc='count', margins=False, margins_name='Total')
-pvTable_gen=pvTable_gen["minus_2inch_pct"].head(len(pvTable_gen))
-
-pvTable_gen["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_gen.index.to_list())].iloc[:,0].to_list()
-pvTable_gen["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_gen.index.to_list())].iloc[:,2].to_list()
-
-pvTable_Availability=pvTable_gen[['Site','System']]
-
-pvTable_Availability["POR Start"]=""
-pvTable_Availability["POR End"]=""
-
-pvTable_Availability["2 inch"]=""
-pvTable_Availability["4 inch"]=""
-pvTable_Availability["8 inch"]=""
-pvTable_Availability["20 inch"]=""
-pvTable_Availability["40 inch"]=""
-
-depth_cols=pvTable_Availability.columns[4:]
-
-for i in range(0,len(pvTable_Availability)):
-    pvTable_Availability["POR Start"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.min()
-    pvTable_Availability["POR End"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.max()
-    site=data_sites_og[data_sites_og.site==siteCodes.iloc[i]]
-    emptyDepths=site.columns[site.isnull().all()].to_list()
-    for j in range(0,len(depth_cols)):
-        if depths.iloc[j] in emptyDepths:
-            pvTable_Availability[depth_cols[j]].iloc[i]="X"
-        else:
-            pvTable_Availability[depth_cols[j]].iloc[i]="✓"
-  
-#add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
-pvTable_Availability=pvTable_Availability.set_index(["Site"],drop=True)
-
-
-st.header("Data Availability Table")
-#display pivot table 
-AvData=pvTable_Availability.style\
-    .set_properties(**{'width':'10000px'})
-    
-st.dataframe(AvData)
