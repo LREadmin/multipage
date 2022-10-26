@@ -365,7 +365,20 @@ elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_
                            'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
 
 depths=elementDF_og[0]
-pvTable_Availability=pvTable_por[['System','POR Start','POR End']]
+
+data_sites_og['year']=pd.DatetimeIndex(data_sites_og['Date']).year
+
+pvTable_gen=pd.pivot_table(data_sites_og, values=['minus_2inch_pct'],index='site', columns={'year'},aggfunc='count', margins=False, margins_name='Total')
+pvTable_gen=pvTable_gen["minus_2inch_pct"].head(len(pvTable_gen))
+
+pvTable_gen["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_gen.index.to_list())].iloc[:,0].to_list()
+pvTable_gen["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_gen.index.to_list())].iloc[:,2].to_list()
+
+pvTable_Availability=pvTable_gen[['Site','System']]
+
+pvTable_Availability["POR Start"]=""
+pvTable_Availability["POR End"]=""
+
 pvTable_Availability["2 inch"]=""
 pvTable_Availability["4 inch"]=""
 pvTable_Availability["8 inch"]=""
@@ -373,15 +386,19 @@ pvTable_Availability["20 inch"]=""
 pvTable_Availability["40 inch"]=""
 
 depth_cols=pvTable_Availability.columns[3:]
-for j in range(0,len(depth_cols)):
-    for i in range(0,len(pvTable_Availability)):
-        site=data_sites[data_sites_og.site==siteCodes.iloc[i]]
+
+for i in range(0,len(pvTable_Availability)):
+    pvTable_Availability["POR Start"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.min()
+    pvTable_Availability["POR End"].iloc[i]=data_sites_og[data_sites_og.site==pvTable_Availability.index[i]].Date.max()
+    for j in range(0,len(depth_cols)):
+        site=data_sites_og[data_sites_og.site==siteCodes.iloc[i]]
         emptyDepths=site.columns[site.isnull().all()].to_list()
         if depths.iloc[j] in emptyDepths:
             pvTable_Availability[depth_cols[j]].iloc[i]="X"
         else:
             pvTable_Availability[depth_cols[j]].iloc[i]="✓"
   
+#add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
 
 st.header("Data Availability Table")
 #display pivot table 
