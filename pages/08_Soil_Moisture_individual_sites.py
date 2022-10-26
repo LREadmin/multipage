@@ -170,7 +170,7 @@ else:
     pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
     
     pvTable=pvTable.rename(columns = months)
-    pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
+  #  pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sept"]]
     
     #display pivot table 
     tableData=pvTable.style\
