@@ -193,7 +193,7 @@ data_sites['WY']= data_sites.apply(lambda x: convert_to_WY(x), axis=1)
 
 
 #calculate averageSoilMoisture making nan for missing data on ANY of the depths 
-data_sites['averageSoilMoisture']=(data_sites[data_sites.columns[1:-1]]).mean(axis=1,skipna=False)
+data_sites['averageSoilMoisture']=(data_sites[element_select.to_list()]).mean(axis=1,skipna=False)
 data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
 
 #filter by month
