@@ -129,7 +129,7 @@ for col in emptyDepths:
     print(col[45:49])
     emptyDepths_items.append(col[45:49])
 
-depth_dict={"2in ":"2 inch depth","4in ":"4 inch depth","8in ":"8 inch depth","20in":"20 inch depth","40in":"40 inch depth",}
+depth_dict={"2in ":"2 inch depth","4in ":"4 inch depth","8in ":"8 inch depth","20in":"20 inch depth","40in":"40 inch depth"}
 
 emptyDepths_items=[depth_dict[k] for k in emptyDepths_items]  
 
@@ -148,9 +148,6 @@ if all:
 else:
     element_select=container.multiselect('Select depth(s):',paramsSelect,default=elementDF['long'])
     
-element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
-
-elementStr= ','.join(element_select)
 
 if len(element_select)==0:
     st.sidebar.error("Select at least one depth")
@@ -162,6 +159,15 @@ if len(element_select)==0:
 emptyDepths=urlData.columns[urlData.isnull().all()].to_list()
 urlData.drop(emptyDepths, inplace=True, axis=1)
 
+
+#filter by selected depths only
+for j in ["2in ","4in ","8in ","20in","40in"]:
+    for col in urlData.columns.to_list():
+        if (col[45:49]==j) and (depth_dict[j] not in element_select):
+            urlData.drop(col, inplace=True, axis=1)
+            print("remove " + j)
+            
+#filter by WY
 urlData['year']=pd.DatetimeIndex(urlData['Date']).year
 urlData['month']=pd.DatetimeIndex(urlData['Date']).month
 
