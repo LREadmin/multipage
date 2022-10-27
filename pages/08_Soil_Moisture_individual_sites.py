@@ -155,11 +155,6 @@ if len(element_select)==0:
 
 #%% Download Daily Soil Moisture Data
 
-#remove column with all nan values
-# emptyDepths=urlData.columns[urlData.isnull().all()].to_list()
-# urlData.drop(emptyDepths, inplace=True, axis=1)
-
-
 #filter by selected depths only
 for j in ["2in ","4in ","8in ","20in","40in"]:
     for col in urlData.columns.to_list():
