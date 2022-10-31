@@ -66,7 +66,7 @@ AllsiteNames = siteNamesRaw.replace('SNOTEL:','', regex=True)
 AllsiteNames = AllsiteNames.replace("_", ":",regex=True)
 
 # remove sites without soil moisture data
-AllsiteNames = AllsiteNames[AllsiteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek|High Lonesome")==False]
+AllsiteNames = AllsiteNames[AllsiteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek")==False]
 #%% Load SMS data
 data_raw=pd.read_csv('SNOTEL_SMS.csv.gz')
 
