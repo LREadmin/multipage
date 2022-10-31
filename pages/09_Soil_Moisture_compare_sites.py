@@ -169,7 +169,7 @@ if all:
 else: 
     site_selected = container.multiselect('Select your site:', siteNames.iloc[:,0], default=siteNames.iloc[0,0])
 
-#site_selected=['Berthoud Summit','Middle Fork Camp']
+#site_selected=['Middle Fork Camp']
 siteCodes=siteNames[siteNames['0'].isin(site_selected)].iloc[:,1]
 siteNames=siteNames[siteNames['0'].isin(site_selected)].iloc[:,0] 
 
@@ -300,7 +300,6 @@ pvTable_por=pvTable_por["averageSoilMoisture"].head(len(pvTable_por))
 pvTable_wy=pd.pivot_table(data_wy, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable_wy=pvTable_wy["averageSoilMoisture"].head(len(pvTable_wy))
 
-
 pvTable_por["POR Start"]=""
 pvTable_por["POR End"]=""
 pvTable_por["POR Stat"]=np.nan
@@ -335,8 +334,10 @@ for siteTemp2 in pvTable_por.index:
         pvTable_por["Select WY Trend"].loc[siteTemp2]=np.nan
 
 #add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
-pvTable_por["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())].iloc[:,0].to_list()
-pvTable_por["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())].iloc[:,2].to_list()
+temp=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())]
+temp.set_index('1',inplace=True)
+temp.columns=['Site','System']
+pvTable_por=pd.concat([pvTable_por,temp],axis=1)
 
 pvTable_por=pvTable_por[["Site","System","POR Start","POR End","POR Stat", "POR Trend","Select WY Stat","Select WY Trend"]]
 pvTable_por=pvTable_por.set_index(["Site"],drop=True)
@@ -345,7 +346,7 @@ pvTable_por=pvTable_por.set_index(["Site"],drop=True)
 st.header("Soil Moisture % Statistics ")
 
 #display pivot table 
-st.markdown("Statistics calculated using soil moisture averaged across selected depths")
+st.markdown("Statistics calculated using soil moisture averaged across selected depths; POR reported here reflects days with values for all selected depths.")
 st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
 
 displayTableDataPOR=pvTable_por.style\
