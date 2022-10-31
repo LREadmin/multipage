@@ -176,6 +176,7 @@ else:
     dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
     
     dateFiltered.set_index('Date')
+    dataFiltered.sort_index(ascending=False,inplace=True) # sort with recent WY at top
     
     st.header("Soil Moisture Percent (pct) Start of Day Values")
     "Note: Soil moisture percent > 100% excluded"
