@@ -111,7 +111,7 @@ url=base+part1+site+por+element+part2
 
 s=requests.get(url).text
 
-urlDataRaw=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',',error_bad_lines=False)#headerCount.iloc[0]
+urlDataRaw=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',')#headerCount.iloc[0]
 
 #filter out data >100%
 datecol=urlDataRaw['Date']
@@ -126,9 +126,10 @@ urlData=urlData.reindex(columns=cols2)
 #%% Figure out which depths dont have any data and don't include
 emptyDepths=urlData.columns[urlData.isnull().all()].to_list()
 emptyDepths_items=[]
-for col in emptyDepths:
-    print(col[45:49])
-    emptyDepths_items.append(col[45:49])
+for j in ["2in ","4in ","8in ","20in","40in"]:
+    for col in emptyDepths:
+        if j in col:
+            emptyDepths_items.append(j)
 
 depth_dict={"2in ":"2 inch depth","4in ":"4 inch depth","8in ":"8 inch depth","20in":"20 inch depth","40in":"40 inch depth"}
 
