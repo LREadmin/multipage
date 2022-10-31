@@ -176,7 +176,6 @@ else:
     dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
     
     dateFiltered.set_index('Date')
-    dateFiltered.sort_index(ascending=False,inplace=True) # sort with recent WY at top
     
     st.header("Soil Moisture Percent (pct) Start of Day Values")
     "Note: Soil moisture percent > 100% excluded"
@@ -208,6 +207,7 @@ else:
         pvTable=pvTable["averageSoilMoisture"].head(len(pvTable))
         pvTable=pvTable.rename(columns = months)
         pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
+        pvTable.sort_index(axis='rows',level='WY',ascending=False,inplace=True)
     
         #display pivot table 
         tableData=pvTable.style\
