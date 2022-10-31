@@ -64,6 +64,7 @@ startD=1
 
 #%% Site data
 siteNames = pd.read_csv("siteNamesListCode.csv")
+siteNames = siteNames[siteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek|High Lonesome")==False]
 
 #%% Left Filters
 
@@ -78,8 +79,8 @@ end_dateRaw = arrow.now().format('YYYY-MM-DD')
 min_date = datetime.datetime(startY,startM,startD) #dates for st slider need to be in datetime format:
 max_date = datetime.datetime.today() 
 
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=startY)
-endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=2002)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 
 #%% SOIL MOISTURE DATA filtered by site, parameter and date
