@@ -104,7 +104,7 @@ headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_s
 base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
 part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
 site=sitecodeSMS
-por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear-1) + "-09-30/"
+por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear) + "-09-30/"
 element=elementStr
 part2="?fitToScreen=false"
 url=base+part1+site+por+element+part2
@@ -149,7 +149,7 @@ if all:
 else:
     element_select=container.multiselect('Select depth(s):',paramsSelect,default=elementDF['long'])
     
-
+#element_select=element_select[:-1]
 if len(element_select)==0:
     st.sidebar.error("Select at least one depth")
 
@@ -159,7 +159,7 @@ if len(element_select)==0:
 #filter by selected depths only
 for j in ["2in ","4in ","8in ","20in","40in"]:
     for col in urlData.columns.to_list():
-        if (col[45:49]==j) and (depth_dict[j] not in element_select):
+        if (j in col) and (depth_dict[j] not in element_select):
             urlData.drop(col, inplace=True, axis=1)
             print("remove " + j)
             
