@@ -230,7 +230,7 @@ for siteTemp in pvTable_Availability.index:
 pvTable_Availability=pvTable_Availability.set_index(["Site"],drop=True)
 
 st.header("Data Availability Table")
-st.markdown("Certain depths have later POR start dates, as indicated for certain sites in the table below")
+st.markdown("Certain depths have differnt POR dates, as indicated for certain sites in the table below")
 #display pivot table 
 AvData=pvTable_Availability.style\
     .set_properties(**{'width':'10000px'})
