@@ -276,6 +276,9 @@ data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
   
 #filter by WY
 data_wy=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
+nameTemp=AllsiteNames.copy()
+nameTemp.columns=['Name','site','system']
+data_wy=pd.merge(data_wy,nameTemp,on=['site'])
 
 st.header("Soil Moisture Percent (%) Start of Day Values")
 
