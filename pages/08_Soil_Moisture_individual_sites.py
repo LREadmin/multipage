@@ -64,7 +64,7 @@ startD=1
 
 #%% Site data
 siteNames = pd.read_csv("siteNamesListCode.csv")
-siteNames = siteNames[siteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek|High Lonesome")==False]
+siteNames = siteNames[siteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek")==False]
 
 #%% Left Filters
 
