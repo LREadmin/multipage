@@ -2,7 +2,7 @@
 """
 Created on Tue Oct 11 11:53:06 2022
 
-@author: msparacino
+@author: msparacino and mpedrazas
 """
 #%% import packages
 
@@ -367,6 +367,7 @@ st.download_button(
 
 pvTable_division=pvTable_wy.copy()
 pvTable_division.sort_index(axis='columns',level='WY',ascending=False,inplace=True)
+pvTable_wy.sort_index(axis='columns',level='WY',ascending=False,inplace=True)
 for i in range(0,len(pvTable_por)):
     pvTable_division.iloc[i]=pvTable_wy.iloc[i]/pvTable_por["Select WY Stat"].iloc[i]
 
@@ -397,7 +398,7 @@ st.download_button(
 
 pvTable_wy["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,0].to_list()
 pvTable_wy=pvTable_wy.set_index(["Site"],drop=True)
-pvTable_wy.sort_index(axis='columns',level='WY',ascending=False,inplace=True)
+
 
 st.header("Soil Moisture % WY Median ")
 

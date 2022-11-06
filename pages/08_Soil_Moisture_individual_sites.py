@@ -2,7 +2,7 @@
 """
 Created on Tue Oct 11 11:53:06 2022
 
-@author: msparacino
+@author: msparacino and mpedrazas
 """
 #%% import packages
 
