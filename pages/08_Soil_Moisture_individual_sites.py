@@ -179,8 +179,7 @@ else:
     
     dateFiltered.set_index('Date')
     
-    st.header("Soil Moisture Percent (pct) Start of Day Values")
-    "Note: Soil moisture percent > 100% excluded"
+
     
     csv = convert_df(dateFiltered)
     st.download_button(
@@ -190,6 +189,9 @@ else:
          mime='text/csv',
      )
     
+    
+    st.header("Depth Averaged Median Monthly Soil Moisture Percent (%)")
+    "Note: Soil moisture percent > 100% excluded"
     # st.header("URL to download directly from NRCS")
     # url
     
@@ -259,7 +261,7 @@ else:
         medianTableData=medianTable.append(manKdf)
         
         #display pivot table 
-        st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
+        st.markdown("Trend (Theil-Sen Slope (%/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
         
         displayTableData=medianTableData.style\
             .set_properties(**{'width':'10000px'})\
