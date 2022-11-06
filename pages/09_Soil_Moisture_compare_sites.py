@@ -280,7 +280,6 @@ nameTemp=AllsiteNames.copy()
 nameTemp.columns=['Name','site','system']
 data_wy=pd.merge(data_wy,nameTemp,on=['site'])
 
-st.header("Soil Moisture Percent (%) Start of Day Values")
 
 data_wy.set_index('Date')
 
@@ -343,11 +342,11 @@ pvTable_por=pvTable_por[["Site","System","POR Start","POR End","POR Stat", "POR 
 pvTable_por=pvTable_por.set_index(["Site"],drop=True)
 
 
-st.header("Soil Moisture % Statistics ")
+st.header("Site Comparison ")
 
 #display pivot table 
-st.markdown("Statistics calculated using soil moisture averaged across selected depths; POR reported here reflects days with values for all selected depths.")
-st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
+st.markdown("Median percent soil moisture averaged across selected depths; POR reported reflects days with values for all selected depths.")
+st.markdown("Trend (Theil-Sen Slope (%/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan). Months with less than 25 days of data are not included in the analysis.")
 
 displayTableDataPOR=pvTable_por.style\
     .set_properties(**{'width':'10000px'})\
@@ -375,7 +374,7 @@ pvTable_division["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.in
 # pvTable_division["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,2].to_list()
 pvTable_division=pvTable_division.set_index(["Site"],drop=True)
 
-st.header("WY Soil Moisture / Median Soil Moisture for Select Water Years")
+st.header("WY Median Soil Moisture (%) / Median Soil Moisture for Select Water Years (%)")
 
 #display pivot table 
 tableDataDiv=pvTable_division.style\
