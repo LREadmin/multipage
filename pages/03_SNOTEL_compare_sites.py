@@ -19,8 +19,13 @@ import arrow #another library for date/time manipulation
 
 import pymannkendall as mk #for trend anlaysis
 
+from PIL import Image
+#%% Stations display information
 
-#%% Website display information
+image=Image.open("Maps/1_Snotel.png")
+st.image(image, caption="Static Elevation Map of the SNOTEL Station Locations")
+
+
 #%% Define data download as CSV function
 @st.cache
 def convert_df(df):
