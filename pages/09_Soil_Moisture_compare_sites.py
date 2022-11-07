@@ -20,6 +20,14 @@ import numpy as np
 import matplotlib.pyplot as plt #for plotting
 from matplotlib import colors #for additional colors
 
+from PIL import Image
+#%% Stations display information
+
+image=Image.open("Maps/3_Soil_Moisture.png")
+st.image(image, caption="Static Elevation Map of the Weather Station Locations")
+
+#%% Title page
+
 st.set_page_config(page_title="Soil Moisture Site Comparison", page_icon="🌱")
 
 #%% Define data download as CSV function
