@@ -20,11 +20,6 @@ import arrow #another library for date/time manipulation
 import pymannkendall as mk #for trend anlaysis
 
 from PIL import Image
-#%% Stations display information
-
-image=Image.open("Maps/1_Snotel.png")
-st.image(image, caption="Static Elevation Map of the SNOTEL Station Locations")
-
 
 #%% Define data download as CSV function
 @st.cache
@@ -35,6 +30,12 @@ st.set_page_config(page_title="SNOTEL Site Comparison", page_icon="📈")
 
 st.header("Site Comparison")
 st.sidebar.header("Site Comparison")
+
+#%% Stations display information
+
+image=Image.open("Maps/1_Snotel.png")
+st.image(image, caption="Static Elevation Map of the SNOTEL Station Locations")
+
 
 #%% Read in raw data
 data_raw=pandas.read_csv('SNOTEL_data_raw.csv.gz')

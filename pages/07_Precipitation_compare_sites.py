@@ -21,14 +21,13 @@ import arrow #another library for date/time manipulation
 import pymannkendall as mk #for trend anlaysis
 
 from PIL import Image
+
+#%% Website display information
+st.set_page_config(page_title="Precipitation Site Comparison", page_icon="🌦")
 #%% Stations display information
 
 image=Image.open("Maps/2_Weather_Stations.png")
 st.image(image, caption="Static Elevation Map of the Weather Station Locations")
-
-
-#%% Website display information
-st.set_page_config(page_title="Precipitation Site Comparison", page_icon="🌦")
 
 #%% Define data download as CSV function
 @st.cache
