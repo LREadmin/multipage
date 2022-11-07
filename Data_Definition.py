@@ -1,5 +1,5 @@
 import streamlit as st
-
+from PIL import Image
 
 st.set_page_config(
     page_title="Denver Water Climate APP",
@@ -9,7 +9,8 @@ st.set_page_config(
 
 st.write("# Welcome to Denver Water's Climate App! 👋")
 
-st.image("Maps\4_All_Sites.png", caption="Static Elevation Map of the Assesment Basin and Station Locations")
+image=Image.open("Maps/4_All_Sites.png")
+st.image(image, caption="Static Elevation Map of the Assesment Basin and Station Locations")
 #add map here when DW provides it
 
 st.header("Temperature and Precipitation Data Information")
