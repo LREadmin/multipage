@@ -9,7 +9,7 @@ st.set_page_config(
 
 st.write("# Welcome to Denver Water's Climate App! 👋")
 
-st.header("Static Elevation Map of the Assesment Basin and Station Locations")
+st.image("Maps\4_All_Sites.png", caption="Static Elevation Map of the Assesment Basin and Station Locations")
 #add map here when DW provides it
 
 st.header("Temperature and Precipitation Data Information")
