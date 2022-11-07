@@ -135,6 +135,7 @@ depth_dict={"2in ":"2 inch depth","4in ":"4 inch depth","8in ":"8 inch depth","2
 
 emptyDepths_items=[depth_dict[k] for k in emptyDepths_items]  
 
+
 #%%02 Select Depths
 
 container=st.sidebar.container()
@@ -160,9 +161,9 @@ if len(element_select)==0:
 #filter by selected depths only
 for j in ["2in ","4in ","8in ","20in","40in"]:
     for col in urlData.columns.to_list():
-        if (j in col) and (depth_dict[j] not in element_select):
-            urlData.drop(col, inplace=True, axis=1)
-            print("remove " + j)
+        if (j in col) and (depth_dict[j] not in element_select.to_list()):
+          urlData.drop(col, inplace=True, axis=1)
+          print("removing " + j)
             
 #filter by WY
 urlData['year']=pd.DatetimeIndex(urlData['Date']).year
@@ -174,7 +175,6 @@ if len(urlData)==0:
 else:
     urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
     
-    #filter by WY
     dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
     
     dateFiltered.set_index('Date')
@@ -194,6 +194,59 @@ else:
     "Note: Soil moisture percent > 100% excluded"
     # st.header("URL to download directly from NRCS")
     # url
+    
+    #%% Data Availability Table
+    elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
+                               'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+    depth_dict={"2 inch":"2in ","4 inch":"4in ","8 inch":"8in ","20 inch":"20in","40 inch":"40in"}
+
+    depths=elementDF_og['long']
+    
+    site_dateFiltered=dateFiltered.copy()
+    site_dateFiltered['site']=site_selected
+    
+    pvTable_Availability=pd.pivot_table(site_dateFiltered,values=['WY'],index='site', columns={'year'},aggfunc='count', margins=False, margins_name='Total')
+    pvTable_Availability=pvTable_Availability["WY"].head(len(pvTable_Availability))
+
+    pvTable_Availability["POR Start"]=""
+    pvTable_Availability["POR End"]=""
+
+    pvTable_Availability["2 inch"]=""
+    pvTable_Availability["4 inch"]=""
+    pvTable_Availability["8 inch"]=""
+    pvTable_Availability["20 inch"]=""
+    pvTable_Availability["40 inch"]=""
+
+    depth_cols=pvTable_Availability.columns[-5:]
+
+    pvTable_Availability["POR Start"]=site_dateFiltered.Date.min()
+    pvTable_Availability["POR End"]=site_dateFiltered.Date.max()
+    
+    emptyDepths=emptyDepths_items
+    
+    for j in range(0,len(depth_cols)):
+        print(j)
+        if depths.iloc[j] in emptyDepths:
+            pvTable_Availability[depth_cols[j]]="X"
+        else:
+            depth_col=depth_cols[j]
+            col_name=depth_dict[depth_col]
+            spike_cols = [col for col in site_dateFiltered.columns if col_name in col]
+            temp=site_dateFiltered[[spike_cols[0],'Date']]
+            temp.dropna(inplace=True)
+            if ((temp.Date.min()==pvTable_Availability['POR Start'].iloc[0]) and (temp.Date.max()==pvTable_Availability['POR End'].iloc[0])):
+                pvTable_Availability[depth_cols[j]]="✓"
+            else:
+                pvTable_Availability[depth_cols[j]]="%s to %s"%(temp.Date.min(),temp.Date.max())#"✓"
+      
+    pvTable_Availability=pvTable_Availability[["POR Start", "POR End","2 inch","4 inch","8 inch","20 inch","40 inch"]]
+    # st.header("Data Availability Table")
+    st.markdown("Certain depths have differnt POR dates, as indicated for certain sites in the table below")
+    #display pivot table 
+    AvData=pvTable_Availability.style\
+        .set_properties(**{'width':'10000px'})
+        
+    st.dataframe(AvData)
     
     #%% Create pivot table using average soil moisture and show medians by WY
     
