@@ -35,7 +35,7 @@ st.sidebar.header("Site Comparison")
 
 image=Image.open("Maps/1_Snotel.png")
 width, height = image.size
-newsize = (300, 300)
+newsize = (1912, 2475)
 im1 = image.resize(newsize)
 st.image(im1, caption="Static Elevation Map of the SNOTEL Station Locations")
 
