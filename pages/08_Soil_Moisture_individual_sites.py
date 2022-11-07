@@ -190,11 +190,7 @@ else:
      )
     
     
-    st.header("Depth Averaged Median Monthly Soil Moisture Percent (%)")
-    "Note: Soil moisture percent > 100% excluded"
-    # st.header("URL to download directly from NRCS")
-    # url
-    
+
     #%% Data Availability Table
     elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
                                'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
@@ -249,7 +245,11 @@ else:
     st.dataframe(AvData)
     
     #%% Create pivot table using average soil moisture and show medians by WY
-    
+    st.header("Depth Averaged Median Monthly Soil Moisture Percent (%)")
+    "Note: Soil moisture percent > 100% excluded"
+    # st.header("URL to download directly from NRCS")
+    # url
+     
     
     dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1,skipna=False)
     dateFiltered_nonans = dateFiltered.dropna(subset=['averageSoilMoisture'])
