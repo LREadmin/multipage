@@ -34,10 +34,10 @@ st.sidebar.header("Site Comparison")
 #%% Stations display information
 
 image=Image.open("Maps/1_Snotel.png")
-width, height = image.size
-newsize = (int(width/2), int(height/2))
-im1 = image.resize(newsize)
-st.image(im1, caption="Static Elevation Map of the SNOTEL Station Locations")
+# width, height = image.size
+# newsize = (int(width/2), int(height/2))
+# image = image.resize(newsize)
+st.image(image, caption="Static Elevation Map of the SNOTEL Station Locations")
 
 
 #%% Read in raw data
