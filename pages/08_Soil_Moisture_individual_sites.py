@@ -33,9 +33,9 @@ def convert_df(df):
 
 def convert_to_WY(row):
     if row.month>=10:
-        return(pd.datetime(row.year+1,1,1).year)
+        return(datetime.date(row.year+1,1,1).year)
     else:
-        return(pd.datetime(row.year,1,1).year)
+        return(datetime.date(row.year,1,1).year)
     
 def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.1, high=1):
     if m is None:
@@ -71,17 +71,7 @@ siteNames = siteNames[siteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool C
 #01 Select Site 
 site_selected = st.sidebar.selectbox('Select your site:', siteNames.iloc[:,0])
 siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
-
-#03 Select Water Year
-start_date = "%s-%s-0%s"%(startY,startM,startD) 
-end_dateRaw = arrow.now().format('YYYY-MM-DD')
-
-min_date = datetime.datetime(startY,startM,startD) #dates for st slider need to be in datetime format:
-max_date = datetime.datetime.today() 
-
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=2002)
-endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
-
+#siteCode='SNOTEL:485_CO_SNTL'
 
 #%% SOIL MOISTURE DATA filtered by site, parameter and date
 #Selections
@@ -104,7 +94,7 @@ headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_s
 base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
 part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
 site=sitecodeSMS
-por="%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear) + "-09-30/"
+por="%7Cid=%22%22%7Cname/POR_BEGIN,POR_END/"#  "%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear) + "-09-30/"
 element=elementStr
 part2="?fitToScreen=false"
 url=base+part1+site+por+element+part2
@@ -122,127 +112,149 @@ cols2=urlData.columns.tolist()
 cols2 = [cols2[-1]]+cols2[:-1] 
 urlData=urlData.reindex(columns=cols2)
 
+urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
+
+#add WY column from date
+urlData['year']=urlData['Date'].str[0:4].astype(int)
+urlData['month']=urlData['Date'].str[5:7].astype(int)
+urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
+
+dayCountThres=330
+g=urlData.groupby(['WY'])
+data=g.filter(lambda x: len(x)>=dayCountThres)
+
+dayCountThres=25
+g=data.groupby(['WY','month'])
+data=g.filter(lambda x: len(x)>=dayCountThres)
+
+urlData=data
+PORData=urlData
 
 #%% Figure out which depths dont have any data and don't include
-emptyDepths=urlData.columns[urlData.isnull().all()].to_list()
-emptyDepths_items=[]
-for j in ["2in ","4in ","8in ","20in","40in"]:
-    for col in emptyDepths:
-        if j in col:
-            emptyDepths_items.append(j)
+emptyDepths=PORData.columns[PORData.isnull().all()].to_list()
 
-depth_dict={"2in ":"2 inch depth","4in ":"4 inch depth","8in ":"8 inch depth","20in":"20 inch depth","40in":"40 inch depth"}
+# emptyDepths_items=[]
+# for j in ["2in ","4in ","8in ","20in","40in"]:
+#     for col in emptyDepths:
+#         if j in col:
+#             emptyDepths_items.append(j)
 
-emptyDepths_items=[depth_dict[k] for k in emptyDepths_items]  
+depth_dict={"minus_2inch_pct":"2 inch depth",
+            "minus_4inch_pct":"4 inch depth",
+            "minus_8inch_pct":"8 inch depth",
+            "minus_20inch_pct":"20 inch depth",
+            "minus_40inch_pct":"40 inch depth"}
 
+emptyDepths_items=[depth_dict.get(k) for k in emptyDepths]  
 
 #%%02 Select Depths
 
+elementDF=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
+                           'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+elementDF=elementDF[~elementDF[0].isin(emptyDepths)]
+
 container=st.sidebar.container()
 paramsSelect=elementDF['long']
-
-#dont include depths with all nans as an option
-elementDF=elementDF[~elementDF['long'].isin(emptyDepths_items)]
- 
-all=st.sidebar.checkbox("Select all")
-if all:
-    element_select = container.multiselect('Select one or more depths:', elementDF['long'], elementDF['long'])
-    
-else:
-    element_select=container.multiselect('Select depth(s):',paramsSelect,default=elementDF['long'])
+element_select=container.multiselect('Select depth(s):',paramsSelect,default=elementDF['long'])
+element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
+elementStr= ','.join(element_select)
     
 #element_select=element_select[:-1]
 if len(element_select)==0:
     st.sidebar.error("Select at least one depth")
 
+#element_select=element_select[0:1]
 
-#%% Download Daily Soil Moisture Data
+#%%03 Select Water Year
+start_date = "%s-%s-0%s"%(startY,startM,startD) 
+end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
-for j in ["2in ","4in ","8in ","20in","40in"]:
-    for col in urlData.columns.to_list():
-        if (j in col) and (depth_dict[j] not in element_select):
-          urlData.drop(col, inplace=True, axis=1)
-          print("removing " + j)
-          
-#filter by WY
-urlData['year']=pd.DatetimeIndex(urlData['Date']).year
-urlData['month']=pd.DatetimeIndex(urlData['Date']).month
+min_date = datetime.datetime(startY,startM,startD) #dates for st slider need to be in datetime format:
+max_date = datetime.datetime.today() 
+
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=2002)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 
+#%%Filter by depths selected
+columns_selected=element_select.to_list()
+columns_selected.append('Date')
+columns_selected.append('WY')
+columns_selected.append('month')
+dateFiltered=urlData[columns_selected]
+ 
+#filter by water year
+dateFiltered=dateFiltered[(dateFiltered['WY']>=startYear)&(dateFiltered['WY']<=endYear)]
+         
 if len(urlData)==0:
     "no data for this depth"
 else:
-    urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
-    
-    dateFiltered=urlData[(urlData['WY']>=startYear)&(urlData['WY']<=endYear)]
-    
-    dateFiltered.set_index('Date')
-    
-
-    
-    csv = convert_df(dateFiltered)
+    csv = convert_df(PORData)
     st.download_button(
          label="Download Daily Soil Moisture Data",
          data=csv,
          file_name='SMS_data.csv',
          mime='text/csv',
      )
-    
-    
 
     #%% Data Availability Table
-    # elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
-    #                            'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
-    # depth_dict2={"2 inch":"2in ","4 inch":"4in ","8 inch":"8in ","20 inch":"20in","40 inch":"40in"}
-
-    # depths=elementDF_og['long']
+    elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
+                                'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+    depths=elementDF_og['long']
     
-    # site_dateFiltered=dateFiltered.copy()
-    # site_dateFiltered['site']=site_selected
+    site_dateFiltered=PORData.copy()
+    site_dateFiltered['site']=site_selected
     
-    # pvTable_Availability=pd.pivot_table(site_dateFiltered,values=['WY'],index='site', columns={'year'},aggfunc='count', margins=False, margins_name='Total')
-    # pvTable_Availability=pvTable_Availability["WY"].head(len(pvTable_Availability))
+    pvTable_gen=pd.pivot_table(site_dateFiltered,values=['WY'],index='site', columns={'year'},aggfunc='count', margins=False, margins_name='Total')
+    pvTable_gen=pvTable_gen["WY"].head(len(pvTable_gen))
 
-    # pvTable_Availability["POR Start"]=""
-    # pvTable_Availability["POR End"]=""
-
-    # pvTable_Availability["2 inch"]=""
-    # pvTable_Availability["4 inch"]=""
-    # pvTable_Availability["8 inch"]=""
-    # pvTable_Availability["20 inch"]=""
-    # pvTable_Availability["40 inch"]=""
-
-    # depth_cols=pvTable_Availability.columns[-5:]
-
-    # pvTable_Availability["POR Start"]=site_dateFiltered.Date.min()
-    # pvTable_Availability["POR End"]=site_dateFiltered.Date.max()
+    temp=siteNames[siteNames['0'].isin(pvTable_gen.index.to_list())]
+    temp.set_index('0',inplace=True)
+    temp.columns=['Code','System']
+    temp['Site']=temp.index
+    pvTable_gen=pd.concat([pvTable_gen,temp],axis=1)
     
-    # emptyDepths=emptyDepths_items
-    
-    # for j in range(0,len(depth_cols)):
-    #     print(j)
-    #     if depths.iloc[j] in emptyDepths:
-    #         pvTable_Availability[depth_cols[j]]="X"
-    #     else:
-    #         depth_col=depth_cols[j]
-    #         col_name=depth_dict2[depth_col]
-    #         spike_cols = [col for col in site_dateFiltered.columns if col_name in col]
-    #         temp=site_dateFiltered[[spike_cols[0],'Date']]
-    #         temp.dropna(inplace=True)
-    #         if ((temp.Date.min()==pvTable_Availability['POR Start'].iloc[0]) and (temp.Date.max()==pvTable_Availability['POR End'].iloc[0])):
-    #             pvTable_Availability[depth_cols[j]]="✓"
-    #         else:
-    #             pvTable_Availability[depth_cols[j]]="%s to %s"%(temp.Date.min(),temp.Date.max())#"✓"
+    pvTable_Availability=pvTable_gen[['Site','System']]
+
+    pvTable_Availability["POR Start"]=""
+    pvTable_Availability["POR End"]=""
+
+    pvTable_Availability["2 inch"]=""
+    pvTable_Availability["4 inch"]=""
+    pvTable_Availability["8 inch"]=""
+    pvTable_Availability["20 inch"]=""
+    pvTable_Availability["40 inch"]=""
+
+    depth_cols=pvTable_Availability.columns[-5:]
+
+    for siteTemp in pvTable_Availability.index:
+        print(siteTemp)
+        pvTable_Availability["POR Start"].loc[siteTemp]=site_dateFiltered[site_dateFiltered.site==siteTemp].Date.min()
+        pvTable_Availability["POR End"].loc[siteTemp]=site_dateFiltered[site_dateFiltered.site==siteTemp].Date.max()
+        site=site_dateFiltered
+               
+        for j in range(0,len(depth_cols)):
+            print(j)
+            if depths.iloc[j] in emptyDepths_items:
+                pvTable_Availability[depth_cols[j]].loc[siteTemp]="X"
+            else:
+                temp=site[[elementDF_og.loc[j][0],'Date']]
+                temp.dropna(inplace=True)
+                if ((temp.Date.min()==pvTable_Availability['POR Start'].loc[siteTemp]) and (temp.Date.max()==pvTable_Availability['POR End'].loc[siteTemp])):
+                    pvTable_Availability[depth_cols[j]].loc[siteTemp]="✓"
+                else:
+                    pvTable_Availability[depth_cols[j]].loc[siteTemp]="%s to %s"%(temp.Date.min(),temp.Date.max())#"✓"
       
-    # pvTable_Availability=pvTable_Availability[["POR Start", "POR End","2 inch","4 inch","8 inch","20 inch","40 inch"]]
-    # # st.header("Data Availability Table")
-    # st.markdown("Certain depths have differnt POR dates, as indicated for certain sites in the table below")
-    # #display pivot table 
-    # AvData=pvTable_Availability.style\
-    #     .set_properties(**{'width':'10000px'})
-        
-    # st.dataframe(AvData)
+    #add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
+    pvTable_Availability=pvTable_Availability.set_index(["Site"],drop=True)
     
+    st.header("Data Availability Table")
+    st.markdown("Certain depths have differnt POR dates, as indicated for certain sites in the table below")
+    #display pivot table 
+    AvData=pvTable_Availability.style\
+        .set_properties(**{'width':'10000px'})
+        
+    st.dataframe(AvData)
     #%% Create pivot table using average soil moisture and show medians by WY
     st.header("Depth Averaged Median Monthly Soil Moisture Percent (%)")
     "Note: Soil moisture percent > 100% excluded"
@@ -250,7 +262,7 @@ else:
     # url
      
     
-    dateFiltered['averageSoilMoisture']=(dateFiltered[urlData.columns[1:-3]]).mean(axis=1,skipna=False)
+    dateFiltered['averageSoilMoisture']=(dateFiltered[element_select.to_list()]).mean(axis=1,skipna=False)
     dateFiltered_nonans = dateFiltered.dropna(subset=['averageSoilMoisture'])
         
     #filter by months with days > 25 that have average soil moisture data 
