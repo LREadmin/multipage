@@ -194,7 +194,7 @@ else:
     #%% Data Availability Table
     elementDF_og=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
                                'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
-    depth_dict={"2 inch":"2in ","4 inch":"4in ","8 inch":"8in ","20 inch":"20in","40 inch":"40in"}
+    depth_dict2={"2 inch":"2in ","4 inch":"4in ","8 inch":"8in ","20 inch":"20in","40 inch":"40in"}
 
     depths=elementDF_og['long']
     
@@ -226,7 +226,7 @@ else:
             pvTable_Availability[depth_cols[j]]="X"
         else:
             depth_col=depth_cols[j]
-            col_name=depth_dict[depth_col]
+            col_name=depth_dict2[depth_col]
             spike_cols = [col for col in site_dateFiltered.columns if col_name in col]
             temp=site_dateFiltered[[spike_cols[0],'Date']]
             temp.dropna(inplace=True)
