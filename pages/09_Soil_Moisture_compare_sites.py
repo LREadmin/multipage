@@ -284,6 +284,9 @@ data_sites=data_sites[columns_selected]
 data_sites['averageSoilMoisture']=(data_sites[element_select.to_list()]).mean(axis=1,skipna=False)
 data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
   
+
+
+
 #filter by WY
 data_wy=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
 nameTemp=AllsiteNames.copy()
@@ -303,7 +306,7 @@ st.download_button(
 
 #%% POR Statistics Table
 
-pvTable_por=pd.pivot_table(data_wy, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
+pvTable_por=pd.pivot_table(data_sites_nonans, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
 pvTable_por=pvTable_por["averageSoilMoisture"].head(len(pvTable_por))
 
 pvTable_wy=pd.pivot_table(data_wy, values=['averageSoilMoisture'],index='site', columns={'WY'},aggfunc=np.nanmedian, margins=False, margins_name='Total')
