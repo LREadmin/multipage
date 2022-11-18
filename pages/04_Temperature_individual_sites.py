@@ -48,7 +48,7 @@ paramsSelect=paramsDF['long']
 
 #get site list
 sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
-sites['long']=['Anterro (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
+sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
                'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
                'Strontia (ST)','Williams Fork (WF)']
 
