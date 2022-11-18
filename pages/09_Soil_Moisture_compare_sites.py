@@ -346,10 +346,12 @@ for siteTemp2 in pvTable_por.index:
         pvTable_por["Select WY Trend"].loc[siteTemp2]=np.nan
 
 #add site and system as indexcpvTable_por.index[0]pvTable_por.index[0]
-temp=AllsiteNames[AllsiteNames['1'].isin(pvTable_por.index.to_list())]
-temp.set_index('1',inplace=True)
-temp.columns=['Site','System']
-pvTable_por=pd.concat([pvTable_por,temp],axis=1)
+pvTable_por['Site']=""
+pvTable_por['System']=""
+for i in range(0,len(pvTable_por)):
+    pvTable_por["Site"].iloc[i]=AllsiteNames[AllsiteNames['1']== pvTable_por.index[i]]['0'].iloc[0]
+    pvTable_por["System"].iloc[i]=AllsiteNames[AllsiteNames['1']== pvTable_por.index[i]]['2'].iloc[0]
+
 
 pvTable_por=pvTable_por[["Site","System","POR Start","POR End","POR Stat", "POR Trend","Select WY Stat","Select WY Trend"]]
 pvTable_por=pvTable_por.set_index(["Site"],drop=True)
@@ -381,11 +383,13 @@ st.download_button(
 pvTable_division=pvTable_wy.copy()
 pvTable_division.sort_index(axis='columns',level='WY',ascending=False,inplace=True)
 pvTable_wy.sort_index(axis='columns',level='WY',ascending=False,inplace=True)
+pvTable_division["Site"]=""
+pvTable_division['System']=""
 for i in range(0,len(pvTable_por)):
     pvTable_division.iloc[i]=pvTable_wy.iloc[i]/pvTable_por["Select WY Stat"].iloc[i]
+    pvTable_division["Site"].iloc[i]=AllsiteNames[AllsiteNames['1']==pvTable_division.index[i]]['0'].iloc[0]
+    pvTable_division["System"].iloc[i]=AllsiteNames[AllsiteNames['1']== pvTable_division.index[i]]['2'].iloc[0]
 
-pvTable_division["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,0].to_list()
-# pvTable_division["System"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_division.index.to_list())].iloc[:,2].to_list()
 pvTable_division=pvTable_division.set_index(["Site"],drop=True)
 
 st.header("WY Median Soil Moisture (%) / Median Soil Moisture for Select Water Years (%)")
@@ -409,7 +413,12 @@ st.download_button(
 
 #%% Create pivot table using average soil moisture and show medians by WY
 
-pvTable_wy["Site"]=AllsiteNames[AllsiteNames['1'].isin(pvTable_wy.index.to_list())].iloc[:,0].to_list()
+pvTable_wy["Site"]=""
+pvTable_wy['System']=""
+for i in range(0,len(pvTable_wy)):
+    pvTable_wy["Site"].iloc[i]=AllsiteNames[AllsiteNames['1']==pvTable_wy.index[i]]['0'].iloc[0]
+    pvTable_wy["System"].iloc[i]=AllsiteNames[AllsiteNames['1']== pvTable_wy.index[i]]['2'].iloc[0]
+
 pvTable_wy=pvTable_wy.set_index(["Site"],drop=True)
 
 
