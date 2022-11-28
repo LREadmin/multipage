@@ -385,7 +385,7 @@ def background_gradient(s, m=None, M=None, cmap='bwr_r',low=0., high=0.8):
     if M is None:
         M = s.max().max()
     rng = M - m
-    norm = colors.CenteredNorm()
+    norm = colors.CenteredNorm(vcenter=0, halfrange=15)
     normed = s.apply(norm)
 
     cm = plt.cm.get_cmap(cmap)
@@ -437,7 +437,7 @@ def background_gradient(s, m=None, M=None, cmap='bwr_r',low=0., high=0.8):
     if M is None:
         M = s.max().max()
     rng = M - m
-    norm = colors.CenteredNorm(vcenter=1)
+    norm = colors.CenteredNorm(vcenter=1, halfrange=1.5)
     normed = s.apply(norm)
 
     cm = plt.cm.get_cmap(cmap)
