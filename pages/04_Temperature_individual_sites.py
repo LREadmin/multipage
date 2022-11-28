@@ -18,6 +18,7 @@ import arrow #another library for date/time manipulation
 
 import pymannkendall as mk #for trend anlaysis
 
+import numpy as np
 #%% Website display information
 st.set_page_config(page_title="Temperature Individual Sites", page_icon="📈")
 
@@ -114,12 +115,14 @@ for row in yearList:
     
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]
-        tempData2=tempData2.dropna()
         tempData2=tempData2.drop(columns='site')
+        if tempData2.isnull().all():
+            count=np.nan
+        else:
+            tempData2=tempData2.dropna()
+            count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
         median=tempData2.median()
-        #remove nans before count
-        no_nans=tempData2.dropna() 
-        count=no_nans[(no_nans < thresholdHigh)&(no_nans > thresholdLow)].count()
+        
         newParamData.append([row,row1,median[0]])
         newParamData1.append([row,row1,count[0]])
         
