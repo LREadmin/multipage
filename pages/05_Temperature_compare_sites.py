@@ -19,7 +19,6 @@ import pymannkendall as mk #for trend anlaysis
 
 from PIL import Image #for map
 
-from matplotlib.colors import DivergingNorm
 #%% Website display information
 st.set_page_config(page_title="Temperature Site Comparison", page_icon="📈")
 
@@ -354,7 +353,7 @@ def background_gradient(s, m=None, M=None, cmap='bwr',low=0.2, high=0):
     if M is None:
         M = s.max().max()
     rng = M - m
-    norm=DivergingNorm(0)
+    norm=colors.DivergingNorm(0)
     
     #norm=colors.Normalize(m - (rng * low),
                            # M + (rng * high))
