@@ -367,7 +367,7 @@ def rgb_to_dec(value):
     Returns: list (length 3) of decimal values'''
     return [v/256 for v in value]
 
-def get_continuous_cmap(hex_list, float_list=None):
+def get_continuous_cmap(hex_list):
     ''' creates and returns a color map that can be used in heat map figures.
         If float_list is not provided, colour map graduates linearly between each color in hex_list.
         If float_list is provided, each color in hex_list is mapped to the respective location in float_list. 
@@ -381,10 +381,7 @@ def get_continuous_cmap(hex_list, float_list=None):
         ----------
         colour map'''
     rgb_list = [rgb_to_dec(hex_to_rgb(i)) for i in hex_list]
-    if float_list:
-        pass
-    else:
-        float_list = list(np.linspace(0,1,len(rgb_list)))
+    float_list = list(np.linspace(0,1,len(rgb_list)))
         
     cdict = dict()
     for num, col in enumerate(['red', 'green', 'blue']):
