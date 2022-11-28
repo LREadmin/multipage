@@ -120,12 +120,12 @@ for row in yearList:
     
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]
+        tempData2=tempData2.dropna()
+        tempData2=tempData2.drop(columns='site')
         if len(tempData2)==0:
             count=[np.nan, np.nan, np.nan]
-            count[0]=np.nan
+            count[1]=np.nan
         else:
-            tempData2=tempData2.dropna()
-            tempData2=tempData2.drop(columns='site')
             # sumMonth=tempData2.pcpn.sum()
             monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
             count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
