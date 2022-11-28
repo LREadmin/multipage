@@ -380,8 +380,8 @@ for n in list:
 
 #%%colormap
 
-
-light_bwr = cmap_map(lambda x: x/2 + 0.5, matplotlib.cm.bwr)
+bwr_cmap = plt.get_cmap('bwr')
+light_bwr = cmap_map(lambda x: x/2 + 0.5, bwr_cmap)
 
 
 def background_gradient(s, m=None, M=None, cmap=light_bwr,low=0.2, high=0):
