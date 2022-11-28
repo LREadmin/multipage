@@ -127,8 +127,8 @@ for row in yearList:
             count[1]=np.nan
         else:
             # sumMonth=tempData2.pcpn.sum()
-            monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
             count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
+        monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
         newParamData.append([row,row1,monthlyCumPrecip])
         newParamData1.append([row,row1,count[1]])
         
