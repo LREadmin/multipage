@@ -261,7 +261,7 @@ def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
     return ret 
     
 countTableData=data5.style\
-    .format(precision=2)\
+    .format(precision=0)\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)
 
