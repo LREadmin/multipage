@@ -362,7 +362,7 @@ def background_gradient(s, m=None, M=None, cmap='bwr',low=0, high=0):
 
     cm = plt.cm.get_cmap(cmap)
     my_cmap = cm(np.arange(cm.N))
-    my_cmap[:, -1] = np.linspace(0, 1, cm.N)
+    my_cmap[:, -1] = np.linspace(0, 0.7, cm.N)
     my_cmap = ListedColormap(my_cmap)
     c = normed.applymap(lambda x: colors.rgb2hex(my_cmap(x)))
     ret = c.applymap(lambda x: 'background-color: %s' % x)
@@ -416,7 +416,7 @@ def background_gradient(s, m=None, M=None, cmap='bwr',low=0.2, high=0):
     normed = s.apply(norm)
     cm = plt.cm.get_cmap(cmap)
     my_cmap = cm(np.arange(cm.N))
-    my_cmap[:, -1] = np.linspace(0, 1, cm.N)
+    my_cmap[:, -1] = np.linspace(0, 0.7, cm.N)
     my_cmap = ListedColormap(my_cmap)
     c = normed.applymap(lambda x: colors.rgb2hex(my_cmap(x)))
     ret = c.applymap(lambda x: 'background-color: %s' % x)
