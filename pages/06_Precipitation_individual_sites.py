@@ -179,7 +179,7 @@ sumStats=sumStats.rename({1:'Median',2:'Trend'})
 #%%colormap
 
 
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0.8):
     if m is None:
         m = s.min().min()
     if M is None:
@@ -253,7 +253,7 @@ data5.columns=monthNames
 
 #%%colormap
 
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0):
+def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0.8):
     if m is None:
         m = s.min().min()
     if M is None:
