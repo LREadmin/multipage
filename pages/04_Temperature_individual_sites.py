@@ -116,8 +116,9 @@ for row in yearList:
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]
         tempData2=tempData2.drop(columns='site')
-        if tempData2.isnull().all():
-            count=np.nan
+        if len(tempData2)==0:
+            count=[np.nan, np.nan, np.nan]
+            count[0]=np.nan
         else:
             tempData2=tempData2.dropna()
             count=tempData2[(tempData2 < thresholdHigh)&(tempData2 > thresholdLow)].count()
