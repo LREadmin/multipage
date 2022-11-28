@@ -207,7 +207,7 @@ st.download_button(
  )
 
 sumStats1=sumStats.style\
-    .format('{:,.2f}')\
+    .format('{:,.1f}')\
     .set_properties(**{'width':'10000px'})
 
 st.markdown("Trend (Theil-Sen Slope (degrees/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
