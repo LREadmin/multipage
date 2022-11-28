@@ -23,7 +23,7 @@ import arrow #another library for date/time manipulation
 
 import pymannkendall as mk #for trend anlaysis
 
-
+import numpy as np
 
 #%% Website display information
 st.set_page_config(page_title="Precipitation Individual Sites", page_icon="🌦")
@@ -120,11 +120,15 @@ for row in yearList:
     
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]
-        tempData2=tempData2.dropna()
-        tempData2=tempData2.drop(columns='site')
-        # sumMonth=tempData2.pcpn.sum()
-        monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
-        count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
+        if len(tempData2)==0:
+            count=[np.nan, np.nan, np.nan]
+            count[0]=np.nan
+        else:
+            tempData2=tempData2.dropna()
+            tempData2=tempData2.drop(columns='site')
+            # sumMonth=tempData2.pcpn.sum()
+            monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
+            count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
         newParamData.append([row,row1,monthlyCumPrecip])
         newParamData1.append([row,row1,count[1]])
         
