@@ -56,7 +56,7 @@ sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin 
 #%% filter first for parameters
 params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
 param=paramsDF.loc[paramsDF['long']==params_select][0]
-data1=data_raw
+data_param=data_raw
 data1=data_param[[param.iloc[0],'Month','site','CY']]
 
 #%% filter second for site
