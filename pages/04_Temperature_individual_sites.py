@@ -56,13 +56,7 @@ sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin 
 #%% filter first for parameters
 params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
 param=paramsDF.loc[paramsDF['long']==params_select][0]
-
-def paramfilter():
-    return data_raw.loc[data_raw[param.iloc[0]] >= 0]
-
-data_param=paramfilter()
-
-#%%
+data1=data_raw
 data1=data_param[[param.iloc[0],'Month','site','CY']]
 
 #%% filter second for site
@@ -97,9 +91,9 @@ data_param_site_date=dateSelection()
 
 #%%threshold filter
 
-thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=1, min_value=0, value=100)
+thresholdHigh = st.sidebar.number_input('Set Upper %s threshold:'%params_select,step=1, min_value=100, value=100)
 
-thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1, min_value=-200, value=0)
+thresholdLow = st.sidebar.number_input('Set Lower %s threshold:'%params_select,step=1, min_value=-100, value=-100)
 
 #%%calc statistic for all months
 yearList=data_param_site_date['CY'].drop_duplicates()
@@ -240,26 +234,7 @@ years=list.values.tolist()
 data5['Years']=years
 data5=data5.set_index('Years')
 data5.columns=monthNames
-
-#%%colormap
-
-def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
-    if m is None:
-        m = s.min().min()
-    if M is None:
-        M = s.max().max()
-    rng = M - m
-    norm = colors.Normalize(m - (rng * low),
-                            M + (rng * high))
-    normed = s.apply(norm)
-
-    cm = plt.cm.get_cmap(cmap)
-    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
-    ret = c.applymap(lambda x: 'background-color: %s' % x)
-    # if data4.isnull().values.any():
-    #     return 'background-color: white'
-    return ret 
-    
+   
 countTableData=data5.style\
     .format(precision=0)\
     .set_properties(**{'width':'10000px'})\
