@@ -62,18 +62,14 @@ sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin 
 #%% filter first for parameters
 params_select = "Accumulated Precipitation (in)"
 param=paramsDF.loc[paramsDF['long']==params_select][0]
-
-def paramfilter():
-    return data_raw.loc[data_raw[param.iloc[0]] >= 0]
-
-data_param=paramfilter()
+data_param=data_raw
 
 #%%
 data1=data_param[[param.iloc[0],'pcpn','Month','site','CY','WY']]
 
 #%% filter second for site
 site_select_long = st.sidebar.selectbox('Select one site:', sites['long'])
-
+#site_select_long="Eleven Mile (EM)"
 site_select=sites['site'][sites['long']==site_select_long]
 
 def sitefilter():
@@ -82,7 +78,7 @@ def sitefilter():
 data_param_site=sitefilter()
 
 #%% filter third for date
-startY=1950
+startY=1900
 startM=10
 startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
@@ -93,18 +89,17 @@ min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=1950)
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=startY)
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2021)
-
 def dateSelection():
     return data_param_site[(data_param_site['WY']>=startYear)&(data_param_site['WY']<=endYear)]
 
 data_param_site_date=dateSelection()
 
 #%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=4.0,format="%.1f")
+thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=4.0,format="%.2f")
 
-thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=0.0,format="%.1f")
+thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=0.0,format="%.2f")
 
 #%%calc statistic for all months
 yearList=data_param_site_date['WY'].drop_duplicates()
@@ -116,24 +111,34 @@ for row in yearList:
 
     #filter by day count threshold
     dayCountThres=25
-    tempData=tempData.groupby('Month').filter(lambda x : len(x)>=dayCountThres)
-    
+ 
     for row1 in monthList:
+
         tempData2=tempData[tempData['Month']==row1]
-        tempData2=tempData2.dropna()
+                
         tempData2=tempData2.drop(columns='site')
         if len(tempData2)==0:
             count=[np.nan, np.nan, np.nan]
             count[1]=np.nan
         else:
-            # sumMonth=tempData2.pcpn.sum()
-            count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
-        monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
-        newParamData.append([row,row1,monthlyCumPrecip])
-        newParamData1.append([row,row1,count[1]])
+            count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 > thresholdLow)].count()
+            count2=tempData2['cumm_precip'].isna().sum()
+            
+        if len(tempData2)==0:
+            monthlyCumPrecip=np.nan
+        else:
+            monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
+            
+        newParamData.append([row,row1,monthlyCumPrecip,count2])
+        newParamData1.append([row,row1,count[1],count2])
         
-paramDataMerge=pandas.DataFrame(newParamData,columns=['WY','Month',params_select]) #sum pcpn
-paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select]) #count
+paramDataMerge=pandas.DataFrame(newParamData,columns=['WY','Month',params_select,'count']) #sum pcpn
+cols=paramDataMerge.columns
+paramDataMerge.loc[((paramDataMerge['count']>dayCountThres)),cols[2]]=np.nan
+
+paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select,'count']) #count
+cols=paramDataMerge1.columns
+paramDataMerge1.loc[((paramDataMerge1['count']>dayCountThres)),cols[2]]=np.nan
 
 #%%transpose to get months as columns
 list=paramDataMerge['WY'].drop_duplicates()
@@ -174,11 +179,9 @@ sumStats=pandas.concat([medianData, manK],ignore_index=True)
 sumStats.columns=sumStats.iloc[0]
 sumStats=sumStats[1:]
 sumStats=sumStats.rename({1:'Median',2:'Trend'})
-
+sumStats=sumStats[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
 
 #%%colormap
-
-
 def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0.8):
     if m is None:
         m = s.min().min()
@@ -217,7 +220,7 @@ st.download_button(
 
 sumStats1=sumStats.style\
     .format('{:,.2f}')\
-    .set_properties(**{'width':'10000px'})
+    .set_properties(**{'width':'10000px'})\
 
 st.markdown("Trend (Theil-Sen Slope (inches/year) if Mann-Kendall trend test is significant (p-value <0.1); otherwise nan)")
 sumStats1
@@ -249,35 +252,19 @@ years=list.values.tolist()
 data5['Years']=years
 data5=data5.set_index('Years')
 data5.columns=monthNames
-
+data5=data5[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
 
 #%%colormap
-
-def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0.8):
-    if m is None:
-        m = s.min().min()
-    if M is None:
-        M = s.max().max()
-    rng = M - m
-    norm = colors.Normalize(m - (rng * low),
-                            M + (rng * high))
-    normed = s.apply(norm)
-
-    cm = plt.cm.get_cmap(cmap)
-    c = normed.applymap(lambda x: colors.rgb2hex(cm(x)))
-    ret = c.applymap(lambda x: 'background-color: %s' % x)
-    # if data4.isnull().values.any():
-    #     return 'background-color: white'
-    return ret 
-    
+   
 countTableData=data5.style\
     .format(precision=2)\
     .set_properties(**{'width':'10000px'})\
+    .format(precision=0)\
     .apply(background_gradient, axis=None)
 
 #%%display
 pandas.set_option('display.width',100)
-st.header("Count of days with Precipitation between %s and %s inches" %(thresholdLow, thresholdHigh))
+st.header("Count of days with Precipitation Greater Than %s and Less Than or Equal to %s inches" %(thresholdLow, thresholdHigh))
 st.dataframe(countTableData)
 
 #%% download count data
@@ -289,7 +276,3 @@ st.download_button(
      file_name='Count_Data.csv',
      mime='text/csv',
  )
-
-
-
-
