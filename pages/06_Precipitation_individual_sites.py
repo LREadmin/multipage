@@ -97,9 +97,10 @@ def dateSelection():
 data_param_site_date=dateSelection()
 
 #%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=4.0,format="%.2f")
+maxDaily=data_param_site_date['pcpn'].max()
+thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=maxDaily,format="%.2f")
 
-thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=0.0,format="%.2f")
+thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=-0.1, value=-0.1,format="%.2f")
 
 #%%calc statistic for all months
 yearList=data_param_site_date['WY'].drop_duplicates()
@@ -278,3 +279,4 @@ st.download_button(
      file_name='Count_Data.csv',
      mime='text/csv',
  )
+"Note: To count dry days (precip = 0), set lower threshold to -0.1 and upper threshold to 0.0"
