@@ -267,7 +267,7 @@ countTableData=data5.style\
 
 #%%display
 pandas.set_option('display.width',100)
-st.header("Count of days with Precipitation Greater Than %s and Less Than or Equal to %s inches" %(thresholdLow, thresholdHigh))
+st.header("Count of days with Precipitation Greater Than %s and Less Than or Equal to %s inches" %(thresholdLow, round(thresholdHigh,2)))
 st.dataframe(countTableData)
 
 #%% download count data
