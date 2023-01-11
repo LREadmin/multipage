@@ -241,7 +241,6 @@ data_sites_years=data_sites[(data_sites['date']>start_date1)&(data_sites['date']
 maxDaily=data_sites_years['pcpn'].max()
 
 #%%threshold filter
-maxDaily=data_param_site_date['pcpn'].max()
 thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=maxDaily,format="%.2f")
 
 thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=-0.1, value=-0.1,format="%.2f")
