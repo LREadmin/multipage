@@ -329,8 +329,8 @@ selectSite=compData.index.drop_duplicates()
 compList=[]
 for WYrow in selectWY:
     tempWYdata=compData[compData['WY']==WYrow]
-    try:
-        for siterow in selectSite:
+    for siterow in selectSite:
+        try:
             tempSiteData=tempWYdata[tempWYdata.index==siterow]
             tempfullWYcheck=fullWYcheck[fullWYcheck.index==siterow]
             tempSiteData=tempSiteData[tempSiteData['WY'].isin(tempfullWYcheck['WY'])]    
@@ -352,8 +352,8 @@ for WYrow in selectWY:
             
             #melt day count
             compList.append([siterow,WYrow,tempSiteWYPeak,tempMedNorm,tempSiteWYPeakDay,tempZeroDay, tempZeroDay-tempSiteWYPeakDay])
-    except:
-        compList.append([siterow,WYrow,None,None,None,None,None])
+        except:
+            compList.append([siterow,WYrow,None,None,None,None,None])
 compListDF=pandas.DataFrame(compList)
 compListDF.columns=['Site','WY','Peak SWE (in)','NormMed','Peak SWE Day','First Zero SWE Day','Melt Day Count']
 # compListDF['Melt Day Count']=compListDF['First Zero SWE Day']-compListDF['Peak SWE Day']
