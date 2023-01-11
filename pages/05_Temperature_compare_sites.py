@@ -202,7 +202,7 @@ data_sites=multisitefilter()
 
 #%%start and end dates needed for initial data fetch
 startY=1900
-startM=10
+startM=1
 startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
 end_dateRaw = arrow.now().format('YYYY-MM-DD')
@@ -212,8 +212,8 @@ min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]), value=startY)
-endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
+startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=startY, max_value=int(end_dateRaw[:4]), value=startY)
+endYear = st.sidebar.number_input('Enter Ending Calendar Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 def startDate():
     return "%s-0%s-0%s"%(int(startYear),1,1)
