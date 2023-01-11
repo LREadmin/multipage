@@ -113,24 +113,26 @@ for row in yearList:
     dayCountThres=25
  
     for row1 in monthList:
+        try:
+            tempData2=tempData[tempData['Month']==row1]
 
-        tempData2=tempData[tempData['Month']==row1]
-                
-        tempData2=tempData2.drop(columns='site')
-        if len(tempData2)==0:
-            count=[np.nan, np.nan, np.nan]
-            count[1]=np.nan
-        else:
-            count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 > thresholdLow)].count()
-            count2=tempData2['cumm_precip'].isna().sum()
-            
-        if len(tempData2)==0:
-            monthlyCumPrecip=np.nan
-        else:
-            monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
-            
-        newParamData.append([row,row1,monthlyCumPrecip,count2])
-        newParamData1.append([row,row1,count[1],count2])
+            tempData2=tempData2.drop(columns='site')
+            if len(tempData2)==0:
+                count=[np.nan, np.nan, np.nan]
+                count[1]=np.nan
+            else:
+                count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 > thresholdLow)].count()
+                count2=tempData2['cumm_precip'].isna().sum()
+
+            if len(tempData2)==0:
+                monthlyCumPrecip=np.nan
+            else:
+                monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
+
+            newParamData.append([row,row1,monthlyCumPrecip,count2])
+            newParamData1.append([row,row1,count[1],count2])
+        except:
+            pass
         
 paramDataMerge=pandas.DataFrame(newParamData,columns=['WY','Month',params_select,'count']) #sum pcpn
 cols=paramDataMerge.columns
