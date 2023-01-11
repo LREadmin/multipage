@@ -236,13 +236,15 @@ end_date=endDate()
 start_date1=pandas.to_datetime(start_date)
 end_date1=pandas.to_datetime(end_date) 
 
-#%%threshold filter
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=4.0,format="%.2f")
-
-thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=0.0,format="%.2f")
-
 #%%FILTERED DATA
 data_sites_years=data_sites[(data_sites['date']>start_date1)&(data_sites['date']<=end_date1)]
+maxDaily=data_sites_years['pcpn'].max()
+
+#%%threshold filter
+maxDaily=data_param_site_date['pcpn'].max()
+thresholdHigh = st.sidebar.number_input('Set Upper Precipitation threshold (in/day):',step=0.1,min_value=0.0, value=maxDaily,format="%.2f")
+
+thresholdLow = st.sidebar.number_input('Set Lower Precipitation threshold (in/day):',step=0.1,min_value=-0.1, value=-0.1,format="%.2f")
 
 #%% calculate params for selected period for Site Comparison Table
 
@@ -588,7 +590,7 @@ countList1=countList.style\
     .apply(background_gradient, axis=None)\
 
     #.background_gradient(cmap='Blues',low=0,high=1.02,axis=None, subset=select_col)\    
-st.header("Count of days with Precipitation Greater Than %s and Less Than or Equal to %s in"%(thresholdLow, thresholdHigh))
+st.header("Count of days with Precipitation Greater Than %s and Less Than or Equal to %s in"%(thresholdLow, round(thresholdHigh,2)))
 st.markdown("Date range for selected months: %s through %s"%(start_date, end_date))
 countList1
 
@@ -602,3 +604,4 @@ st.download_button(
      file_name='Pcpn_count_comp.csv',
      mime='text/csv',
  )
+"Note: To count dry days (precip = 0), set lower threshold to -0.1 and upper threshold to 0.0"
