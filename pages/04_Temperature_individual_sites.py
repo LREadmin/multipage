@@ -70,7 +70,7 @@ def sitefilter():
 data_param_site=sitefilter()
 
 #%% filter third for date
-startY=1950
+startY=1900
 startM=10
 startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
@@ -81,7 +81,7 @@ min_date = datetime.datetime(startY,startM,startD)
 max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
-startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=1950)
+startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=startY, max_value=int(end_dateRaw[:4]),value=startY)
 endYear = st.sidebar.number_input('Enter Ending Calendar Year:',min_value=startY, max_value=int(end_dateRaw[:4]),value=2022)
 
 def dateSelection():
