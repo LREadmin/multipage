@@ -318,17 +318,17 @@ Median (mid-point) and Trend for Peak SWE (inches), Peak SWE Day (calendar day),
 
 _Median value, or midpoint, for the selected water years for:_ 
 
-- **Peak SWE** (inches) 
-- **Peak SWE Day** (Calendar Day) 
+- **Peak SWE:** (inches) 
+- **Peak SWE Day:** (Calendar Day) 
 - **First Zero SWE Day:** The first day SWE equals zero and the snowpack has melted (Calendar Day) 
 - **Melt Day Count:** Number of days between the Peak SWE Day and First Zero SWE Day (Days) 
 
 _Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for:_
 
-- **Peak SWE** (increasing or decreasing inches/year) 
-- **Peak SWE Day** (earlier or later calendar day/year) 
-- **First Zero SWE Day:** earlier or later calendar day/year
-- **Melt Day Count:** increasing or decreasing days/year
+- **Peak SWE:** (increasing or decreasing inches/year) 
+- **Peak SWE Day:** (earlier or later calendar day/year) 
+- **First Zero SWE Day:** (earlier or later calendar day/year)
+- **Melt Day Count:** (increasing or decreasing days/year)
 If no trend, then result is “nan.” 
 """
 )
@@ -357,8 +357,8 @@ Median (mid-point) and Trend for Peak SWE (inches), Peak SWE Day (calendar day),
 
 _Annual Results for:_ 
 
-- **Peak SWE** (inches) 
-- **Peak SWE Day** (Calendar Day) 
+- **Peak SWE:** (inches) 
+- **Peak SWE Day:** (Calendar Day) 
 - **First Zero SWE Day:** (Calendar Day) 
 - **Melt Day Count:** (Days) 
 
