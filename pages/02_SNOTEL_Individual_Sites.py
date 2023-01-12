@@ -70,7 +70,7 @@ end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
 #%% Define and use Site Filter
 
-site_selected = st.sidebar.selectbox('Select your site:', siteNames)
+site_selected = st.sidebar.selectbox('Select Your Site:', siteNames)
 
 def filterdata():
     return data_raw.loc[data_raw['Site']==site_selected]
@@ -311,7 +311,7 @@ st.pyplot(plt)
 
 #%% display summary stats tables
 
-st.header("Summary Statistics or Selected Water Years")
+st.header("Summary Statistics for Selected Water Year(s)")
 st.markdown(
     """
 Median (mid-point) and Trend for Peak SWE (inches), Peak SWE Day (calendar day), First Zero SWE Day (calendar day), and Melt Day County (days):
@@ -350,7 +350,7 @@ st.download_button(
  )
 
 #%% display yearly data table
-st.header("Annual Table for Selected Water Years ")
+st.header("Annual Table for Selected Water Year(s) ")
 st.markdown(
     """
 Median (mid-point) and Trend for Peak SWE (inches), Peak SWE Day (calendar day), First Zero SWE Day (calendar day), and Melt Day County (days):

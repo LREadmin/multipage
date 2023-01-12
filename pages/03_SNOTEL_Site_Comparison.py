@@ -93,7 +93,7 @@ paramsDF['title']=["Peak SWE",
 paramsDF['format']=["{:.1f}","{:.0f}","{:.0f}","{:.0f}"]
 paramsSelect=paramsDF['long']
 
-params_select = st.sidebar.selectbox('Select one summary statistic:', paramsSelect)
+params_select = st.sidebar.selectbox('Select One Summary Statistic:', paramsSelect)
 param=paramsDF.loc[paramsDF['long']==params_select][0]
 title=paramsDF['title'][paramsDF['long']==params_select]
 format_Dec=paramsDF['format'][paramsDF['long']==params_select]
@@ -104,13 +104,13 @@ format_Dec=paramsDF['format'][paramsDF['long']==params_select]
 system=combo_data2['System'].drop_duplicates()
 
 container=st.sidebar.container()
-all=st.sidebar.checkbox("Select both systems")
+all=st.sidebar.checkbox("Select Both Systems")
 
 if all:
-    system_select = container.multiselect('Select collection system(s):', system, system)
+    system_select = container.multiselect('Select Collection System(s):', system, system)
     
 else: 
-    system_select = container.multiselect('Select collection system(s):', system, default=system.iloc[0])
+    system_select = container.multiselect('Select Collection System(s):', system, default=system.iloc[0])
     
 def systemfilter():
     return combo_data2[combo_data2['System'].isin(system_select)]
@@ -125,10 +125,10 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select = container.multiselect('Select one or more sites:', sites, sites)
+    multi_site_select = container.multiselect('Select One or More Sites:', sites, sites)
 
 else:
-    multi_site_select = container.multiselect('Select one or more sites:', sites,default=sites.iloc[0])
+    multi_site_select = container.multiselect('Select One or More Sites:', sites,default=sites.iloc[0])
 
 def multisitefilter():
     return system_data[system_data.index.isin(multi_site_select)]
@@ -443,7 +443,6 @@ Annual selected summary statistic results (Peak SWE, Peak SWE Day, First Zero SW
 - **Melt Day Count:** (Days) 
     """
     )
-st.markdown("Date range: %s through %s"%(start_date, end_date))
 yearListPeak1
 
 #%% download SNOTEL comparison data
@@ -457,7 +456,7 @@ st.download_button(
  )
 
 #%%Summary statistics
-st.header("Summary %s Table for Selected Water Years and Sites"%params_select) 
+st.header("Summary %s Table for Selected Site(s) and Water Year(s)"%params_select) 
 st.markdown(
     """
 For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count), provides period of record dates and both period of record and water year median statistics and trends for each selected site. 
@@ -474,7 +473,7 @@ For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, 
 - **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected Summary Statistic. If no trend, then result is “nan.” 
 """
 )
-    
+st.markdown("Selected Water Year: %s through %s"%(start_date, end_date))    
 summary1
 
 #%% download SNOTEL comparison Summary data
@@ -489,7 +488,7 @@ st.download_button(
  )
 
 #%%Percent of Median Summary Statistis
-st.header("Annual Percent of Median %s for Selected Water Years and Sites"%params_select)
+st.header("Annual Percent of Median %s for Selected Site(s) and Water Year(s)"%params_select)
 st.markdown(
     """
 Annual selected Summary Statistic percent of median results for each selected Site by Water Year.  A 100% result for a given Water Year indicates that the value is exactly the median of the Selected WY summary statistic result.  A 50% result indicates that WY result is half of the selected WY median. 
