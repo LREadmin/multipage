@@ -602,7 +602,6 @@ st.markdown(
 Table Note:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
-- If no trend, then result is presented as “nan.” 
 - The user-defined precipitation threshold does not change this table.
     """)
     
@@ -655,7 +654,9 @@ displays the number of days in each month within the user-defined upper and lowe
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 st.dataframe(countList1)
 st.markdown("""
-Table Note:
+Table Notes:
+- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
 - The count includes days that are equal to the value of each threshold.
             """)
 
