@@ -599,7 +599,7 @@ st.markdown("User-Selected Month(s)/Season(s) in Water Year(s): %s through %s"%(
 yearListAbs1
 st.markdown(
     """
-Table Note:
+Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
 - The user-defined precipitation threshold does not change this table.

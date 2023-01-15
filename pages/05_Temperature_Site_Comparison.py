@@ -514,7 +514,7 @@ st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s
 sumSitesDisplay
 st.markdown(
     """
-Table Note:
+Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
 - If no trend, then result is presented as “nan.” 
@@ -543,7 +543,7 @@ st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s
 yearList1
 st.markdown(
     """
-Table Note:
+Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
 - The user-defined temperature threshold does not change this table.
@@ -565,7 +565,7 @@ st.subheader("Count of %s Days Within %s\N{DEGREE SIGN}F and %s\N{DEGREE SIGN}F"
 st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))
 countList1
 st.markdown("""
-Table Note:
+Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
 - The count includes days that are equal to the value of each threshold.
