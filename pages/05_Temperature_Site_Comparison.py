@@ -89,11 +89,6 @@ selectStartYear=data_sites['CY'].min()
 selectEndYear=data_sites['CY'].max()
 startM=1
 startD=1
-start_date = "%s-%s-0%s"%(selectStartYear,startM,startD) #if start day is single digit, add leading 0
-end_date = "%s-12-31"%(selectEndYear)
-
-#dates for st slider need to be in datetime format:
-min_date = datetime.datetime(selectStartYear,startM,startD)
 
 # with st.sidebar: 
 startYear = st.sidebar.number_input('Enter Beginning Calendar Year:', min_value=selectStartYear, max_value=selectEndYear, value=selectStartYear)
@@ -189,18 +184,18 @@ data_months=monthfilterPOR()
 if len(month_select)==12:
     dayCountThres=330
     g=data_sites_years_months.groupby(['site','CY'])
-    data_sites_years_months=g.filter(lambda x: x['%s'%stat_selection[0]].count().sum()>=dayCountThres)
+    data_sites_years_months=g.filter(lambda x: x['%s'%stat_selection.iloc[0]].count().sum()>=dayCountThres)
     
     g=data_months.groupby(['site','CY'])
-    data_months=g.filter(lambda x: x['%s'%stat_selection[0]].count().sum()>=dayCountThres)
+    data_months=g.filter(lambda x: x['%s'%stat_selection.iloc[0]].count().sum()>=dayCountThres)
     
 else:
     dayCountThres=25
     g=data_sites_years_months.groupby(['site','CY','Month'])
-    data_sites_years_months=g.filter(lambda x: x['%s'%stat_selection[0]].count().sum()>=dayCountThres)
+    data_sites_years_months=g.filter(lambda x: x['%s'%stat_selection.iloc[0]].count().sum()>=dayCountThres)
     
     g=data_months.groupby(['site','CY','Month'])
-    data_months=g.filter(lambda x: x['%s'%stat_selection[0]].count().sum()>=dayCountThres)
+    data_months=g.filter(lambda x: x['%s'%stat_selection.iloc[0]].count().sum()>=dayCountThres)
 
 #%%calulcate params for POR
 manKPOR=[]
@@ -245,8 +240,8 @@ sumSites['POR Start']=pandas.to_datetime(sumSites["POR Start"]).dt.strftime('%Y-
 sumSites['POR End']=pandas.to_datetime(sumSites["POR End"]).dt.strftime('%Y-%m-%d')
 
 #%%threshold filter
-maxDaily=int(np.ceil(data_sites_years_months['%s'%stat_selection[0]].max())) #rounds up to max num in dataset
-minDaily=int(np.floor(data_sites_years_months['%s'%stat_selection[0]].min())) #rounds down to max num in dataset
+maxDaily=int(np.ceil(data_sites_years_months['%s'%stat_selection.iloc[0]].max())) #rounds up to max num in dataset
+minDaily=int(np.floor(data_sites_years_months['%s'%stat_selection.iloc[0]].min())) #rounds down to max num in dataset
 
 thresholdHigh = st.sidebar.number_input('Set Upper %s Threshold (Inclusive):'%stat_select,step=1, min_value=minDaily, value=maxDaily)
 
