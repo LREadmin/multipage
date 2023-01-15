@@ -24,18 +24,6 @@ st.set_page_config(page_title="SNOTEL Individual Sites", page_icon="📈")
 
 st.header("Individual SNOTEL Site Data Assessment")
 
-st.markdown(
-    """
-    _For the site and water year range selected, the following information is available:_ 
-
-    - **Snow Water Equivalent (SWE):** The daily SWE measurement (in inches)  
-
-    - **Peak SWE:** The highest daily SWE (in inches) for each water year 
-
-    - **Peak SWE Day:** The day(s) of peak SWE (in inches) occurrence prior to snowmelt and SWE decline. Presented in calendar day where January 1 = Day 1.  Calendar day 100 = April 10 or April 9 in a leap year.  Calendar day 150 = May 30 or May 29 in a leap year. 
-"""    
-)
-
 #%% Define data download as CSV function
 @st.cache
 def convert_df(df):
@@ -62,11 +50,8 @@ siteNamesList = [s.replace("'", "") for s in siteNamesList]
 siteNames=pandas.DataFrame(siteNamesList)
 
 #%% Definte start and end dates
-startY=1950
 startM=10
 startD=1
-start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
-end_dateRaw = arrow.now().format('YYYY-MM-DD')
 
 #%% Define and use Site Filter
 
@@ -92,15 +77,14 @@ data1=data1.sort_values(by="Date", ascending=False)
 #%% date filter
 
 #dates for st slider need to be in datetime format:
-min_date = datetime.datetime(startY,startM,startD)
-max_date = datetime.datetime.today() #today
+startY=int(data1['Date'].min()[:4])
+endY=int(data1['Date'].max()[:4])
+
+start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
 
 # with st.sidebar: 
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]))
-endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
-
-# startYear=2013
-# endYear=2013
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=endY,value=startY)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=endY,value=endY)
 
 def startDate():
     return "%s-%s-0%s"%(int(startYear-1),10,1)
@@ -112,9 +96,17 @@ def endDate():
 
 end_date1=endDate()
 
-st.header("Snow Water Equivalent (SWE) by Calendar Day within Water Year")
+st.subheader("Snow Water Equivalent (SWE) by Calendar Day within Water Year")
 
-st.markdown("Selected Water Year: %s through %s"%(start_date1, end_date1))
+st.markdown(
+    """
+    - **Snow Water Equivalent (SWE):** The daily SWE measurement (in inches)  
+    - **Peak SWE:** The highest daily SWE (in inches) for each water year 
+    - **Peak SWE Day:** The day(s) of peak SWE (in inches) occurrence prior to snowmelt and SWE decline. Presented in calendar day where January 1 = Day 1. Calendar day 100 = April 10 or April 9 in a leap year. Calendar day 150 = May 30 or May 29 in a leap year. 
+"""    
+)
+
+st.markdown("Selected Water Year(s): %s through %s"%(start_date1, end_date1))
 
 #change dates to similar for comparison
 start_date=pandas.to_datetime(start_date1,utc=True) 
@@ -146,7 +138,7 @@ data2['WY']=numpy.where(data2['CalDay']>=274,data2['CY']+1,data2['CY'])
 
 #check for full WY and keep if current WY
 fullWYcheck=data2.groupby(data2['WY']).count()
-fullWYcheck.drop(fullWYcheck [ (fullWYcheck['SWE_in'] <365) & (fullWYcheck.index < int(end_dateRaw[:4])) ].index,inplace=True)
+fullWYcheck.drop(fullWYcheck [ (fullWYcheck['SWE_in'] <365) & (fullWYcheck.index < endY) ].index,inplace=True)
 
 #%%drop incomplete WYs
 data2= data2 [data2['WY'].isin(fullWYcheck.index)]
@@ -311,7 +303,7 @@ st.pyplot(plt)
 
 #%% display summary stats tables
 
-st.header("Summary Statistics for Selected Water Year(s)")
+st.subheader("Summary Statistics for Selected Water Year(s)")
 st.markdown(
     """
 Median (mid-point) and Trend for Peak SWE (inches), Peak SWE Day (calendar day), First Zero SWE Day (calendar day), and Melt Day County (days):
@@ -329,39 +321,42 @@ _Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is signi
 - **Peak SWE Day:** (earlier or later calendar day/year) 
 - **First Zero SWE Day:** (earlier or later calendar day/year)
 - **Melt Day Count:** (increasing or decreasing days/year)
-If no trend, then result is “nan.” 
 """
 )
 sumDisplay=merge1.style\
     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.1f}","First Zero SWE Day":"{:.1f}","Melt Day Count":"{:.1f}"})\
     .set_properties(**{'width':'10000px'})
 
-st.markdown("Selected Water Year: %s through %s"%(start_date1, end_date1))
+st.markdown("Selected Water Year(s): %s through %s"%(start_date1, end_date1))
+
 sumDisplay
+st.markdown(
+    """
+Table Note:
+- If no trend, then result is presented as “nan.” 
+    """)
 
 #%% download sum stats data
 csv = convert_df(merge1)
 
 st.download_button(
-     label="Download summary stats CSV",
+     label="Download Summary Stats (as CSV)",
      data=csv,
      file_name='%s_sum_stats.csv'%site_selected,
      mime='text/csv',
  )
 
 #%% display yearly data table
-st.header("Annual Table for Selected Water Year(s) ")
+st.subheader("Annual Table for Selected Water Year(s) ")
 st.markdown(
     """
 Median (mid-point) and Trend for Peak SWE (inches), Peak SWE Day (calendar day), First Zero SWE Day (calendar day), and Melt Day County (days):
 
 _Annual Results for:_ 
-
 - **Peak SWE:** (inches) 
 - **Peak SWE Day:** (Calendar Day) 
 - **First Zero SWE Day:** (Calendar Day) 
 - **Melt Day Count:** (Days) 
-
 """
 )
 merge=merge.sort_values(by="WY", ascending=False)
@@ -369,21 +364,21 @@ merge2=merge.style\
     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})\
     .set_properties(**{'width':'10000px'})
 
-st.markdown("Selected Water Year: %s through %s"%(start_date1, end_date1))
+st.markdown("Selected Water Year(s): %s through %s"%(start_date1, end_date1))
 merge2
 
 #%% download yearly data table
 csv = convert_df(merge)
 
 st.download_button(
-     label="Download yearly data as CSV",
+     label="Download Annual Table (as CSV)",
      data=csv,
-     file_name='%s_yearly_data.csv'%site_selected,
+     file_name='%s_Annual_Table.csv'%site_selected,
      mime='text/csv',
  )
 
 #%% download snotel data  as CSV
-st.header("View and Download Daily SWE Data for POR")
+st.subheader("View and Download Daily SWE Data for POR")
 # toggle check box to display data table
 if st.checkbox('View Daily SWE Data for POR'):    
     st.dataframe(data1)
@@ -393,10 +388,10 @@ csv = convert_df(data1)
 st.download_button(
      label="Download Daily SWE Data (as CSV)",
      data=csv,
-     file_name='%s_data.csv'%site_selected,
+     file_name='%s_Daily_SWE_Data.csv'%site_selected,
      mime='text/csv',
  )
 #%%Map
-st.header("SNOTEL Locations ")
+st.subheader("SNOTEL Locations ")
 image=Image.open("Maps/1_Snotel.png")
 st.image(image,width=600)

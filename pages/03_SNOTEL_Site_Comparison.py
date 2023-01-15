@@ -31,18 +31,6 @@ st.set_page_config(page_title="SNOTEL Site Comparison Data Assessment", page_ico
 
 st.header("SNOTEL Site Comparison Data Assessment")
 
-st.markdown(
-    """
-_For the summary statistic, site(s), and selected water years, the following information is available:_
-
-Summary Statistic selections: 
-- **Peak SWE:** The highest daily SWE (in inches) for each water year 
-- **Peak SWE Day:** The day(s) of peak SWE (in inches) occurrence prior to snowmelt and SWE decline. Presented in calendar day where January 1 = Day 1.  Calendar day 100 = April 10 or April 9 in a leap year.  Calendar day 150 = May 30 or May 29 in a leap year. 
-- **First Zero SWE Day:** The first day SWE equals zero and the snowpack has melted (Calendar Day) 
-- **Melt Day Count:** Number of days between the Peak SWE Day and First Zero SWE Day (Days) 
-"""
-)
-
 #%% Read in raw data
 data_raw=pandas.read_csv('SNOTEL_data_raw.csv.gz')
 
@@ -135,23 +123,17 @@ def multisitefilter():
     
 system_site_data=multisitefilter()
 
-
-
 #%%start and end dates needed for initial data fetch
-startY=1950
+startY=system_site_data['WY'].min()
+endY=system_site_data['WY'].max()
 startM=10
 startD=1
-start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 
-
-#dates for st slider need to be in datetime format:
-min_date = datetime.datetime(startY,startM,startD)
-max_date = datetime.datetime.today() #today
 
 # with st.sidebar: 
 st.sidebar.header("Define Select WY Range")
     
-startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=int(end_dateRaw[:4]), value=1950)
-endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY+1, max_value=int(end_dateRaw[:4]),value=2022)
+startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=endY,value=startY)
+endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=endY,value=endY)
 
 def startDate():
     return "%s-%s-0%s"%(int(startYear-1),10,1)
@@ -433,15 +415,16 @@ yearListPeak1=yearListPeak.style\
 
 #%%Page Display
 #Annual table
-st.header("Annual %s for Selected Site(s) and Water Year(s)"%params_select)
+st.subheader("Annual %s for Selected Site(s) and Water Year(s)"%params_select)
 st.markdown(
     """
 Annual selected summary statistic results (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count) for each selected site by water year: 
-- **Peak SWE:** (inches) 
-- **Peak SWE Day:** (Calendar Day) 
-- **First Zero SWE Day:** (Calendar Day) 
-- **Melt Day Count:** (Days) 
-    """
+
+- **Peak SWE:** The highest daily SWE (in inches) for each water year 
+- **Peak SWE Day:** The day(s) of peak SWE (in inches) occurrence prior to snowmelt and SWE decline. Presented in calendar day where January 1 = Day 1. Calendar day 100 = April 10 or April 9 in a leap year. Calendar day 150 = May 30 or May 29 in a leap year. 
+- **First Zero SWE Day:** The first day SWE equals zero and the snowpack has melted (Calendar Day) 
+- **Melt Day Count:** Number of days between the Peak SWE Day and First Zero SWE Day (Days) 
+"""
     )
 yearListPeak1
 
@@ -456,7 +439,7 @@ st.download_button(
  )
 
 #%%Summary statistics
-st.header("Summary %s Table for Selected Site(s) and Water Year(s)"%params_select) 
+st.subheader("Summary %s Table for Selected Site(s) and Water Year(s)"%params_select) 
 st.markdown(
     """
 For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count), provides period of record dates and both period of record and water year median statistics and trends for each selected site. 
@@ -468,13 +451,17 @@ For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, 
     - **Peak SWE Day:** (earlier or later calendar day/year) 
     - **First Zero SWE Day:** (earlier or later calendar day/year) 
     - **Melt Day Count:** (increasing or decreasing days/year) 
-    If no trend, then result is “nan.” 
 - **Selected WY Median:** Median of the selected Summary Statistic (peak SWE, peak SWE day, first zero SWE day, or melt day count) for the selected Water Year 
 - **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected Summary Statistic. If no trend, then result is “nan.” 
 """
 )
-st.markdown("Selected Water Year: %s through %s"%(start_date, end_date))    
+st.markdown("Selected Water Year(s): %s through %s"%(start_date, end_date))    
 summary1
+st.markdown(
+    """
+Table Note:
+- If no trend, then result is presented as “nan.” 
+    """)
 
 #%% download SNOTEL comparison Summary data
 
@@ -488,7 +475,7 @@ st.download_button(
  )
 
 #%%Percent of Median Summary Statistis
-st.header("Annual Percent of Median %s for Selected Site(s) and Water Year(s)"%params_select)
+st.subheader("Annual Percent of Median %s for Selected Site(s) and Water Year(s)"%params_select)
 st.markdown(
     """
 Annual selected Summary Statistic percent of median results for each selected Site by Water Year.  A 100% result for a given Water Year indicates that the value is exactly the median of the Selected WY summary statistic result.  A 50% result indicates that WY result is half of the selected WY median. 
@@ -498,6 +485,7 @@ Annual selected Summary Statistic percent of median results for each selected Si
 - **Melt Day Count:** (% of median, where less then 100% indicates fewer days between the Peak SWE Day and First Zero SWE Day) 
 """
 )
+st.markdown("Selected Water Year(s): %s through %s"%(start_date, end_date))    
 yearList1
 
 #%% download SNOTEL comparison data
@@ -513,7 +501,7 @@ st.download_button(
 
 
 #%% Stations display information
-st.header("SNOTEL Locations ")
+st.subheader("SNOTEL Locations ")
 image=Image.open("Maps/1_Snotel.png")
 st.image(image, width=500)
 
