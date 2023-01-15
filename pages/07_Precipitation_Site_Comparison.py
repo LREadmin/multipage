@@ -476,7 +476,7 @@ for WYrow in selectWY:
             tempSiteData=tempSiteData[['WY','pcpn']].set_index('WY')
             site_long=sites[sites.site==siterow].long.iloc[0]
             
-            count=tempSiteData[(tempSiteData <= thresholdHigh)&(tempSiteData > thresholdLow)].count()[0]
+            count=tempSiteData[(tempSiteData <= thresholdHigh)&(tempSiteData >= thresholdLow)].count()[0]
             if (len(tempSiteData)==0):
                 compListCount.append([site_long,WYrow,None])
             else:
@@ -535,8 +535,8 @@ st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDat
 st.dataframe(yearList2)
 st.markdown("""
 Table Notes:
-- Years with fewer than 330 results are excluded and the result is presented as “nan.”
-- Months with fewer than 25 results are excluded and the result is presented as “nan.”
+- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
 - The user-defined precipitation threshold does not change this table.
             """)
             
