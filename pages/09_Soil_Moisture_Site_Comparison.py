@@ -431,7 +431,7 @@ st.markdown(
 Provides the depth averaged median soil moisture (percent) for the selected water years and selected month(s)/season(s):  
 - Only depths with available soil moisture data are available for selection in the depth filter.  
 - If multiple depths are selected, the monthly median is assessed using the daily soil moisture percentage, averaged across selected depths.
-- If multiple depths are selected, the monthly median results will only be provided for months and water years with data for all selected depths.  
+- If multiple depths are selected, the monthly median results will only be provided for month(s)/season(s) and water year(s) with data for all selected depths.  
 """
 )
 ##note the following: If fall months (September, October, November) are selected for all depths and the full POR for Berthoud Summit, the column for water year 2018 in the following table will display the depth averaged median soil moisture percentage for 9/1/2018 thorugh 9/30/2018. The column for water year 2019 in the following table will display the depth averaged median soil moisture percentage for 10/1/2018 thorugh 11/30/2018 combined with 9/1/2019 through 9/30/2019. 
