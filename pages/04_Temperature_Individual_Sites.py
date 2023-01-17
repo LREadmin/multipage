@@ -57,13 +57,13 @@ sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin 
                'Strontia (ST)','Williams Fork (WF)']
 
 #%% filter first for parameters
-params_select = st.sidebar.selectbox('Select one parameter:', paramsSelect)
+params_select = st.sidebar.selectbox('Select One Statistic:', paramsSelect)
 param=paramsDF.loc[paramsDF['long']==params_select][0]
 data_param=data_raw
 data1=data_param[[param.iloc[0],'Month','site','CY']]
 
 #%% filter second for site
-site_select_long = st.sidebar.selectbox('Select one site:', sites['long'])
+site_select_long = st.sidebar.selectbox('Select One Site:', sites['long'])
 
 site_select=sites['site'][sites['long']==site_select_long]
 
@@ -230,18 +230,12 @@ sumStats1=sumStats.style\
 st.subheader("Monthly %s for Selected Calendar Year(s)"%params_select)
 st.markdown(
 """
-_Monthly median value, or midpoint, for the selected summary statistic and selected calendar year(s):_
-- **Max Temp (deg F):** That month’s median monthly maximum temperature for the selected calendar year(s)
-- **Min Temp (deg F):** That month’s median monthly minimum temperature for the selected calendar year(s) 
-- **Mean Temp (deg F):** That month’s median monthly mean temperature for the selected calendar year(s)
+Provides the monthly median and monthly trend for %s for the selected water year(s):
 
-_Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for:_
-- **Max Temp:** (increasing or decreasing degrees Fahrenheit per year)
-- **Min Temp:** (increasing or decreasing degrees Fahrenheit per year) 
-- **Mean Temp:** (increasing or decreasing degrees Fahrenheit per year) 
-
-_Example: If the September trend for Max Temp is 0.2 for calendar years 1981 through 2021, then the September warming trend is 0.2 degrees Fahrenheit per year or 8 degrees F over 40 years._
-"""
+- Monthly median value, or midpoint, for the selected water years for %s
+- Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for monthly %s (degrees Fahrenheit per year)
+    - A negative trend indicates decreasing %s in a given month and a positive trend indicates increasing %s in in a given month
+"""%(params_select, params_select, params_select, params_select, params_select)
 )
 st.markdown("Selected Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 sumStats1

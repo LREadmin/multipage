@@ -55,7 +55,7 @@ paramsDF=pandas.DataFrame({0:['maxt','mint','meant'], 'long': ['Max Temp (F)', '
 paramsSelect=paramsDF['long']
 
 stat_select= st.sidebar.selectbox(
-     'Select one statistic:', paramsSelect)
+     'Select One Statistic:', paramsSelect)
 
 #stat_select='Mean Temp (F)'
 stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
@@ -71,10 +71,10 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select_long = container.multiselect('Select one or more sites:', sites['long'], sites['long'])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'], sites['long'])
 
 else:
-    multi_site_select_long = container.multiselect('Select one or more sites:', sites['long'],default=sites['long'].iloc[0])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'],default=sites['long'].iloc[0])
  
 multi_site_select=sites['site'][sites['long'].isin(multi_site_select_long)]
 
@@ -471,15 +471,16 @@ Provides the median of the selected summary statistic for each selected site for
 - **Max Temp (F):** The recorded daily maximum temperature 
 - **Min Temp (F):** The recorded daily minimum temperature 
 - **Mean Temp (F):** Calculated daily mean using the recorded maximum and minimum temperature
+Notes for all tables:
+- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 """
 )
 st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))
 yearList2
 st.markdown(
     """
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+Table Note
 - The user-defined temperature threshold does not change this table.
 """
 )
@@ -505,8 +506,8 @@ For the selected summary statistic (Max Temp, Min Temp, or Mean Temp), provides 
     - **Max Temp:** (increasing or decreasing degrees Fahrenheit per year)
     - **Min Temp:** (increasing or decreasing degrees Fahrenheit per year)
     - **Median Temp:** (increasing or decreasing degrees Fahrenheit per year)
-- **Selected CY Median:** Median of the selected summary statistic (Max Temp, Min Temp, or Mean Temp) and months/seasons for the selected calendar year(s).
-- **Selected CY Trend:** Trend for the Selected summary statistic (Max Temp, Min Temp, or Mean Temp) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the Months/Seasons for the selected Calendar Year(s). 
+- **Selected CY Median:** Median of the selected summary statistic (Max Temp, Min Temp, or Mean Temp) for the selected month(s)/season(s) and calendar year(s).
+- **Selected CY Trend:** Trend for the Selected summary statistic (Max Temp, Min Temp, or Mean Temp) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected month(s)/season(s) and calendar year(s). 
     """        
     )
     
@@ -514,10 +515,7 @@ st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s
 sumSitesDisplay
 st.markdown(
     """
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
-- If no trend, then result is presented as “nan.” 
+Table Note:
 - The user-defined temperature threshold does not change this table.
     """)
 
@@ -543,9 +541,7 @@ st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s
 yearList1
 st.markdown(
     """
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+Table Note:
 - The user-defined temperature threshold does not change this table.
     """)
 
@@ -562,12 +558,13 @@ st.download_button(
 #%%
 
 st.subheader("Count of %s Days Within %s\N{DEGREE SIGN}F and %s\N{DEGREE SIGN}F"%(stat_select,thresholdLow,thresholdHigh))
+st.markdown(
+"""For each selected site for the selected month(s)/season(s) and calendar year(s), displays the number of days in each month %s was within the user-defined upper and lower temperature thresholds.    
+"""%stat_select)
 st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))
 countList1
 st.markdown("""
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+Table Note:
 - The count includes days that are equal to the value of each threshold.
             """)
 

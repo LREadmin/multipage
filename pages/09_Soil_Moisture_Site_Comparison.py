@@ -442,19 +442,17 @@ tableDepths2=elementDF.loc[elementDF[0].isin(tableDepths)]['long']
 tableDepths2Str= ', '.join(tableDepths2)
 
 st.markdown(
-    """
-    Based on average for %s for user-selected month(s)/season(s) in selected water year(s): %s through %s    
-    """%(tableDepths2Str, tableStartY, tableEndY)
-    )
-
-st.dataframe(tableDataMedian)
-st.markdown(
-    """
-Table Notes:
+"""
+Notes for all tables:
 - Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
-    """)
+Based on average for %s for user-selected month(s)/season(s) in selected water year(s): %s through %s    
+"""%(tableDepths2Str, tableStartY, tableEndY)
+    )
+
+st.dataframe(tableDataMedian)
+
 #download pivot table
 csv = convert_df(pvTable_wy)
 st.download_button(
@@ -488,11 +486,9 @@ st.markdown(
 st.dataframe(displayTableDataPOR)
 st.markdown(
     """
-Table Notes:
-- Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Avaiable Data Summary Table). 
+Table Note: 
 - If no trend, then result is presented as “nan.” 
     """)
-
 
 #download pivot table
 csv = convert_df(pvTable_por)
@@ -520,10 +516,7 @@ st.markdown(
 st.dataframe(tableDataDiv)
 st.markdown(
     """
-Table Notes:
-- Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+Table Note:
 - If divisor is zero, result is excluded and presented as “nan.”
     """)
 #download pivot table
@@ -535,6 +528,6 @@ st.download_button(
      mime='text/csv',
  )
 #%% Stations display information
-st.subheader("Soil Moisture Station Locations ")
+st.subheader("Soil Moisture Station Locations")
 image=Image.open("Maps/3_Soil_Moisture.png")
 st.image(image, width=500)

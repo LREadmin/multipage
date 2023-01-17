@@ -359,7 +359,8 @@ Table Notes:
 Provides the monthly median and monthly trend for soil moisture for the selected depth(s) and selected water year(s):
 - Monthly median value, or midpoint, for the selected water year(s) for soil moisture (percent). If multiple depths are selected, the median will only be provided for the months and years with data for all depths. 
 - Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for monthly median soil moisture (percent per year) where all selected depths have available data. 
-            """
+    - A negative trend indicates lower soil moisture in a given month within the selected water year(s). A positive trend indicates higher soil moisture in a given month.
+"""
             )
         displayTableData=medianTableData.style\
             .set_properties(**{'width':'10000px'})\
@@ -377,8 +378,7 @@ Provides the monthly median and monthly trend for soil moisture for the selected
     """
 Table Notes:        
 - If no trend, then result is presented as “nan.” 
-- A negative trend indicates lower soil moisture in a given month within the selected water year(s). A positive trend indicates higher soil moisture in a given month.
-    """
+ """
     )        
         #download pivot table
         csv = convert_df(medianTableData)

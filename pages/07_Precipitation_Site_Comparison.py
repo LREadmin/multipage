@@ -529,14 +529,15 @@ countList1=countList.style\
 st.subheader("Monthly %s for Selected Site(s) and Month(s)/Season(s) by Water Year(s)" %stat_select)
 st.markdown("""
 Provides the total accumulated precipitation (in inches) for each selected site for the selected month(s)/season(s) and water year(s):  
-            """)
+Notes for all tables:
+- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”          
+    """)
             
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 st.dataframe(yearList2)
 st.markdown("""
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+Table Note:
 - The user-defined precipitation threshold does not change this table.
             """)
             
@@ -560,9 +561,9 @@ Provides period of record dates and accumulated precipitation medians and trends
 - **POR Median:** Median of accumulated precipitation and month(s)/season(s) for the entire period of record, regardless of selected water year(s)
 - **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected summary statistic:
     - **Accumulated Precipitation** (increasing or decreasing inches per year)
-- **Selected WY Median:** Median of accumulated precipitation and Months/Seasons for the selected water year(s).
-- **Selected WY Trend:** Trend for accumulated precipitation (inches per year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the Months/Seasons for the selected water year(s). 
-    """        
+- **Selected WY Median:** Median of accumulated precipitation for the selected month(s)/season(s) and water year(s).
+- **Selected WY Trend:** Trend for accumulated precipitation (inches per year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected month(s)/season(s) and water year(s).  
+"""        
     )
     
 st.markdown("User-Selected Month(s)/Season(s) in Water Year(s): %s through %s"%(tableStartDate, tableEndDate))
@@ -570,8 +571,6 @@ sumSitesDisplay
 st.markdown(
     """
 Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 - If no trend, then result is presented as “nan.” 
 - The user-defined precipitation threshold does not change this table.
     """)
@@ -599,9 +598,7 @@ st.markdown("User-Selected Month(s)/Season(s) in Water Year(s): %s through %s"%(
 yearListAbs1
 st.markdown(
     """
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+Table Note:
 - The user-defined precipitation threshold does not change this table.
     """)
     
@@ -628,8 +625,6 @@ yearList1
 st.markdown(
     """
 Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 - If no trend, then result is presented as “nan.” 
 - The user-defined precipitation threshold does not change this table.
     """)
@@ -647,16 +642,13 @@ st.download_button(
 pandas.set_option('display.width',100)
 st.subheader("Count of %s Days Between %s and %s Inches"%(stat_select,thresholdLow,thresholdHigh))
 st.markdown(
-"""For the Selected Sites, Water Year(s) and Month(s)/Season(s)
-displays the number of days in each month within the user-defined upper and lower accumulated precipitation thresholds.    
+"""For each selected site for the selected month(s)/season(s) and water year(s), displays the number of days in each month within the user-defined upper and lower accumulated precipitation thresholds.    
 """)
 
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 st.dataframe(countList1)
 st.markdown("""
-Table Notes:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+Table Note:
 - The count includes days that are equal to the value of each threshold.
             """)
 
