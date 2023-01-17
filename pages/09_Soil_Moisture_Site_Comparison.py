@@ -504,7 +504,7 @@ st.subheader("Percent of Monthly Median Soil Moisture Compared to the Monthly Me
 st.markdown(
     """
 The percent is calculated by dividing the depth averaged soil moisture median in selected month(s)/season(s) in a selected water year by the median soil moisture for the selected water year range for the selected month(s)/season(s) and multiplying by 100. 
-- For example, the depth averaged soil moisture median for Fall (September, October, and November) 2017 at Middle Fork Camp (3.1%) is divided by the median for the selected Water Year range of 2002 – 2022 for the same months (4.4%) and multiplied by 100.  The result shows that soil moisture for fall 2017 at Middle Fork Camp was 71% of the median for the selected water years of 2002 – 2022. 
+- For example, the depth averaged soil moisture median for Fall (September, October, and November) 2017 at Middle Fork Camp (3.1%) is divided by the median for the selected water year range of 2002 – 2022 for the same months (4.4%) and multiplied by 100. The result shows that soil moisture for fall 2017 at Middle Fork Camp was 71% of the median for the selected water years of 2002 – 2022. 
     """)
 
 st.markdown(
