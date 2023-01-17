@@ -559,7 +559,8 @@ st.download_button(
 
 st.subheader("Count of %s Days Within %s\N{DEGREE SIGN}F and %s\N{DEGREE SIGN}F"%(stat_select,thresholdLow,thresholdHigh))
 st.markdown(
-"""For each selected site for the selected month(s)/season(s) and calendar year(s), displays the number of days in each month %s was within the user-defined upper and lower temperature thresholds.    
+"""For each selected site, %s, month(s)/season(s) and selected calendar year(s), 
+displays the number of days in each month within the user-defined upper and lower thresholds.
 """%stat_select)
 st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))
 countList1

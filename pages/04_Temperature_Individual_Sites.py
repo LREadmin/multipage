@@ -281,9 +281,9 @@ countTableData=data5.style\
 pandas.set_option('display.width',100)
 st.subheader("Count of %s Days Within %s\N{DEGREE SIGN}F and %s\N{DEGREE SIGN}F"%(params_select,thresholdLow,thresholdHigh))
 st.markdown(
-"""For the selected site, selected summary statistic, and selected calendar year(s), 
+"""For the selected site, %s, and selected calendar year(s), 
 displays the number of days in each month within the user-defined upper and lower thresholds.    
-""")
+"""%params_select)
 
 st.markdown("Selected Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 st.dataframe(countTableData)
