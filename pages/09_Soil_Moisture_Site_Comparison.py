@@ -273,6 +273,13 @@ data_sites=data_sites[columns_selected]
 #calculate averageSoilMoisture making nan for missing data on ANY of the depths 
 data_sites['averageSoilMoisture']=(data_sites[element_select.to_list()]).mean(axis=1,skipna=False)
 data_sites_nonans = data_sites.dropna(subset=['averageSoilMoisture'])
+
+if len(month_select)==12:
+    g=data_sites_nonans.groupby(['site','WY'])
+    data_sites_nonans=g.filter(lambda x: len(x)>=dayCountThres)
+else:
+    g=data_sites_nonans.groupby(['site','WY','month'])
+    data_sites_nonans=g.filter(lambda x: len(x)>=dayCountThres)
   
 #filter by WY
 data_wy=data_sites_nonans[(data_sites_nonans['WY']>=startYear)&(data_sites_nonans['WY']<=endYear)]
@@ -300,8 +307,13 @@ pvTable_por["Select WY Trend"]=np.nan
 #add por start and por end
 for siteTemp2 in pvTable_por.index:
     print(siteTemp2)
-    pvTable_por["POR Start"].loc[siteTemp2]=data_wy[data_wy.site==siteTemp2].Date.min()
-    pvTable_por["POR End"].loc[siteTemp2]=data_wy[data_wy.site==siteTemp2].Date.max()
+    pvTable_por["POR Start"].loc[siteTemp2]=data_sites_nonans[data_sites_nonans.site==siteTemp2].Date.min()
+    pvTable_por["POR End"].loc[siteTemp2]=data_sites_nonans[data_sites_nonans.site==siteTemp2].Date.max()
+    
+    # get select WY start and end
+    tableStartY=data_wy[data_wy.site==siteTemp2].Date.min()
+    tableEndY=data_wy[data_wy.site==siteTemp2].Date.max()
+    
     trend_data_por=pvTable_por.loc[siteTemp2][:-6]
     trend_data_wy=pvTable_wy.loc[siteTemp2][:]
     pvTable_por["POR Median"].loc[siteTemp2]=trend_data_por.median()
@@ -336,7 +348,8 @@ pvTable_por=pvTable_por.set_index(["Site"],drop=True)
 
 displayTableDataPOR=pvTable_por.style\
     .set_properties(**{'width':'10000px'})\
-    .format(precision=2)
+    .format({'POR Median':"{:.2f}",'POR Trend':"{:.3f}"
+              ,'Select WY Median':"{:.2f}",'Select WY Trend':"{:.3f}"})\
 
 #%% Create pivot table WY Soil moisture / Median SM for select water years range
 
@@ -411,25 +424,24 @@ st.download_button(
 st.subheader("Depth Averaged Monthly Median Soil Moisture (%) by Water Year(s)")
 st.markdown(
 """
-Provides the depth-averaged median soil moisture (percent) for the selected water years and selected month(s)/season(s).  
+Provides the depth-averaged median soil moisture (percent) for the selected water years and selected month(s)/season(s):  
 - Only depths with available soil moisture data are available for selection in the depth filter.  
 - If multiple depths are selected, the monthly median is assessed using the daily soil moisture percentage, averaged across selected depths.
 - If multiple depths are selected, the monthly median results will only be provided for months and water years with data for all selected depths.  
 """
 )
+##note the following: If fall months (September, October, November) are selected for all depths and the full POR for Berthoud Summit, the column for water year 2018 in the following table will display the depth averaged median soil moisture percentage for 9/1/2018 thorugh 9/30/2018. The column for water year 2019 in the following table will display the depth averaged median soil moisture percentage for 10/1/2018 thorugh 11/30/2018 combined with 9/1/2019 through 9/30/2019. 
 
-# tableStartY=smData['WY'].min()-1
-# tableEndY=smData['WY'].max()
+    
+tableDepths=list(element_select)
+tableDepths2=elementDF.loc[elementDF[0].isin(tableDepths)]['long']
+tableDepths2Str= ', '.join(tableDepths2)
 
-# tableDepths=list(element_select)
-# tableDepths2=elementDF.loc[elementDF[0].isin(tableDepths)]['long']
-# tableDepths2Str= ', '.join(tableDepths2)
-
-# st.markdown(
-#     """
-#     Based on average for %s for selected water year(s): %s-10-01 through %s-9-30   
-#     """%(tableDepths2Str, tableStartY, tableEndY)
-#     )
+st.markdown(
+    """
+    Based on average for %s for user-selected month(s)/season(s) in selected water year(s): %s through %s    
+    """%(tableDepths2Str, tableStartY, tableEndY)
+    )
 
 st.dataframe(tableDataMedian)
 st.markdown(
@@ -457,11 +469,18 @@ Provides the following information for the selected site:
 - **POR End:** Latest date of available data for site
 - **POR Median:** Median soil moisture (percent) for the month(s)/season(s) for the entire period of record, regardless of selected water year(s).
 - **POR Trend:** Soil moisture trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record:
-    - **Soil Moisture** (increasing or decreasing percent/year)
+    - **Soil Moisture** (increasing or decreasing percent per year)
 - **Selected WY Median:** Soil moisture median for the Months/Seasons of the selected Water Year(s).
-- **Selected WY Trend:** Soil moisture trend (percent/year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the month(s)/season(s) of the selected water year(s).
+- **Selected WY Trend:** Soil moisture trend (percent per year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the month(s)/season(s) of the selected water year(s).
 """
     )
+    
+st.markdown(
+    """
+    POR and selected water year(s) depths based on average for %s and user-selected month(s)/season(s). Selected water year(s): %s through %s   
+    """%(tableDepths2Str, tableStartY, tableEndY)
+    )
+
 st.dataframe(displayTableDataPOR)
 st.markdown(
     """
@@ -474,7 +493,7 @@ Table Notes:
 #download pivot table
 csv = convert_df(pvTable_por)
 st.download_button(
-      label="Download Summary Soil Moisture Table (as CSV)%",
+      label="Download Summary Soil Moisture Table (as CSV)",
       data=csv,
       file_name='StatisticsTableSoilMoistureCompareSites.csv',
       mime='text/csv',
@@ -487,6 +506,13 @@ st.markdown(
 The percent is calculated by dividing the depth-averaged soil moisture median in selected month(s)/season(s) in a selected water year by the median soil moisture for the selected water year range for the selected month(s)/season(s) and multiplying by 100. 
 - For example, the depth-averaged soil moisture median for Fall (September, October, and November) 2017 at Middle Fork Camp (3.1%) is divided by the median for the selected Water Year range of 2002 – 2022 for the same months (4.4%) and multiplied by 100.  The result shows that soil moisture for fall 2017 at Middle Fork Camp was 71% of the median for the selected water years of 2002 – 2022. 
     """)
+
+st.markdown(
+    """
+    Based on average for %s for user-selected month(s)/season(s) in water year(s): %s through %s   
+    """%(tableDepths2Str, tableStartY, tableEndY)
+    )
+
 st.dataframe(tableDataDiv)
 st.markdown(
     """

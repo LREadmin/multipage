@@ -312,8 +312,8 @@ for i in range(0,len(sumSites1)):
     
 sumSites1=sumSites1.set_index('long')
 sumSitesDisplay=sumSites1.style\
-    .format({'POR Median of %s'%stat_select:"{:.1f}",'POR Trend for %s'%stat_select:"{:.2f}"
-              ,'Select WY Median of %s'%stat_select:"{:.1f}",'Select WY Trend for %s'%stat_select:"{:.2f}"})\
+    .format({'POR Median of %s'%stat_select:"{:.2f}",'POR Trend for %s'%stat_select:"{:.3f}"
+              ,'Select WY Median of %s'%stat_select:"{:.2f}",'Select WY Trend for %s'%stat_select:"{:.3f}"})\
     .set_table_styles([dict(selector="th",props=[('max-width','3000px')])])
 
 #%%Temp Current WY Median - WY Stat Median
@@ -388,7 +388,7 @@ yearListAbs = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
 yearListAbs1=yearListAbs.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
-    .format('{:,.1f}')
+    .format('{:,.2f}')
 
 #%%percentage table
 
@@ -463,7 +463,7 @@ yearList = yearList.reindex(sorted(yearList.columns,reverse=True), axis=1)
 yearList2=yearList.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
-    .format('{:,.1f}')
+    .format('{:,.2f}')
 
 #%%FOR THRESHOLD
 #%%calc statistic for all months
@@ -528,7 +528,7 @@ countList1=countList.style\
 #%% Accumulated Precip
 st.subheader("Monthly %s for Selected Site(s) and Month(s)/Season(s) by Water Year(s)" %stat_select)
 st.markdown("""
-Provides the total accumulated precipitation (in inches) for each selected site and month(s)/season(s) by selected water year(s).  
+Provides the total accumulated precipitation (in inches) for each selected site and month(s)/season(s) by selected water year(s):  
             """)
             
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
@@ -554,18 +554,18 @@ st.download_button(
 st.subheader("Summary of %s for Selected Sites, Water Year(s) and Month(s)/Season(s)"%stat_select)
 st.markdown(
     """
-Provides period of record dates and accumulated precipitation medians and trends for each selected site and the selected water year(s) and month(s)/season(s). 
+Provides period of record dates and accumulated precipitation medians and trends for each selected site and the selected water year(s) and month(s)/season(s): 
 - **POR Start:** Earliest date of available data for the site 
 - **POR End:** Latest date of available data for site 
 - **POR Median:** Median of accumulated precipitation and Month(s)/Season(s) for the entire period of record, regardless of selected Calendar Year
 - **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected Summary Statistic:
-    - **Accumulated Precipitation** (increasing or decreasing inches/year)
-- **Selected WY Median:** Median of accumulated precipitation and Months/Seasons for the selected Walendar Year(s).
+    - **Accumulated Precipitation** (increasing or decreasing inches per year)
+- **Selected WY Median:** Median of accumulated precipitation and Months/Seasons for the selected Water Year(s).
 - **Selected WY Trend:** Trend for accumulated precipitation (inches per year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the Months/Seasons for the selected Calendar Year(s). 
     """        
     )
     
-st.markdown("User-Selected Month(s)/Season(s) in Walendar Year(s): %s through %s"%(tableStartDate, tableEndDate))
+st.markdown("User-Selected Month(s)/Season(s) in Water Year(s): %s through %s"%(tableStartDate, tableEndDate))
 sumSitesDisplay
 st.markdown(
     """

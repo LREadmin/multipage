@@ -363,7 +363,8 @@ Provides the monthly median and monthly trend for soil moisture for the selected
             )
         displayTableData=medianTableData.style\
             .set_properties(**{'width':'10000px'})\
-            .format(precision=2)
+            .format('{:,.2f}',subset=(['Median'],slice(None)))\
+            .format('{:,.3f}',subset=(['Trend'],slice(None)))\
             
         st.markdown(
             """

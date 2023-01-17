@@ -245,14 +245,15 @@ st.download_button(
 #%%
 st.subheader("Monthly Summary Statistics for Selected Water Year(s)")
 sumStats1=sumStats.style\
-    .format('{:,.2f}')\
+    .format('{:,.2f}',subset=(['Median'],slice(None)))\
+    .format('{:,.3f}',subset=(['Trend'],slice(None)))\
     .set_properties(**{'width':'10000px'})\
 
 st.markdown(
     """
-Provides the monthly median and monthly trend for accumulated precipitation for the Selected Water Year(s):)
+Provides the monthly median and monthly trend for accumulated precipitation for the Selected Water Year(s):
 - Monthly median value, or midpoint, for the selected water years for accumulated precipitation (inches)
-- Trend using the Theil-Sen Slope analysis  where Mann-Kendall trend test is significant for monthly accumulated precipitation (inches/year)
+- Trend using the Theil-Sen Slope analysis  where Mann-Kendall trend test is significant for monthly accumulated precipitation (inches per year)
     - A negative trend indicates less accumulated precipitation in a given month and a positive trend indicates more accumulated precipitation in a given month.    
     """)
 

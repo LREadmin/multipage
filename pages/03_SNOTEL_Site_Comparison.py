@@ -447,10 +447,10 @@ For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, 
 - **POR End:** Latest date of available data for site 
 - **POR Median:** Median of the selected Summary Statistic (peak SWE, peak SWE day, first zero SWE day, or melt day count) for the entire period of record, regardless of selected Water Year 
 - **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected Summary Statistic: 
-    - **Peak SWE:** (increasing or decreasing inches/year) 
-    - **Peak SWE Day:** (earlier or later calendar day/year) 
-    - **First Zero SWE Day:** (earlier or later calendar day/year) 
-    - **Melt Day Count:** (increasing or decreasing days/year) 
+    - **Peak SWE:** (increasing or decreasing inches per year) 
+    - **Peak SWE Day:** (earlier or later calendar day per year) 
+    - **First Zero SWE Day:** (earlier or later calendar day per year) 
+    - **Melt Day Count:** (increasing or decreasing days per year) 
 - **Selected WY Median:** Median of the selected Summary Statistic (peak SWE, peak SWE day, first zero SWE day, or melt day count) for the selected Water Year 
 - **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected Summary Statistic. If no trend, then result is “nan.” 
 """

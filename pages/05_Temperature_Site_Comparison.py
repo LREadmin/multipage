@@ -502,9 +502,9 @@ For the selected summary statistic (max temp, min temp, or mean temp), provides 
 - **POR End:** Latest date of available data for site 
 - **POR Median:** Median of the selected Summary Statistic (max temp, min temp, or mean temp) and Month(s)/Season(s) for the entire period of record, regardless of selected Calendar Year
 - **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected Summary Statistic:
-    - **Max Temp:** (increasing or decreasing degrees Fahrenheit/year)
-    - **Min Temp:** (increasing or decreasing degrees Fahrenheit/year)
-    - **Median Temp:** (increasing or decreasing degrees Fahrenheit/year)
+    - **Max Temp:** (increasing or decreasing degrees Fahrenheit per year)
+    - **Min Temp:** (increasing or decreasing degrees Fahrenheit per year)
+    - **Median Temp:** (increasing or decreasing degrees Fahrenheit per year)
 - **Selected CY Median:** Median of the selected Summary Statistic (max temp, min temp, or mean temp) and Months/Seasons for the selected Calendar Year(s).
 - **Selected CY Trend:** Trend for the Selected Summary Statistic (max temp, min temp, or mean temp) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the Months/Seasons for the selected Calendar Year(s). 
     """        

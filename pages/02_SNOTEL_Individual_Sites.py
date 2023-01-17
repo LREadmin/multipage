@@ -317,14 +317,15 @@ _Median value, or midpoint, for the selected water years for:_
 
 _Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for:_
 
-- **Peak SWE:** (increasing or decreasing inches/year) 
-- **Peak SWE Day:** (earlier or later calendar day/year) 
-- **First Zero SWE Day:** (earlier or later calendar day/year)
-- **Melt Day Count:** (increasing or decreasing days/year)
+- **Peak SWE:** (increasing or decreasing inches per year) 
+- **Peak SWE Day:** (earlier or later calendar day per year) 
+- **First Zero SWE Day:** (earlier or later calendar day per year)
+- **Melt Day Count:** (increasing or decreasing days per year)
 """
 )
 sumDisplay=merge1.style\
-    .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.1f}","First Zero SWE Day":"{:.1f}","Melt Day Count":"{:.1f}"})\
+    .format('{:,.1f}',subset=(['Median'],slice(None)))\
+    .format('{:,.2f}',subset=(['Trend'],slice(None)))\
     .set_properties(**{'width':'10000px'})
 
 st.markdown("Selected Water Year(s): %s through %s"%(start_date1, end_date1))

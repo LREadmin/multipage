@@ -223,7 +223,8 @@ st.download_button(
  )
 
 sumStats1=sumStats.style\
-    .format('{:,.1f}')\
+    .format('{:,.1f}',subset=(['Median'],slice(None)))\
+    .format('{:,.2f}',subset=(['Trend'],slice(None)))\
     .set_properties(**{'width':'10000px'})
 
 st.subheader("Monthly %s for Selected Calendar Year(s)"%params_select)
@@ -235,11 +236,11 @@ _Monthly median value, or midpoint, for the selected summary statistic and selec
 - **Mean Temp (deg F):** That month’s median monthly mean temperature for the selected calendar year(s)
 
 _Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for:_
-- **Max Temp:** (increasing or decreasing degrees Fahrenheit/year)
-- **Min Temp:** (increasing or decreasing degrees Fahrenheit/year) 
-- **Mean Temp:** (increasing or decreasing degrees Fahrenheit/year) 
+- **Max Temp:** (increasing or decreasing degrees Fahrenheit per year)
+- **Min Temp:** (increasing or decreasing degrees Fahrenheit per year) 
+- **Mean Temp:** (increasing or decreasing degrees Fahrenheit per year) 
 
-_Example: If the September trend for Max Temp is 0.2 for calendar years 1981 through 2021, then the September warming trend is 0.2 degrees F/year or 8 degrees F over 40 years._
+_Example: If the September trend for Max Temp is 0.2 for calendar years 1981 through 2021, then the September warming trend is 0.2 degrees Fahrenheit per year or 8 degrees F over 40 years._
 """
 )
 st.markdown("Selected Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))   
