@@ -66,10 +66,10 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select_long = container.multiselect('Select one or more sites:', sites['long'], sites['long'])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'], sites['long'])
 
 else:
-    multi_site_select_long = container.multiselect('Select one or more sites:', sites['long'],default=sites['long'].iloc[0])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'],default=sites['long'].iloc[0])
 
 #multi_site_select_long=["Antero (AN)" ]   
 multi_site_select=sites['site'][sites['long'].isin(multi_site_select_long)]
@@ -163,7 +163,7 @@ elif spring and fall and summer and winter:
 else:
     month_select = container.multiselect('Select month(s):', monthSelect,default=monthSelect)
 
-month_select=['Sep','Oct','Nov']
+#month_select=['Sep','Oct','Nov']
 monthNum_select=pandas.DataFrame(month_select)
 monthNum_select=monthOptions.loc[monthOptions['Month'].isin(month_select)]['Num']
     
@@ -528,7 +528,7 @@ countList1=countList.style\
 #%% Accumulated Precip
 st.subheader("Monthly %s for Selected Site(s) and Month(s)/Season(s) by Water Year(s)" %stat_select)
 st.markdown("""
-Provides the total accumulated precipitation (in inches) for each selected site and mont(s)/season(s) by selected water year(s).  
+Provides the total accumulated precipitation (in inches) for each selected site and month(s)/season(s) by selected water year(s).  
             """)
             
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
