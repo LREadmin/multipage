@@ -160,9 +160,9 @@ container=st.sidebar.container()
 all=st.sidebar.checkbox("Select Both Collection Systems")
 
 if all:
-    system_selected = container.multiselect('Select Collection system(s):', AllsiteNames.iloc[:,2].drop_duplicates(), AllsiteNames.iloc[:,2].drop_duplicates())
+    system_selected = container.multiselect('Select Collection System(s):', AllsiteNames.iloc[:,2].drop_duplicates(), AllsiteNames.iloc[:,2].drop_duplicates())
 else: 
-    system_selected = container.multiselect('Select Collection system(s):', AllsiteNames.iloc[:,2].drop_duplicates(), default='North')
+    system_selected = container.multiselect('Select Collection System(s):', AllsiteNames.iloc[:,2].drop_duplicates(), default='North')
 
 siteNames=AllsiteNames[AllsiteNames['2'].isin(system_selected)]
 
@@ -358,7 +358,10 @@ pvTable_division.sort_index(axis='columns',level='WY',ascending=False,inplace=Tr
 pvTable_wy.sort_index(axis='columns',level='WY',ascending=False,inplace=True)
 
 for i in range(0,len(pvTable_division)):
-    pvTable_division.iloc[i]=pvTable_wy.iloc[i]/pvTable_por["Select WY Median"].iloc[i]
+    if pvTable_por["Select WY Median"].iloc[i]>0:
+        pvTable_division.iloc[i]=pvTable_wy.iloc[i]/pvTable_por["Select WY Median"].iloc[i]
+    else:
+        pvTable_division.iloc[i]=float('nan')
 
 pvTable_division["Site"]=""
 pvTable_division['System']=""
@@ -367,6 +370,7 @@ for i in range(0,len(pvTable_division)):
     pvTable_division["System"].iloc[i]=AllsiteNames[AllsiteNames['1']== pvTable_division.index[i]]['2'].iloc[0]
 
 pvTable_division=pvTable_division.set_index(["Site", "System"],drop=True)
+pvTable_division.replace("inf",'nan')
 
 #display pivot table 
 tableDataDiv=pvTable_division.style\
@@ -520,6 +524,7 @@ Table Notes:
 - Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
 - If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+- If divisor is zero, result is excluded and presented as “nan.”
     """)
 #download pivot table
 csv = convert_df(pvTable_division)
