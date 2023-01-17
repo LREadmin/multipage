@@ -467,7 +467,7 @@ countList1=countList.style\
 st.subheader("Median of %s for Selected Site(s) and Month(s)/Season(s) by Calendar Year(s)"%(stat_select))
 st.markdown(
     """
-Provides the median of the selected summary statistic for each selected site and month(s)/season(s) by selected calendar year(s):
+Provides the median of the selected summary statistic for each selected site for the selected month(s)/season(s) and calendar year(s):
 - **Max Temp (F):** The recorded daily maximum temperature 
 - **Min Temp (F):** The recorded daily minimum temperature 
 - **Mean Temp (F):** Calculated daily mean using the recorded maximum and minimum temperature
@@ -479,7 +479,7 @@ st.markdown(
     """
 Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 - The user-defined temperature threshold does not change this table.
 """
 )
@@ -497,16 +497,16 @@ st.download_button(
 st.subheader("Summary %s for Selected Sites, Calendar Year(s) and Month(s)/Season(s)"%stat_select)
 st.markdown(
     """
-For the selected summary statistic (max temp, min temp, or mean temp), provides period of record dates and both period of record and calendar year median statistics and trends for each selected site for the selected month(s)/season(s) and calendar year(s). 
+For the selected summary statistic (Max Temp, Min Temp, or Mean Temp), provides period of record dates and both period of record and calendar year median statistics and trends for each selected site for the selected month(s)/season(s) and calendar year(s). 
 - **POR Start:** Earliest date of available data for the site 
 - **POR End:** Latest date of available data for site 
-- **POR Median:** Median of the selected Summary Statistic (max temp, min temp, or mean temp) and Month(s)/Season(s) for the entire period of record, regardless of selected Calendar Year
-- **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected Summary Statistic:
+- **POR Median:** Median of the selected summary statistic (Max Temp, Min Temp, or Mean Temp) and month(s)/season(s) for the entire period of record, regardless of selected calendar year(s)
+- **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected summary statistic:
     - **Max Temp:** (increasing or decreasing degrees Fahrenheit per year)
     - **Min Temp:** (increasing or decreasing degrees Fahrenheit per year)
     - **Median Temp:** (increasing or decreasing degrees Fahrenheit per year)
-- **Selected CY Median:** Median of the selected Summary Statistic (max temp, min temp, or mean temp) and Months/Seasons for the selected Calendar Year(s).
-- **Selected CY Trend:** Trend for the Selected Summary Statistic (max temp, min temp, or mean temp) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the Months/Seasons for the selected Calendar Year(s). 
+- **Selected CY Median:** Median of the selected summary statistic (Max Temp, Min Temp, or Mean Temp) and months/seasons for the selected calendar year(s).
+- **Selected CY Trend:** Trend for the Selected summary statistic (Max Temp, Min Temp, or Mean Temp) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the Months/Seasons for the selected Calendar Year(s). 
     """        
     )
     
@@ -516,7 +516,7 @@ st.markdown(
     """
 Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 - If no trend, then result is presented as “nan.” 
 - The user-defined temperature threshold does not change this table.
     """)
@@ -525,7 +525,7 @@ Table Notes:
 csv = convert_df(sumSites1)
 
 st.download_button(
-     label="Download Summary %s Table (as CSV)",
+     label="Download Summary %s Table (as CSV)"%stat_select,
      data=csv,
      file_name='Summary_Table.csv',
      mime='text/csv',
@@ -545,7 +545,7 @@ st.markdown(
     """
 Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 - The user-defined temperature threshold does not change this table.
     """)
 
@@ -567,7 +567,7 @@ countList1
 st.markdown("""
 Table Notes:
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
 - The count includes days that are equal to the value of each threshold.
             """)
 

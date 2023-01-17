@@ -25,7 +25,7 @@ from matplotlib import colors #for additional colors
 from PIL import Image
 
 st.set_page_config(page_title="Soil Moisture Individual Site", page_icon="🌱")
-st.header("Individual Soil Moisture Data Assessment")
+st.header("Individual Soil Moisture Site Data Assessment")
 
 #%% Define data download as CSV function
 #functions
@@ -264,7 +264,7 @@ Provides the following information for the selected site:
     st.subheader("Depth Averaged Monthly Median Soil Moisture (%) by Water Year(s)")
     st.markdown(
 """
-Provides the depth-averaged median soil moisture (percent) for each month within the selected water years. 
+Provides the depth averaged median soil moisture (percent) for each month within the selected water years: 
 - Only depths with available soil moisture data are available for selection in the depth filter.  
 - If multiple depths are selected, the monthly median is assessed using the daily soil moisture percentage, averaged across selected depths.
 - If multiple depths are selected, the monthly median results will only be provided for months and water years with data for all selected depths.  
@@ -310,8 +310,8 @@ Provides the depth-averaged median soil moisture (percent) for each month within
         st.markdown(
     """
 Table Notes:
-- Months with fewer than 25 results are excluded and presented as “nan.""
-- NRCS raw data occaisionally includes soil moisture percentages that exceed 100%; these values are excluded from teh calculations presented in this table.  
+- Months with fewer than 25 results are excluded and presented as “nan.”
+- NRCS raw data occasionally includes soil moisture percentages that exceed 100%; these values are excluded from the calculations presented in this table.  
     """)
         
         #download pivot table

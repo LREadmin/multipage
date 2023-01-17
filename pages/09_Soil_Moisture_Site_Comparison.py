@@ -424,7 +424,7 @@ st.download_button(
 st.subheader("Depth Averaged Monthly Median Soil Moisture (%) by Water Year(s)")
 st.markdown(
 """
-Provides the depth-averaged median soil moisture (percent) for the selected water years and selected month(s)/season(s):  
+Provides the depth averaged median soil moisture (percent) for the selected water years and selected month(s)/season(s):  
 - Only depths with available soil moisture data are available for selection in the depth filter.  
 - If multiple depths are selected, the monthly median is assessed using the daily soil moisture percentage, averaged across selected depths.
 - If multiple depths are selected, the monthly median results will only be provided for months and water years with data for all selected depths.  
@@ -449,7 +449,7 @@ st.markdown(
 Table Notes:
 - Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
     """)
 #download pivot table
 csv = convert_df(pvTable_wy)
@@ -503,8 +503,8 @@ st.download_button(
 st.subheader("Percent of Monthly Median Soil Moisture Compared to the Monthly Median Soil Moisture for Selected Water Year Range")
 st.markdown(
     """
-The percent is calculated by dividing the depth-averaged soil moisture median in selected month(s)/season(s) in a selected water year by the median soil moisture for the selected water year range for the selected month(s)/season(s) and multiplying by 100. 
-- For example, the depth-averaged soil moisture median for Fall (September, October, and November) 2017 at Middle Fork Camp (3.1%) is divided by the median for the selected Water Year range of 2002 – 2022 for the same months (4.4%) and multiplied by 100.  The result shows that soil moisture for fall 2017 at Middle Fork Camp was 71% of the median for the selected water years of 2002 – 2022. 
+The percent is calculated by dividing the depth averaged soil moisture median in selected month(s)/season(s) in a selected water year by the median soil moisture for the selected water year range for the selected month(s)/season(s) and multiplying by 100. 
+- For example, the depth averaged soil moisture median for Fall (September, October, and November) 2017 at Middle Fork Camp (3.1%) is divided by the median for the selected Water Year range of 2002 – 2022 for the same months (4.4%) and multiplied by 100.  The result shows that soil moisture for fall 2017 at Middle Fork Camp was 71% of the median for the selected water years of 2002 – 2022. 
     """)
 
 st.markdown(
@@ -519,7 +519,7 @@ st.markdown(
 Table Notes:
 - Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
 - If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.""
+- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
     """)
 #download pivot table
 csv = convert_df(pvTable_division)

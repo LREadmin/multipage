@@ -447,14 +447,14 @@ st.markdown(
 For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count), provides period of record dates and both period of record and water year median statistics and trends for each selected site. 
 - **POR Start:** Earliest date of available data for the site 
 - **POR End:** Latest date of available data for site 
-- **POR Median:** Median of the selected Summary Statistic (peak SWE, peak SWE day, first zero SWE day, or melt day count) for the entire period of record, regardless of selected Water Year 
-- **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected Summary Statistic: 
+- **POR Median:** Median of the selected summary tatistic (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count) for the entire period of record, regardless of selected water year(s) 
+- **POR Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record of the selected summary statistic: 
     - **Peak SWE:** (increasing or decreasing inches per year) 
     - **Peak SWE Day:** (earlier or later calendar day per year) 
     - **First Zero SWE Day:** (earlier or later calendar day per year) 
     - **Melt Day Count:** (increasing or decreasing days per year) 
-- **Selected WY Median:** Median of the selected Summary Statistic (peak SWE, peak SWE day, first zero SWE day, or melt day count) for the selected Water Year 
-- **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected Summary Statistic. If no trend, then result is “nan.” 
+- **Selected WY Median:** Median of the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count) for the selected water year(s) 
+- **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected summary statistic. If no trend, then result is “nan.” 
 """
 )
 st.markdown("Selected Water Year(s): %s through %s"%(start_date, end_date))    
@@ -480,7 +480,7 @@ st.download_button(
 st.subheader("Annual Percent of Median %s for Selected Site(s) and Water Year(s)"%params_select)
 st.markdown(
     """
-Annual selected Summary Statistic percent of median results for each selected Site by Water Year.  A 100% result for a given Water Year indicates that the value is exactly the median of the Selected WY summary statistic result.  A 50% result indicates that WY result is half of the selected WY median. 
+Annual selected summary statistic percent of median results for each selected Site by WY. A 100% result for a given WY indicates that the value is exactly the median of the Selected WY summary statistic result.  A 50% result indicates that WY result is half of the selected WY median. 
 - **Peak SWE:** (% of median, where less then 100% indicates a lower SWE in inches) 
 - **Peak SWE Day:** (% of median, where less then 100% indicates an earlier Peak SWE day in calendar days) 
 - **First Zero SWE Day:** (% of median, where less then 100% indicates an earlier First Zero SWE day in calendar days) 

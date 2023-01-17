@@ -23,7 +23,7 @@ import numpy as np
 from PIL import Image #for map
 #%% Website display information
 st.set_page_config(page_title="Temperature Individual Sites", page_icon="📈")
-st.header("Individual Temperature Data Assessment")
+st.header("Individual Temperature Site Data Assessment")
 
 #%% Define data download as CSV function
 @st.cache

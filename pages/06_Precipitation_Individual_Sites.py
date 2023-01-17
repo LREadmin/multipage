@@ -29,7 +29,7 @@ from PIL import Image
 
 #%% Website display information
 st.set_page_config(page_title="Precipitation Individual Sites", page_icon="🌦")
-st.header("Individual Precipitation Data Assessment")
+st.header("Individual Precipitation Site Data Assessment")
 
 #%% Define data download as CSV function
 @st.cache
@@ -221,7 +221,7 @@ tableData=data4.style\
 #%%display
 st.subheader("Monthly %s for Selected Water Year(s)" %params_select)
 st.markdown("""
-Provides the monthly accumulated precipitation by year for the selected water years.  
+Provides the monthly accumulated precipitation by month for the selected water year(s):  
             """)
             
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
@@ -251,10 +251,10 @@ sumStats1=sumStats.style\
 
 st.markdown(
     """
-Provides the monthly median and monthly trend for accumulated precipitation for the Selected Water Year(s):
+Provides the monthly median and monthly trend for accumulated precipitation for the selected water year(s):
 - Monthly median value, or midpoint, for the selected water years for accumulated precipitation (inches)
 - Trend using the Theil-Sen Slope analysis  where Mann-Kendall trend test is significant for monthly accumulated precipitation (inches per year)
-    - A negative trend indicates less accumulated precipitation in a given month and a positive trend indicates more accumulated precipitation in a given month.    
+    - A negative trend indicates less accumulated precipitation in a given month and a positive trend indicates more accumulated precipitation in a given month    
     """)
 
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
@@ -310,7 +310,7 @@ pandas.set_option('display.width',100)
 st.subheader("Count of %s Days Between %s and %s Inches"%(params_select,thresholdLow,thresholdHigh))
 st.markdown(
 """For the selected site and selected water year(s), 
-displays the number of days in each month within the user-defined upper and lower accumulated precipitation thresholds.    
+displays the number of days in each month within the user-defined upper and lower accumulated precipitation thresholds:   
 """)
 
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
