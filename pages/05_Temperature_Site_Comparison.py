@@ -535,7 +535,7 @@ st.download_button(
 st.subheader("Net Difference Between Select CY Median of %s and POR Median of %s"%(stat_select,stat_select))
 st.markdown(
     """
-For example, the median maximum temperature at Antero in 2012 was 58 degrees F and the median for the selected Calendar Year range of 1990 – 2021 was 55 degrees F, so the net difference presented for Antero in 2012 is 3 degrees F if all months are included. 
+For example, the median maximum temperature at Antero in 2012 was 58 degrees F and the median for the full period of record was 54 degrees F, so the net difference presented for Antero in 2012 is +4 degrees F. 
     """
     )
 

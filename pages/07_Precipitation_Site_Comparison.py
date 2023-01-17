@@ -591,7 +591,7 @@ st.download_button(
 st.subheader("Net Difference Between Select WY Median of %s and POR Median of %s"%(stat_select,stat_select))
 st.markdown(
     """
-For example, the total accumulated precipitation for Spring (March, April, and May) 2015 at Strontia was 11.9 inches and the median for the selected Water Year range of 2001 – 2021 for the same months was 6.9 inches, so the net difference presented for Strontia in 2015 with  only Spring months selected is +5 inches. This shows that spring 2015 had higher than average precipitation.
+For example, the total accumulated precipitation for 2015 at Antero was 14.87 inches and the median for the full period of record was 10.37 in, so the net difference presented for Antero in 2015 with is +4.50 inches. This shows that 2015 had higher than average precipitation.
 """
     )
 
@@ -619,7 +619,7 @@ st.subheader("Percent of %s for Individual Water Year Compared to the Median of 
 st.markdown(
     """
 The percent is calculated by dividing the accumulated precipitation for selected months/seasons in a selected water year by the accumulated precipitation for the selected water year range for the selected month(s)/season(s) and multiplying by 100. 
-- For example, the total accumulated precipitation for Spring (March, April, and May) 2015 at Strontia (11.9 inches) is divided by the median for the selected Water Year range of 2001 – 2021 for the same months (6.9 inches) and multiplied by 100.  The result shows that precipitation for spring 2015 at Strontia was 172% of the median for the selected water years of 2001 – 2021.
+- For example, the total accumulated precipitation for 2015 at Antero (14.87 inches) is divided by the median for the full period of record (10.37 in) and multiplied by 100. The result shows that precipitation for 2015 at Antero was 143% of the median for the full period of record.
 """
     )
 

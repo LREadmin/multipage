@@ -268,7 +268,7 @@ Provides the depth averaged median soil moisture (percent) for each month within
 - Only depths with available soil moisture data are available for selection in the depth filter.  
 - If multiple depths are selected, the monthly median is assessed using the daily soil moisture percentage, averaged across selected depths.
 - If multiple depths are selected, the monthly median results will only be provided for months and water years with data for all selected depths.  
-    - For example, Berthoud Summit has full POR data (2002 – 2022) for 2, 8, and 20-inch depths. The 4-inch depth data is limited to 2018 – 2022. If all four depths are selected and if the beginning and ending water years are 2002 – 2022, only data from 2018 – 2022 will be presented.
+    - For example, Berthoud Summit has full POR data (2003 – 2022) for 2, 8, and 20-inch depths. The 4-inch depth data is limited to 2018 – 2022. If all four depths are selected and if the beginning and ending water years are 2003 – 2022, only data from 2018 – 2022 will be presented.
 """
 )
 
