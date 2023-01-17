@@ -472,8 +472,8 @@ Provides the following information for the selected site:
 - **POR Median:** Median soil moisture (percent) for the month(s)/season(s) for the entire period of record, regardless of selected water year(s).
 - **POR Trend:** Soil moisture trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for entire period of record:
     - **Soil Moisture** (increasing or decreasing percent per year)
-- **Selected WY Median:** Soil moisture median for the Months/Seasons of the selected Water Year(s).
-- **Selected WY Trend:** Soil moisture trend (percent per year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the month(s)/season(s) of the selected water year(s).
+- **Selected WY Median:** Soil moisture median for the selected month(s)/season(s) and water year(s).
+- **Selected WY Trend:** Soil moisture trend (percent per year) using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected month(s)/season(s) and water year(s).
 """
     )
     
