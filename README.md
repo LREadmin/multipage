@@ -1,6 +1,8 @@
 SNOTEL Data
 1)	Download/run “Data_fetch.py” lines through 105:
-	  This SNOTEL block of code is needed because The "ulmo" library (necessary for SNOTEL data fetch) is not supported by Streamlit. 
+
+a. 	This SNOTEL block of code is needed because The "ulmo" library (necessary for SNOTEL data fetch) is not supported by Streamlit. 
+
 b.	Verify that the sitecode list in lines 36 through 51 is representative of the SNOTEL sites you would like to include in the analysis. 
 c.	Line 58 sets the period of record end date to the day the code is rerun
 2)	A new file, “SNOTEL_data_raw.csv.gz,” will be saved to your local working directory. 
