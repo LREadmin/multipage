@@ -17,6 +17,7 @@ SNOTEL Data
 
     a.	This file is read by “SMS_data_fetch_all.py,” “08_Soil_Moisture_Individual_Sites.py” and “09_Soil_Moisture_Site_Comparison.py”
 6)	Copy the new files generated in steps 4-6 to the GitHub multipage parent directory. 
+
 Temperature/Precipitation Data
 1)	Copy DW weather station data into a folder titled “Weather_Data” in your local working directory
 2)	Download/run “Data_fetch.py” lines 108 -118
@@ -24,6 +25,7 @@ Temperature/Precipitation Data
 
     a.  This file concatenates individual weather station files
 4)	Copy the new file generated in steps 4 to the GitHub multipage parent directory. 
+
 Soil Moisture Data
 1)	Create a folder titled “SMS_Data” in your local working directory.
 2)	Download/run “SMS_data_fetch_all.py”
