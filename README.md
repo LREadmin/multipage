@@ -22,7 +22,7 @@ Temperature/Precipitation Data
 2)	Download/run “Data_fetch.py” lines 108 -118
 3)	A new file, “DW_weather.csv.gz” will be saved to your local working directory. 
 
-    a.	This file concatenates individual weather station files
+    a.  This file concatenates individual weather station files
 4)	Copy the new file generated in steps 4 to the GitHub multipage parent directory. 
 Soil Moisture Data
 1)	Create a folder titled “SMS_Data” in your local working directory.
@@ -30,7 +30,7 @@ Soil Moisture Data
 3)	New files, one for each SNOTEL site, will be saved to the “SMS_Data” folder in your local working directory. 
 4)	 The last block of code, lines 61-71, concatenates individual soil moisture files and creates a new file “SNOTEL_SMS.csv.gz”
     
-    a.	This file is read by “09_Soil_Moisture_Site_Comparison.py”
+    a.  This file is read by “09_Soil_Moisture_Site_Comparison.py”
 
 Requirements.txt file is needed for streamlit to read required libraries. The "ulmo" library (necessary for SNOTEL data fetch) is not supported by streamlit, which is why I separated out the "Data_fetch.py" script. 
 
