@@ -12,6 +12,8 @@ import requests
 
 import numpy as np
 
+import os
+
 #%%dictionaries
 months={1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'}
 
@@ -52,6 +54,6 @@ for site in sitecodeSMS:
     urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
     
     urlData['site']=site
-    
-    urlData.to_csv("C:\\Users\msparacino\streamlit\SMS_Data\POR_data_site_%s.csv"%site[:3],index=False)
+      
+    urlData.to_csv("SMS_Data\\POR_data_site_%s.csv"%site[:3],index=False)
     

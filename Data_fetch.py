@@ -29,10 +29,10 @@ sites_df=sites_df.reset_index()
 #sites_df.to_csv("SNOTEL_sites.csv.gz",index=False)
 
 #%% Get available measurements
-ulmo.cuahsi.wof.get_site_info(wsdlurl, "SNOTEL:335_CO_SNTL")['series'].keys()
+#ulmo.cuahsi.wof.get_site_info(wsdlurl, "SNOTEL:335_CO_SNTL")['series'].keys()
 #%% SNOTEL data SNOTEL: WTEQ_D
 variablecode='SNOTEL:WTEQ_D'
-     
+    
 sitecode = [
     'SNOTEL:335_CO_SNTL',
     'SNOTEL:938_CO_SNTL',
@@ -102,7 +102,7 @@ with open ("siteNamesList.txt","w") as output:
 siteNamesListCode=pandas.DataFrame(siteNamesListCode)
 siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
 
-#data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
+data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
 
 #%% TEMPERATURE data
 wd=os.getcwd()
@@ -116,18 +116,3 @@ for item in weather_files:
     weather=pandas.concat([weather,file])
     
 weather.to_csv("DW_weather.csv.gz",index=False)
-
-#%% SMS Data
-wd=os.getcwd()
-path=os.path.join(wd,"SMS_Data\\") #put all DW files in one directory with nothing else
-sms_files = os.listdir(path)
-
-sms=pandas.DataFrame()
-for item in sms_files:
-    print(item)
-    file=pandas.read_csv(os.path.join(path,item))
-    #file['site']=item[-7:-4]
-    sms=pandas.concat([sms,file],ignore_index=True)
-    
-sms.to_csv("SNOTEL_SMS.csv.gz",index=False)
-
