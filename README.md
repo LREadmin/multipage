@@ -24,7 +24,7 @@ Temperature/Precipitation Data
 3)	A new file, “DW_weather.csv.gz” will be saved to your local working directory. 
 
     a.  This file concatenates individual weather station files
-4)	Copy the new file generated in steps 4 to the GitHub multipage parent directory. 
+4)	Copy the new file generated in step 3 to the GitHub multipage parent directory. 
 
 Soil Moisture Data
 1)	Create a folder titled “SMS_Data” in your local working directory.
