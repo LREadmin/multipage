@@ -188,7 +188,6 @@ def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
     
 tableData=data4.style\
     .format(precision=1)\
-    .format({'Years':"{:,}"})\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)
 
