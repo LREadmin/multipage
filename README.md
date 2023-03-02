@@ -31,8 +31,10 @@ Soil Moisture Data
 2)	Download/run “SMS_data_fetch_all.py”
 3)	New files, one for each SNOTEL site, will be saved to the “SMS_Data” folder in your local working directory. 
 4)	 The last block of code, lines 61-71, concatenates individual soil moisture files and creates a new file “SNOTEL_SMS.csv.gz”
-    
     a.  This file is read by “09_Soil_Moisture_Site_Comparison.py”
+    
+Incorporating updated data into app
+1)	No app updates are needed so long as the updated data files from the scripts are uploaded into the GitHub repository; simply refresh the app and check that the year selection includes the updated data. 
 
 Requirements.txt file is needed for streamlit to read required libraries. The "ulmo" library (necessary for SNOTEL data fetch) is not supported by streamlit, which is why I separated out the "Data_fetch.py" script. 
 
