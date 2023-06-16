@@ -10,22 +10,16 @@ Created on Tue Aug 16 04:42:06 2022
 
 #%% Import Libraries
 import pandas #for dataframe
-
 import matplotlib.pyplot as plt #for plotting
-
 from matplotlib import colors #for additional colors
-
 import streamlit as st #for displaying on web app
-
 import datetime #for date/time manipulation
-
 import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 import numpy as np
-
 from PIL import Image
+
+
 
 #%% Website display information
 st.set_page_config(page_title="Precipitation Individual Sites", page_icon="🌦")
@@ -57,10 +51,29 @@ paramsDF['long']=["Accumulated Precipitation (in)"]
 paramsSelect=paramsDF['long']
 
 #get site list
-sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
-sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
-               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
-               'Strontia (ST)','Williams Fork (WF)']
+sites = {
+    'Antero (AN)': 'AN',
+    'Cheesman (CM)': 'CM',
+    'DIA (DI)': 'DI',
+    'Dillon (DL)': 'DL',
+    'DW Admin (DW)': 'DW',
+    'Evergreen (EG)': 'EG',
+    'Eleven Mile (EM)': 'EM',
+    'Gross (GR)': 'GR',
+    'Kassler (KS)': 'KS',
+    'Moffat HQ (MF)': 'MF',
+    'Ralston (RS)': 'RS',
+    'Central Park (SP)': 'SP',
+    'Strontia (ST)': 'ST',
+    'Williams Fork (WF)': 'WF'}
+# The long names are hard coded, so there's no reason to grab the abbreviations
+# from the data frame. 
+# As written, the long name the user selected DID NOT map to the correct site
+# abbreviation. (i.e. "Antero (AN)" was mapping to "RS"). 
+# sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
+# sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
+#                'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
+#                'Strontia (ST)','Williams Fork (WF)']
 
 #%% filter first for parameters
 params_select = "Accumulated Precipitation (in)"
@@ -71,9 +84,10 @@ data_param=data_raw
 data1=data_param[[param.iloc[0],'pcpn','Month','site','CY','WY']]
 
 #%% filter second for site
-site_select_long = st.sidebar.selectbox('Select One Site:', sites['long'])
+# TODO: test whether this will work without converting keys from dict_keys type
+site_select_long = st.sidebar.selectbox('Select One Site:', list(sites.keys()))
 #site_select_long="Ralston (RS)"
-site_select=sites['site'][sites['long']==site_select_long]
+site_select=sites[site_select_long]
 
 def sitefilter():
     return data1.loc[data1['site'] == site_select.iloc[0]]
