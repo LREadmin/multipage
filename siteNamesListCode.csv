@@ -1,16 +1,16 @@
-0,1
-Berthoud Summit,SNOTEL:335_CO_SNTL
-Buckskin Joe,SNOTEL:938_CO_SNTL
-Buffalo Park,SNOTEL:913_CO_SNTL
-Copper Mountain,SNOTEL:415_CO_SNTL
-Echo Lake,SNOTEL:936_CO_SNTL
-Fool Creek,SNOTEL:1186_CO_SNTL
-Fremont Pass,SNOTEL:485_CO_SNTL
-Grizzly Peak,SNOTEL:505_CO_SNTL
-High Lonesome,SNOTEL:1187_CO_SNTL
-Hoosier Pass,SNOTEL:531_CO_SNTL
-Jackwhacker Gulch,SNOTEL:935_CO_SNTL
-Jones Pass,SNOTEL:970_CO_SNTL
-Michigan Creek,SNOTEL:937_CO_SNTL
-Middle Fork Camp,SNOTEL:1014_CO_SNTL
-Rough And Tumble,SNOTEL:939_CO_SNTL
+0,1,2
+Berthoud Summit,SNOTEL:335_CO_SNTL,North
+Buckskin Joe,SNOTEL:938_CO_SNTL,South
+Buffalo Park,SNOTEL:913_CO_SNTL,North
+Copper Mountain,SNOTEL:415_CO_SNTL,South
+Echo Lake,SNOTEL:936_CO_SNTL,South
+Fool Creek,SNOTEL:1186_CO_SNTL,North
+Fremont Pass,SNOTEL:485_CO_SNTL,South
+Grizzly Peak,SNOTEL:505_CO_SNTL,South
+High Lonesome,SNOTEL:1187_CO_SNTL,North
+Hoosier Pass,SNOTEL:531_CO_SNTL,South
+Jackwhacker Gulch,SNOTEL:935_CO_SNTL,South
+Jones Pass,SNOTEL:970_CO_SNTL,North
+Michigan Creek,SNOTEL:937_CO_SNTL,South
+Middle Fork Camp,SNOTEL:1014_CO_SNTL,North
+Rough And Tumble,SNOTEL:939_CO_SNTL,South
