@@ -90,7 +90,7 @@ site_select_long = st.sidebar.selectbox('Select One Site:', list(sites.keys()))
 site_select=sites[site_select_long]
 
 def sitefilter():
-    return data1.loc[data1['site'] == site_select.iloc[0]]
+    return data1.loc[data1['site'] == site_select]
 
 data_param_site=sitefilter()
 
