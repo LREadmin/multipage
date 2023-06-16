@@ -252,7 +252,7 @@ csv = convert_df(data4)
 st.download_button(
      label="Download Monthly %s Data (as CSV)"%params_select,
      data=csv,
-     file_name='Monthly_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
+     file_name='Monthly_Data_%s_%s.csv'%(params_select,site_select),
      mime='text/csv',
  )
 
@@ -287,7 +287,7 @@ csv = convert_df(sumStats)
 st.download_button(
      label="Download Summary Table Data as CSV",
      data=csv,
-     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
+     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select),
      mime='text/csv',
  )
 
