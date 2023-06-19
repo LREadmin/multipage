@@ -5,21 +5,12 @@
 
 #%% Import Libraries
 import pandas #for dataframe
-
 import matplotlib.pyplot as plt #for plotting
-
 from matplotlib import colors #for additional colors
-
 import streamlit as st #for displaying on web app
-
 import datetime #for date/time manipulation
-
-import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 import numpy as np
-
 from PIL import Image #for map
 #%% Website display information
 st.set_page_config(page_title="Temperature Individual Sites", page_icon="📈")
@@ -43,12 +34,20 @@ monthList=data_raw['Month'].drop_duplicates()
 monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 #get parameter list
-params=data_raw.columns
-params=params[params.isin(["maxt","mint","meant"])==True]
+# params=data_raw.columns
+# params=params[params.isin(["maxt","mint","meant"])==True]
 
-paramsDF=pandas.DataFrame(params)
-paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
-paramsSelect=paramsDF['long']
+# paramsDF=pandas.DataFrame(params)
+# paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
+# paramsSelect=paramsDF['long']
+
+# The "long" values are already hardcoded in, so there's no reason not to use
+# a dict. It simplifies things a lot, an it speeds things up by a factor of 
+# around 5000
+params_dict =  {
+    'Max Temp (F)': 'maxt',
+    'MinTemp(F)': 'mint',
+    'Mean Temp (F)': 'meant'}
 
 #get site list
 sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
@@ -57,10 +56,10 @@ sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin 
                'Strontia (ST)','Williams Fork (WF)']
 
 #%% filter first for parameters
-params_select = st.sidebar.selectbox('Select One Statistic:', paramsSelect)
-param=paramsDF.loc[paramsDF['long']==params_select][0]
+params_select = st.sidebar.selectbox('Select One Statistic:', params_dict.keys())
+param=params_dict[params_select]
 data_param=data_raw
-data1=data_param[[param.iloc[0],'Month','site','CY']]
+data1=data_param[[param,'Month','site','CY']]
 
 #%% filter second for site
 site_select_long = st.sidebar.selectbox('Select One Site:', sites['long'])
@@ -105,7 +104,7 @@ for row in yearList:
 
     #filter by day count threshold
     dayCountThres=25
-    tempData=tempData.groupby('Month').filter(lambda x : x['%s'%param.iloc[0]].count().sum()>=dayCountThres)
+    tempData=tempData.groupby('Month').filter(lambda x : x['%s'%param].count().sum()>=dayCountThres)
     
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]

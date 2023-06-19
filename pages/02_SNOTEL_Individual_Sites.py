@@ -4,19 +4,12 @@
 """
 #%% Import Libraries
 import pandas #for dataframe
-
 import numpy #for math
-
 import matplotlib.pyplot as plt #for plotting
-
 import streamlit as st #for displaying on web app
-
 import datetime #for date/time manipulation
-
 import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 from PIL import Image
 
 #%% Website display information
@@ -36,8 +29,9 @@ yearType="WY" #CY = calendar year, WY = water year
 #%% Read in raw data and isolate site names
 data_raw=pandas.read_csv('SNOTEL_data_raw.csv.gz')
 
+# This didn't do anything - need to use inplace=True or data_raw = pd....
 #convert date to datetime
-pandas.to_datetime(data_raw['Date'])
+# pandas.to_datetime(data_raw['Date'])
 
 # get site list
 with open("siteNamesList.txt") as f:
@@ -67,11 +61,15 @@ cols=data.columns.tolist()
 cols=cols[-1:] + cols[:-1]
 data=data[cols]
 data1=data
-data1=data1.set_index('Site')
+data1=data1.set_index('Site') # Oh god, why? The index will all be the same value
 data1['Date']=data1['Date'].str[:-15]
 
 # sort with current year at top
-data1=data1.sort_values(by="Date", ascending=False)
+# data1=data1.sort_values(by="Date", ascending=False)
+
+# The api returns the data in order (earliest to latest), so this ^ is super
+# inefficient. Changing it to data1[::-1] speeds it up by a factor of 5000
+data1 = data1[::-1]
 
    
 #%% date filter
