@@ -56,23 +56,53 @@ stat_select = "Accumulated Precipitation (in)"
 
 stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
 
-#%%make selections
-sites=pandas.DataFrame(data['site'].drop_duplicates())
-sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
-               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
-               'Strontia (ST)','Williams Fork (WF)']
+#get site list
+sites = {
+    'Antero (AN)': 'AN',
+    'Cheesman (CM)': 'CM',
+    'DIA (DI)': 'DI',
+    'Dillon (DL)': 'DL',
+    'DW Admin (DW)': 'DW',
+    'Evergreen (EG)': 'EG',
+    'Eleven Mile (EM)': 'EM',
+    'Gross (GR)': 'GR',
+    'Kassler (KS)': 'KS',
+    'Moffat HQ (MF)': 'MF',
+    'Ralston (RS)': 'RS',
+    'Central Park (SP)': 'SP',
+    'Strontia (ST)': 'ST',
+    'Williams Fork (WF)': 'WF'}
+
+rev_sites = {
+    'AN': 'Antero (AN)',
+    'CM': 'Cheesman (CM)',
+    'DI': 'DIA (DI)',
+    'DL': 'Dillon (DL)',
+    'DW': 'DW Admin (DW)',
+    'EG': 'Evergreen (EG)',
+    'EM': 'Eleven Mile (EM)',
+    'GR': 'Gross (GR)',
+    'KS': 'Kassler (KS)',
+    'MF': 'Moffat HQ (MF)',
+    'RS': 'Ralston (RS)',
+    'SP': 'Central Park (SP)',
+    'ST': 'Strontia (ST)',
+    'WF': 'Williams Fork (WF)'}
+
+long_site_names = list(sites.keys())
 
 container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'], sites['long'])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', long_site_names, long_site_names)
 
 else:
-    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'],default=sites['long'].iloc[0])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', sites.keys(), default=long_site_names[0])
 
 #multi_site_select_long=["Antero (AN)" ]   
-multi_site_select=sites['site'][sites['long'].isin(multi_site_select_long)]
+
+multi_site_select=[sites[i] for i in long_site_names]
 
 def multisitefilter():
     return data[data['site'].isin(multi_site_select)]
@@ -205,7 +235,7 @@ tableEndDate=datetime.datetime(selectEndYearTable,9,30).strftime("%Y-%m-%d")
 manKPOR=[]
 por=[]
 medstat=[]
-for site in sites['site']:
+for site in sites.values():
     dataBySite=data_months[data_months['site']==site]
 
     porS=dataBySite['date'].min()
@@ -230,15 +260,14 @@ for site in sites['site']:
         manKPOR.append([site,tempPORManK[7]])       #slope value 
 
 manKPOR=pandas.DataFrame(manKPOR)
-manKPOR=manKPOR.set_index([sites['site']])
 manKPOR.columns=(['Site','POR Trend for %s'%stat_select])
+manKPOR = manKPOR.set_index('Site')
     
 pordf=pandas.DataFrame(por)
 pordf=pordf.set_index([0])
 pordf.columns=["POR Start","POR End"]
 
-medstatdf=pandas.DataFrame(medstat)
-medstatdf=medstatdf.set_index([sites['site']])
+medstatdf=pandas.DataFrame(medstat, index=sites.values())
 medstatdf.columns=['POR Median of %s'%stat_select]
 
 sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
@@ -261,7 +290,7 @@ medstatSelect=[]
 
 siteSelect=data_sites_years_months['site'].drop_duplicates()
 
-for site in sites['site']:
+for site in sites.values():
     dataBySite=data_sites_years_months[data_sites_years_months['site']==site]
    
     #filter by day count threshold
@@ -288,13 +317,13 @@ for site in sites['site']:
     else:
         manKPORSelect.append(tempPORManK[7])       #slope value 
 
-manKPORSelect=pandas.DataFrame(manKPORSelect)
-manKPORSelect=manKPORSelect.set_index([sites['site']])
+manKPORSelect=pandas.DataFrame(manKPORSelect, index=sites.values())
+# manKPORSelect=manKPORSelect.set_index([sites['site']])
 manKPORSelect.columns=(['Select WY Trend for %s'%stat_select])
 manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
-medstatSelectdf=pandas.DataFrame(medstatSelect)
-medstatSelectdf=medstatSelectdf.set_index([sites['site']])
+medstatSelectdf=pandas.DataFrame(medstatSelect, index=sites.values())
+# medstatSelectdf=medstatSelectdf.set_index([sites['site']])
 medstatSelectdf.columns=(['Select WY Median of %s'%stat_select])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
@@ -307,7 +336,7 @@ sumSites1['long']=""
 
 for i in range(0,len(sumSites1)):
     idx=sumSites1.index[i]
-    site_long=sites[sites.site==idx].long.iloc[0]
+    site_long=rev_sites[idx]
     sumSites1.long.iloc[i]=site_long
     
 sumSites1=sumSites1.set_index('long')
@@ -327,7 +356,7 @@ for WYrow in selectWY:
     tempWYdata=compData[compData['WY']==WYrow]
     try:
         for siterow in selectSite:
-            site_long=sites[sites.site==siterow].long.iloc[0]
+            site_long=rev_sites[siterow]
             tempSiteData=tempWYdata[tempWYdata['site']==siterow]
             if len(tempSiteData)==0:
                 compList.append([site_long,WYrow,None,None,None,None])
@@ -474,7 +503,7 @@ for WYrow in selectWY:
         for siterow in selectSite:
             tempSiteData=tempWYdata[tempWYdata['site']==siterow]
             tempSiteData=tempSiteData[['WY','pcpn']].set_index('WY')
-            site_long=sites[sites.site==siterow].long.iloc[0]
+            site_long=rev_sites[siterow]
             
             count=tempSiteData[(tempSiteData <= thresholdHigh)&(tempSiteData >= thresholdLow)].count()[0]
             if (len(tempSiteData)==0):
