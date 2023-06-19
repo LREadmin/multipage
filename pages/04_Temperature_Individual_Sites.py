@@ -50,10 +50,21 @@ params_dict =  {
     'Mean Temp (F)': 'meant'}
 
 #get site list
-sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
-sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
-               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
-               'Strontia (ST)','Williams Fork (WF)']
+sites = {
+    'Antero (AN)': 'AN',
+    'Cheesman (CM)': 'CM',
+    'DIA (DI)': 'DI',
+    'Dillon (DL)': 'DL',
+    'DW Admin (DW)': 'DW',
+    'Evergreen (EG)': 'EG',
+    'Eleven Mile (EM)': 'EM',
+    'Gross (GR)': 'GR',
+    'Kassler (KS)': 'KS',
+    'Moffat HQ (MF)': 'MF',
+    'Ralston (RS)': 'RS',
+    'Central Park (SP)': 'SP',
+    'Strontia (ST)': 'ST',
+    'Williams Fork (WF)': 'WF'}
 
 #%% filter first for parameters
 params_select = st.sidebar.selectbox('Select One Statistic:', params_dict.keys())
@@ -62,12 +73,12 @@ data_param=data_raw
 data1=data_param[[param,'Month','site','CY']]
 
 #%% filter second for site
-site_select_long = st.sidebar.selectbox('Select One Site:', sites['long'])
+site_select_long = st.sidebar.selectbox('Select One Site:', sites.keys())
 
-site_select=sites['site'][sites['long']==site_select_long]
+site_select=sites[site_select_long]
 
 def sitefilter():
-    return data1.loc[data1['site'] == site_select.iloc[0]]
+    return data1.loc[data1['site'] == site_select]
 
 data_param_site=sitefilter()
 
@@ -217,7 +228,7 @@ csv = convert_df(data4)
 st.download_button(
      label="Download Monthly Median of %s Data (as CSV)"%params_select,
      data=csv,
-     file_name='Monthly_Median_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
+     file_name='Monthly_Median_Data_%s_%s.csv'%(params_select,site_select),
      mime='text/csv',
  )
 
@@ -249,7 +260,7 @@ csv = convert_df(sumStats)
 st.download_button(
      label="Download Monthly %s Table (as CSV)"%params_select,
      data=csv,
-     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
+     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select),
      mime='text/csv',
  )
 
