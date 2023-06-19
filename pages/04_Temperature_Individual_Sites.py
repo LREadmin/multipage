@@ -141,10 +141,10 @@ tableStartDate=datetime.datetime(selectStartYear,1,1).strftime("%Y-%m-%d")
 
 tableEndDate=datetime.datetime(selectEndYear,12,31).strftime("%Y-%m-%d")
 #%%transpose to get months as columns
-list=paramDataMerge['CY'].drop_duplicates()
-list=list.sort_values(ascending=False)
+years=paramDataMerge['CY'].drop_duplicates()
+years=years.sort_values(ascending=False)
 yearList=[]
-for n in list:
+for n in years:
     temp1=paramDataMerge[paramDataMerge['CY']==n]
     temp2=temp1.iloc[:,[1,2]].copy()
     temp2=temp2.sort_values(by="Month")
@@ -154,7 +154,7 @@ for n in list:
     yearList.append(temp3)
 
 data4=pandas.concat(yearList)
-years=list.values.tolist()
+years=years.values.tolist()
 data4['Years']=years
 data4=data4.set_index('Years')
 data4.columns=monthNames
@@ -267,7 +267,7 @@ st.download_button(
 #%%FOR THRESHOLD
 #%%transpose to get Months as columns
 yearList=[]
-for n in list:
+for n in years:
     temp1=paramDataMerge1[paramDataMerge1['CY']==n]
     temp2=temp1.iloc[:,[1,2]].copy()
     temp2=temp2.sort_values(by="Month")
@@ -277,7 +277,7 @@ for n in list:
     yearList.append(temp3)
 
 data5=pandas.concat(yearList)
-years=list.values.tolist()
+# years=med_list.values.tolist()
 data5['Years']=years
 data5=data5.set_index('Years')
 data5.columns=monthNames
