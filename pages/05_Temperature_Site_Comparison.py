@@ -288,7 +288,7 @@ for site in sites.values():
     #get medians
     dataBySiteParam=dataBySite[stat_selection]
     tempstat=dataBySiteParam.median()
-    medstatSelect.append(tempstat[0])
+    medstatSelect.append(tempstat)
     
     #Man Kendall Test
     try:
