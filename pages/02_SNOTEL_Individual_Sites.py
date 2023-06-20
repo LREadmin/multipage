@@ -358,8 +358,7 @@ _Annual Results for:_
 - **Melt Day Count:** (Days) 
 """
 )
-merge=merge.sort_values(by="WY", ascending=False)
-merge['WY'] = merge['WY'].astype(str)
+merge=merge.sort_values(by="WY", ascending=False).index.map(str)
 merge2=merge.style\
     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})\
     .set_properties(**{'width':'10000px'})
