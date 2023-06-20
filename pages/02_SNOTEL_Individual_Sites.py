@@ -359,9 +359,9 @@ _Annual Results for:_
 """
 )
 merge=merge.sort_values(by="WY", ascending=False)
+merge['WY'] = merge['WY'].astype(str)
 merge2=merge.style\
     .format({"Peak SWE (in)":"{:.1f}","Peak SWE Day":"{:.0f}","First Zero SWE Day":"{:.0f}","Melt Day Count":"{:.0f}"})\
-    .format_index(axis=1,  thousands='')\
     .set_properties(**{'width':'10000px'})
 
 st.markdown("Selected Water Year(s): %s through %s"%(start_date1, end_date1))
