@@ -98,7 +98,7 @@ if all:
     multi_site_select_long = container.multiselect('Select One or More Sites:', long_site_names, long_site_names)
 
 else:
-    multi_site_select_long = container.multiselect('Select One or More Sites:', sites.keys(), default=long_site_names[0])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', long_site_names, default=long_site_names[0])
 
 #multi_site_select_long=["Antero (AN)" ]   
 
