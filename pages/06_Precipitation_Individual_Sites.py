@@ -228,6 +228,7 @@ def background_gradient(s, m=None, M=None, cmap='Blues', low=0, high=0.8):
     return ret 
 
 # pandas.set_option("display.precision", 1)
+data4.index = data4.index.astype(str)
 tableData=data4.style\
     .set_properties(**{'width':'10000px'})\
     .apply(background_gradient, axis=None)\
@@ -312,7 +313,7 @@ data5.columns=monthNames
 data5=data5[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
 
 #%%colormap
-   
+data5.index = data5.index.astype(str)
 countTableData=data5.style\
     .format(precision=2)\
     .set_properties(**{'width':'10000px'})\

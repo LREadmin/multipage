@@ -195,7 +195,8 @@ def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
     ret = c.applymap(lambda x: 'background-color: %s' % x)
 
     return ret 
-    
+
+data4.index = data4.index.astype(str)
 tableData=data4.style\
     .format(precision=1)\
     .set_properties(**{'width':'10000px'})\
@@ -280,6 +281,7 @@ data5=pandas.concat(yearList)
 # years=med_list.values.tolist()
 data5['Years']=years
 data5=data5.set_index('Years')
+data5.index = data5.index.astype(str)
 data5.columns=monthNames
    
 countTableData=data5.style\
