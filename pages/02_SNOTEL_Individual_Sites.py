@@ -332,7 +332,7 @@ sumDisplay
 st.markdown(
     """
 Table Note:
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None". 
     """)
 
 #%% download sum stats data

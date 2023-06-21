@@ -445,8 +445,8 @@ st.markdown(
 """
 Notes for all tables:
 - Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+- If full year (12 months) is selected, years with fewer than 330 results are not shown.
+- If less than 12 months are selected, months with fewer than 25 results are not shown.
 Based on average for %s for user-selected month(s)/season(s) in selected water year(s): %s through %s    
 """%(tableDepths2Str, tableStartY, tableEndY)
     )
@@ -487,7 +487,7 @@ st.dataframe(displayTableDataPOR)
 st.markdown(
     """
 Table Note: 
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None".
     """)
 
 #download pivot table
@@ -517,7 +517,7 @@ st.dataframe(tableDataDiv)
 st.markdown(
     """
 Table Note:
-- If divisor is zero, result is excluded and presented as “nan.”
+- If divisor is zero, result is excluded and presented as "None".
     """)
 #download pivot table
 csv = convert_df(pvTable_division)

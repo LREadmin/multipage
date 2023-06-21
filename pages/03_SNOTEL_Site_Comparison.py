@@ -454,7 +454,7 @@ For the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, 
     - **First Zero SWE Day:** (earlier or later calendar day per year) 
     - **Melt Day Count:** (increasing or decreasing days per year) 
 - **Selected WY Median:** Median of the selected summary statistic (Peak SWE, Peak SWE Day, First Zero SWE Day, or Melt Day Count) for the selected water year(s) 
-- **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected summary statistic. If no trend, then result is “nan.” 
+- **Selected WY Trend:** Trend using the Theil-Sen Slope analysis where Mann-Kendall trend test is significant for the selected water years of the selected summary statistic. 
 """
 )
 st.markdown("Selected Water Year(s): %s through %s"%(start_date, end_date))    
@@ -462,7 +462,7 @@ summary1
 st.markdown(
     """
 Table Note:
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None". 
     """)
 
 #%% download SNOTEL comparison Summary data

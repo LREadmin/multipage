@@ -219,7 +219,7 @@ st.dataframe(tableData)
 
 st.markdown(
     """Table Notes:
-- Months with fewer than 25 results are excluded and presented as “nan.""
+- Months with fewer than 25 results are not shown.
 - The user-defined temperature threshold does not change this table.  
     """
     )
@@ -251,7 +251,7 @@ Provides the monthly median and monthly trend for %s for the selected water year
 st.markdown("Selected Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 sumStats1
 st.markdown("""Table Notes:
-- If no trend, then result is presented as “nan.”
+- If no trend, then result is presented as "None".
 - The user-defined temperature threshold does not change this table.
 """
 )

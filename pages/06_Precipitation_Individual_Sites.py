@@ -251,7 +251,7 @@ st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDat
 st.dataframe(tableData)
 st.markdown("""
 Table Notes:
-- Months with fewer than 25 results are excluded and the result is presented as “nan.”
+- Months with fewer than 25 results are not shown.
 - The user-defined precipitation threshold does not change this table.
             """)
 
@@ -285,7 +285,7 @@ sumStats1
 st.markdown(
     """
 Table Notes:
-- If no trend, then result is presented as “nan.”
+- If no trend, then result is presented as "None".
 - The user-defined precipitation threshold does not change this table.
     """
     )

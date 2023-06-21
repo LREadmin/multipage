@@ -494,8 +494,8 @@ Provides the median of the selected summary statistic for each selected site for
 - **Min Temp (F):** The recorded daily minimum temperature 
 - **Mean Temp (F):** Calculated daily mean using the recorded maximum and minimum temperature
 Notes for all tables:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+- If full year (12 months) is selected, years with fewer than 330 results are not shown.
+- If less than 12 months are selected, months with fewer than 25 results are not shown.
 """
 )
 st.markdown("User-Selected Month(s)/Season(s) in Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))

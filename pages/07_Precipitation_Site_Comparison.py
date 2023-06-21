@@ -553,8 +553,8 @@ st.subheader("Monthly %s for Selected Site(s) and Month(s)/Season(s) by Water Ye
 st.markdown("""
 Provides the total accumulated precipitation (in inches) for each selected site for the selected month(s)/season(s) and water year(s):  
 Notes for all tables:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”          
+- If full year (12 months) is selected, years with fewer than 330 results are not shown.
+- If less than 12 months are selected, months with fewer than 25 results are not shown.    
     """)
             
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
@@ -594,7 +594,7 @@ sumSitesDisplay
 st.markdown(
     """
 Table Notes:
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None".
 - The user-defined precipitation threshold does not change this table.
     """)
     
@@ -648,7 +648,7 @@ yearList1
 st.markdown(
     """
 Table Notes:
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None".
 - The user-defined precipitation threshold does not change this table.
     """)
 #%% download temp comparison data

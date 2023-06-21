@@ -310,7 +310,7 @@ Provides the depth averaged median soil moisture (percent) for each month within
         st.markdown(
     """
 Table Notes:
-- Months with fewer than 25 results are excluded and presented as “nan.”
+- Months with fewer than 25 results are not shown.
 - NRCS raw data occasionally includes soil moisture percentages that exceed 100%; these values are excluded from the calculations presented in this table.  
     """)
         
@@ -377,7 +377,7 @@ Provides the monthly median and monthly trend for soil moisture for the selected
         st.markdown(
     """
 Table Note:        
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None". 
  """
     )        
         #download pivot table
