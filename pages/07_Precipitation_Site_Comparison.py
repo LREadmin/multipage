@@ -102,7 +102,7 @@ else:
 
 #multi_site_select_long=["Antero (AN)" ]   
 
-multi_site_select=[sites[i] for i in long_site_names]
+multi_site_select=[sites[i] for i in multi_site_select_long]
 
 def multisitefilter():
     return data[data['site'].isin(multi_site_select)]
