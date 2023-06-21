@@ -142,18 +142,19 @@ for row in yearList:
                 tempData2=tempData2.drop(columns='site')
                 if len(tempData2)==0:
                     count=[np.nan, np.nan, np.nan]
-                    count[1]=np.nan
+                    na_count = 0
+                    # count[1]=np.nan 
                 else:
                     count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
-                    count2=tempData2['pcpn'].isna().sum()
+                    na_count=tempData2['pcpn'].isna().sum()
                     
                 if len(tempData2)==0:
                     monthlyCumPrecip=np.nan
                 else:
                     monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
                     
-                newParamData.append([row,row1,monthlyCumPrecip,count2])
-                newParamData1.append([row,row1,count[1],count2])
+                newParamData.append([row,row1,monthlyCumPrecip,na_count])
+                newParamData1.append([row,row1,count[1],na_count])
             except:
                 pass
     else:
@@ -162,11 +163,18 @@ for row in yearList:
 
 paramDataMerge=pandas.DataFrame(newParamData,columns=['WY','Month',params_select,'count']) #sum pcpn
 cols=paramDataMerge.columns
-paramDataMerge.loc[((paramDataMerge['count']>dayCountThres)),cols[2]]=np.nan
+# paramDataMerge.loc[((paramDataMerge['count']>dayCountThres)),cols[2]]=np.nan
 
-paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select,'count']) #count
-cols=paramDataMerge1.columns
-paramDataMerge1.loc[((paramDataMerge1['count']>dayCountThres)),cols[2]]=np.nan
+# Incorrect! The columns are: WY, Month, Result count, NA Count
+
+# paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select,'count']) #count
+# You know what, I'm just going to change it. Screw the consequences
+paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month','data_count','na_count']) #count
+na_inx = np.where(paramDataMerge1.data_count < dayCountThres)[0]
+paramDataMerge.loc[na_inx, cols[2]] = np.nan
+
+# cols=paramDataMerge1.columns
+# paramDataMerge1.loc[((paramDataMerge1['count']>dayCountThres)),cols[2]]=np.nan
 
 #%%transpose to get months as columns
 list=paramDataMerge['WY'].drop_duplicates()
