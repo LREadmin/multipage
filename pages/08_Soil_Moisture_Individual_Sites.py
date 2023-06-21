@@ -286,7 +286,7 @@ Provides the depth averaged median soil moisture (percent) for each month within
         pvTable=pvTable.rename(columns = months)
         pvTable=pvTable[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
         pvTable.sort_index(axis='rows',level='WY',ascending=False,inplace=True)
-    
+        pvTable.index = pvTable.index.astype(str)
         #display pivot table 
         tableData=pvTable.style\
             .set_properties(**{'width':'10000px'})\
