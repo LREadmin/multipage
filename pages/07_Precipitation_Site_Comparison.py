@@ -332,14 +332,8 @@ sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
-sumSites1['long']=""
-
-for i in range(0,len(sumSites1)):
-    idx=sumSites1.index[i]
-    site_long=rev_sites[idx]
-    sumSites1.long.iloc[i]=site_long
-    
-sumSites1=sumSites1.set_index('long')
+sumSites1.index = sumSites1.index.map(rev_sites)
+sumSites1.index.name = 'Site'
 sumSitesDisplay=sumSites1.style\
     .format({'POR Median of %s'%stat_select:"{:.2f}",'POR Trend for %s'%stat_select:"{:.3f}"
               ,'Select WY Median of %s'%stat_select:"{:.2f}",'Select WY Trend for %s'%stat_select:"{:.3f}"})\
