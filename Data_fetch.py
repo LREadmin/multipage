@@ -10,6 +10,7 @@ Get data for DW tools
 # streamlit to use conda. I suggest using `channel: conda-forge`, but I'm not
 # the code police - follow your bliss.
 # https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app/app-dependencies#add-python-dependencies
+import os
 import time
 import argparse
 from datetime import datetime
@@ -17,6 +18,7 @@ import json
 import ulmo  
 import pandas as pd
 import numpy as np
+import requests 
 
 ### Global Variables ###
 # not necessarily good practice, but these might be updated in the future, and 
@@ -75,7 +77,6 @@ def snotel_fetch(site_code: str,
         print("Unable to fetch %s" % VARIABLE_CODE)
     # As written this function can return None
     return values_df
-
 
 def get_snotel_data(end_date: str, 
                     verbose: bool=False):
