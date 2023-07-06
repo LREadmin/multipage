@@ -117,9 +117,7 @@ def get_weather_data(verbose: bool=False):
         with open('dropbox_url_list.json','r') as f:    
             url_dict = json.load(f)
     except FileNotFoundError as e:
-        print('The file "dropbox_url_list.json" is not present. This file is \
-              not a part of the github repository because it has some values \
-              that might be sensitive. See README.md for more details')
+        print('The file "dropbox_url_list.json" is missing!')
         raise e
     # Proceed if file is present
     if verbose:
