@@ -13,6 +13,7 @@ Get data for DW tools
 import os
 import argparse
 from datetime import datetime
+import json
 import ulmo  
 import pandas as pd
 import numpy as np
@@ -82,11 +83,10 @@ def get_snotel_data(end_date: str,
             end_date: str - the latest date we want to pull data for
             verbose: bool - whether we should print information to stdout 
         Output:
-
+            Writes data_raw to a compressed csv file. The columns are the date
+            of the observation, the SWE in inches, and the name of the site. 
     """
     data_raw=pd.DataFrame()
-    # siteNamesList=[]
-    # siteNamesListCode=[]
     sites = ulmo.cuahsi.wof.get_sites(WSDLURL)
     sites_df = pd.DataFrame.from_dict(sites, orient='index').dropna()
     sites_df=sites_df.reset_index()
@@ -98,55 +98,51 @@ def get_snotel_data(end_date: str,
         temp=values_df[['datetime','value']].copy()
         name=sites_df['name'][sites_df['index']==site_code].iloc[0]
         temp['Site']=name
-        
-        data_raw=pd.concat([data_raw,temp])
-        # siteNamesList.append(name)
-        # siteNamesListCode.append([name,site_code])
-            
+        data_raw=pd.concat([data_raw,temp])    
     data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
-    # Also commenting this out, because why not.
-    # with open ("siteNamesList.txt","w") as output:
-    #     output.write(str(siteNamesList))
-
-    # An extra column was added since this script was made. The data in that
-    # column doesn't come from the API, so auto-generating it isn't feasible
-    # at the moment.  
-    # siteNamesListCode=pd.DataFrame(siteNamesListCode)
-    # siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
 
     data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
 
-def convert_weather_data(verbose: bool=False):
+def get_weather_data(verbose: bool=False):
     """ Input:
             verbose: bool - whether we should print to stdout 
         Output:
-
+            writes DW_weather to a compressed csv file. The columns mirror those
+            in the excel files, but they are concatenated into one csv and 
+            the site name (2 letter abbreviation) is added as a column named 
+            "site"
     """
-    wd=os.getcwd()
-    path=os.path.join(wd,"Weather_Data") #put all DW files in one directory with nothing else
-    weather_files = os.listdir(path)
-
-    weather=pd.DataFrame()
-    for file_name in weather_files:
-        file=pd.read_excel(os.path.join(path, file_name))
-        # This might break - add test later
-        file['site']=file_name[:2]
-        weather=pd.concat([weather,file])
+    # Fail loudly and informatively if file is missing
+    try:
+        with open('dropbox_url_list.json','r') as f:    
+            url_dict = json.load(f)
+    except FileNotFoundError as e:
+        print('The file "dropbox_url_list.json" is not present. This file is \
+              not a part of the github repository because it has some values \
+              that might be sensitive. See README.md for more details')
+        raise e
+    # Proceed if file is present
+    if verbose:
+        print(f'Preparing to download {len(url_dict)} files from dropbox...')
+    weather = pd.DataFrame()
+    for site_id, url in url_dict.items():
+        if verbose:
+            print(f'site_id: {site_id}, url: {url}')
+        df = pd.read_excel(url)
+        df['site'] = site_id
+        weather=pd.concat([weather,df])
     weather.to_csv("DW_weather.csv.gz",index=False)
 
 def main(args: argparse.Namespace):
     """ Input:
             args: populated namespace from Argument.Parser.parse_args()
-        Output:    
     """
     end_date = datetime.now().strftime('%Y-%m-%d')
     verbose = args.verbose
     if args.snotel:
         get_snotel_data(end_date, verbose)
     if args.weather:
-        convert_weather_data(verbose)
-
-
+        get_weather_data(verbose)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
