@@ -10,7 +10,7 @@ Get data for DW tools
 # streamlit to use conda. I suggest using `channel: conda-forge`, but I'm not
 # the code police - follow your bliss.
 # https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app/app-dependencies#add-python-dependencies
-import os
+import time
 import argparse
 from datetime import datetime
 import json
@@ -122,6 +122,9 @@ def get_weather_data(verbose: bool=False):
     # Proceed if file is present
     if verbose:
         print(f'Preparing to download {len(url_dict)} files from dropbox...')
+    
+    # Download each excel in dropbox_url_list, concatenate them, and save as
+    # compressed csv
     weather = pd.DataFrame()
     for site_id, url in url_dict.items():
         if verbose:
