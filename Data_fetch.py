@@ -14,8 +14,8 @@ import os
 import argparse
 from datetime import datetime
 import ulmo  
-import pandas
-import numpy
+import pandas as pd
+import numpy as np
 
 WSDLURL='https://hydroportal.cuahsi.org/Snotel/cuahsi_1_1.asmx?WSDL'
 VARIABLE_CODE='SNOTEL:WTEQ_D'
@@ -37,10 +37,10 @@ SITE_CODES = [
         'SNOTEL:939_CO_SNTL']
 
 
-def snotel_fetch(site_code, 
-                 start_date, 
-                 end_date,
-                 verbose=False):
+def snotel_fetch(site_code: str, 
+                 start_date: str, 
+                 end_date: str,
+                 verbose: bool=False):
     """ Input:
             site_code:
             start_date:
@@ -62,12 +62,12 @@ def snotel_fetch(site_code,
                                                  start=start_date, 
                                                  end=end_date)
         #Convert to a Pandas DataFrame   
-        values_df = pandas.DataFrame.from_dict(site_values['values'])
+        values_df = pd.DataFrame.from_dict(site_values['values'])
         #Parse the datetime values to Pandas Timestamp objects
-        values_df['datetime'] = pandas.to_datetime(values_df['datetime'], 
+        values_df['datetime'] = pd.to_datetime(values_df['datetime'], 
                                                    utc=True)
         #Convert values to float and replace -9999 nodata values with NaN
-        values_df['value'] = pandas.to_numeric(values_df['value']).replace(-9999, numpy.nan)
+        values_df['value'] = pd.to_numeric(values_df['value']).replace(-9999, np.nan)
         #Remove any records flagged with lower quality
         values_df = values_df[values_df['quality_control_level_code'] == '1']
     # Try/Excepts that don't specify what kind of error they're expecting cause
@@ -78,29 +78,32 @@ def snotel_fetch(site_code,
     return values_df
 
 
-def get_site_info(start_date,
-                  end_date):
+def get_snotel_data(start_date: str,
+                    end_date: str, 
+                    verbose: bool=False):
     """ Input:
             start_date:
             end_date:
+            verbose: bool -
         Output:
 
     """
-    data_raw=pandas.DataFrame()
+    data_raw=pd.DataFrame()
     siteNamesList=[]
     siteNamesListCode=[]
     sites = ulmo.cuahsi.wof.get_sites(WSDLURL)
-    sites_df = pandas.DataFrame.from_dict(sites, orient='index').dropna()
+    sites_df = pd.DataFrame.from_dict(sites, orient='index').dropna()
     sites_df=sites_df.reset_index()
 
     for row in SITE_CODES:
-        print(row)
+        if verbose:
+            print(row)
         values_df = snotel_fetch(row, VARIABLE_CODE, start_date, end_date)
         temp=values_df[['datetime','value']].copy()
         name=sites_df['name'][sites_df['index']==row].iloc[0]
         temp['Site']=name
         
-        data_raw=pandas.concat([data_raw,temp])
+        data_raw=pd.concat([data_raw,temp])
         siteNamesList.append(name)
         siteNamesListCode.append([name,row])
             
@@ -109,51 +112,51 @@ def get_site_info(start_date,
     with open ("siteNamesList.txt","w") as output:
         output.write(str(siteNamesList))
 
-    siteNamesListCode=pandas.DataFrame(siteNamesListCode)
+    siteNamesListCode=pd.DataFrame(siteNamesListCode)
     siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
 
     data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
 
-def convert_weather_data(verbose=False):
+def convert_weather_data(verbose: bool=False):
     """ Input:
-
+            verbose: bool - whether we should print to stdout 
         Output:
 
     """
     wd=os.getcwd()
-    # the backslash at the end defeated the purpose of using "os.path.join"
     path=os.path.join(wd,"Weather_Data") #put all DW files in one directory with nothing else
     weather_files = os.listdir(path)
 
-    weather=pandas.DataFrame()
-    for item in weather_files:
-        file=pandas.read_excel(os.path.join(path,item))
-        file['site']=item[:2]
-        weather=pandas.concat([weather,file])
+    weather=pd.DataFrame()
+    for file_name in weather_files:
+        file=pd.read_excel(os.path.join(path, file_name))
+        # This might break - add test later
+        file['site']=file_name[:2]
+        weather=pd.concat([weather,file])
         
     weather.to_csv("DW_weather.csv.gz",index=False)
 
 def main(args: argparse.Namespace):
     """ Input:
             args: populated namespace from Argument.Parser.parse_args()
-        Output:
-
-            
+        Output:    
     """
-    verbose = args.verbose
-    if args.snotel:
-        pass
-    if args.weather:
-        pass
-
-    #import and store site data for ALL Snotel Sites
-
     # If you're going to specify these like this, why not just use a string?
     startY=1950
     startM=10
     startD=1
     start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
     end_date = datetime.now().strftime('%Y-%m-%d')
+
+    verbose = args.verbose
+    if args.snotel:
+        get_snotel_data(start_date, end_date, verbose)
+    if args.weather:
+        convert_weather_data(verbose)
+
+    #import and store site data for ALL Snotel Sites
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
