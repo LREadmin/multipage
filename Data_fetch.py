@@ -148,11 +148,11 @@ if __name__ == "__main__":
                         '--snotel', 
                         action='store_true',
                         help='download the SNOTEL data')
-    parser.add_arguments('-w', 
+    parser.add_argument('-w', 
                         '--weather', 
                         action='store_true',
                         help='read the weather data from excel docs stored in dropbox.')
-    parser.add_arguments('-v', 
+    parser.add_argument('-v', 
                         '--verbose', 
                         action='store_true',
                         help='print a bunch of stuff to stdout - useful for debugging')
