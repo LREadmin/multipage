@@ -2,37 +2,23 @@
 """
 Get data for DW tools
 """
-
-#%% import packages
-import ulmo  #package for public hydrology/climate data https://ulmo.readthedocs.io/en/latest/; the Ulmo package has weird dependency issues with the "suds-jurko" package and cannot be included in a deployed app via streamlit
-
+# Package for public hydrology/climate data ulmo.readthedocs.io/en/latest/
+# the Ulmo package has weird dependency issues with the "suds-jurko" package and 
+# cannot be included in a deployed app via streamlit
+# ^ This is incorrect. It will work fine if it's installed with conda.
+# Include an environment.yml file instead of a requirements.txt file to tell
+# streamlit to use conda. I suggest using `channel: conda-forge`, but I'm not
+# the code police - follow your bliss.
+# https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app/app-dependencies#add-python-dependencies
+import ulmo  
 import pandas
-
-import arrow
-
+from datetime import datetime
 import numpy
-
 import os
 
-import io
-import requests
-#%% SNOTEL site info
 #import and store site data for ALL Snotel Sites
-
 wsdlurl='https://hydroportal.cuahsi.org/Snotel/cuahsi_1_1.asmx?WSDL'
-sites = ulmo.cuahsi.wof.get_sites(wsdlurl)
-
-sites_df = pandas.DataFrame.from_dict(sites, orient='index').dropna()
-sites_df.head()
-sites_df=sites_df.reset_index()
-
-#sites_df.to_csv("SNOTEL_sites.csv.gz",index=False)
-
-#%% Get available measurements
-#ulmo.cuahsi.wof.get_site_info(wsdlurl, "SNOTEL:335_CO_SNTL")['series'].keys()
-#%% SNOTEL data SNOTEL: WTEQ_D
 variablecode='SNOTEL:WTEQ_D'
-    
 sitecode = [
     'SNOTEL:335_CO_SNTL',
     'SNOTEL:938_CO_SNTL',
@@ -55,12 +41,13 @@ startY=1950
 startM=10
 startD=1
 start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
-end_date = arrow.now().format('YYYY-MM-DD')
+end_date = datetime.now().strftime('%Y-%m-%d')
 
 def snotel_fetch(sitecode, variablecode=variablecode, start_date=start_date, end_date=end_date):
     #print(sitecode, variablecode, start_date, end_date)
     values_df = None
     try:
+        # can pull data out of this dict
         #Request data from the server
         site_values = ulmo.cuahsi.wof.get_values(wsdlurl, sitecode, variablecode, start=start_date, end=end_date)
         #Convert to a Pandas DataFrame   
@@ -104,7 +91,6 @@ siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
 
 data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
 
-#%% TEMPERATURE data
 wd=os.getcwd()
 path=os.path.join(wd,"Weather_Data\\") #put all DW files in one directory with nothing else
 weather_files = os.listdir(path)
