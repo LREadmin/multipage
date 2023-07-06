@@ -131,7 +131,8 @@ def get_weather_data(verbose: bool=False):
             print(f'site_id: {site_id}, url: {url}')
         df = pd.read_excel(url)
         df['site'] = site_id
-        weather=pd.concat([weather,df])
+        weather=pd.concat([weather, df])
+        time.sleep(.5)
     weather.to_csv("DW_weather.csv.gz",index=False)
 
 def main(args: argparse.Namespace):
