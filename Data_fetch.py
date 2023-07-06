@@ -94,7 +94,7 @@ def get_snotel_data(end_date: str,
     for site_code in SITE_CODES:
         if verbose:
             print(site_code)
-        values_df = snotel_fetch(site_code, VARIABLE_CODE, end_date)
+        values_df = snotel_fetch(site_code, end_date)
         temp=values_df[['datetime','value']].copy()
         name=sites_df['name'][sites_df['index']==site_code].iloc[0]
         temp['Site']=name
