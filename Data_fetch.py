@@ -92,44 +92,46 @@ def snotel_fetch(site_code,
     return values_df
 
 # SITE info
-data_raw=pandas.DataFrame()
-siteNamesList=[]
-siteNamesListCode=[]
 
-for row in site_codes:
-    print(row)
-    values_df = snotel_fetch(row, variablecode, start_date, end_date)
-    temp=values_df[['datetime','value']].copy()
-    name=sites_df['name'][sites_df['index']==row].iloc[0]
-    temp['Site']=name
-    
-    data_raw=pandas.concat([data_raw,temp])
-    siteNamesList.append(name)
-    siteNamesListCode.append([name,row])
+def get_site_info():
+    data_raw=pandas.DataFrame()
+    siteNamesList=[]
+    siteNamesListCode=[]
+
+    for row in site_codes:
+        print(row)
+        values_df = snotel_fetch(row, variablecode, start_date, end_date)
+        temp=values_df[['datetime','value']].copy()
+        name=sites_df['name'][sites_df['index']==row].iloc[0]
+        temp['Site']=name
         
-data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
+        data_raw=pandas.concat([data_raw,temp])
+        siteNamesList.append(name)
+        siteNamesListCode.append([name,row])
+            
+    data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
 
-with open ("siteNamesList.txt","w") as output:
-    output.write(str(siteNamesList))
+    with open ("siteNamesList.txt","w") as output:
+        output.write(str(siteNamesList))
 
-siteNamesListCode=pandas.DataFrame(siteNamesListCode)
-siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
+    siteNamesListCode=pandas.DataFrame(siteNamesListCode)
+    siteNamesListCode.to_csv('siteNamesListCode.csv',index=False)
 
-data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
+    data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
 
-# part 2
+def convert_weather_data():
+    wd=os.getcwd()
+    # the backslash at the end defeated the purpose of using "os.path.join"
+    path=os.path.join(wd,"Weather_Data") #put all DW files in one directory with nothing else
+    weather_files = os.listdir(path)
 
-wd=os.getcwd()
-path=os.path.join(wd,"Weather_Data\\") #put all DW files in one directory with nothing else
-weather_files = os.listdir(path)
-
-weather=pandas.DataFrame()
-for item in weather_files:
-    file=pandas.read_excel(os.path.join(path,item))
-    file['site']=item[:2]
-    weather=pandas.concat([weather,file])
-    
-weather.to_csv("DW_weather.csv.gz",index=False)
+    weather=pandas.DataFrame()
+    for item in weather_files:
+        file=pandas.read_excel(os.path.join(path,item))
+        file['site']=item[:2]
+        weather=pandas.concat([weather,file])
+        
+    weather.to_csv("DW_weather.csv.gz",index=False)
 
 if __name__ == "__main__":
     pass
