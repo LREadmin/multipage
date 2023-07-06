@@ -19,6 +19,7 @@ import numpy as np
 
 WSDLURL='https://hydroportal.cuahsi.org/Snotel/cuahsi_1_1.asmx?WSDL'
 VARIABLE_CODE='SNOTEL:WTEQ_D'
+START_DATE='1950-10-01'
 SITE_CODES = [
         'SNOTEL:335_CO_SNTL',
         'SNOTEL:938_CO_SNTL',
@@ -38,19 +39,17 @@ SITE_CODES = [
 
 
 def snotel_fetch(site_code: str, 
-                 start_date: str, 
                  end_date: str,
                  verbose: bool=False):
     """ Input:
             site_code:
-            start_date:
             end_date:
             verbose:
         Output:
             values_df:
     """
     if verbose:
-        print(site_code, VARIABLE_CODE, start_date, end_date)
+        print(site_code, VARIABLE_CODE, START_DATE, end_date)
     # I'm 99% sure this is unnecessary
     # values_df = None
     try:
@@ -59,7 +58,7 @@ def snotel_fetch(site_code: str,
         site_values = ulmo.cuahsi.wof.get_values(WSDLURL, 
                                                  site_code, 
                                                  VARIABLE_CODE, 
-                                                 start=start_date, 
+                                                 start=START_DATE, 
                                                  end=end_date)
         #Convert to a Pandas DataFrame   
         values_df = pd.DataFrame.from_dict(site_values['values'])
@@ -78,12 +77,10 @@ def snotel_fetch(site_code: str,
     return values_df
 
 
-def get_snotel_data(start_date: str,
-                    end_date: str, 
+def get_snotel_data(end_date: str, 
                     verbose: bool=False):
     """ Input:
-            start_date:
-            end_date:
+            end_date: str -
             verbose: bool -
         Output:
 
@@ -95,17 +92,17 @@ def get_snotel_data(start_date: str,
     sites_df = pd.DataFrame.from_dict(sites, orient='index').dropna()
     sites_df=sites_df.reset_index()
 
-    for row in SITE_CODES:
+    for site_code in SITE_CODES:
         if verbose:
-            print(row)
-        values_df = snotel_fetch(row, VARIABLE_CODE, start_date, end_date)
+            print(site_code)
+        values_df = snotel_fetch(site_code, VARIABLE_CODE, end_date)
         temp=values_df[['datetime','value']].copy()
-        name=sites_df['name'][sites_df['index']==row].iloc[0]
+        name=sites_df['name'][sites_df['index']==site_code].iloc[0]
         temp['Site']=name
         
         data_raw=pd.concat([data_raw,temp])
         siteNamesList.append(name)
-        siteNamesListCode.append([name,row])
+        siteNamesListCode.append([name,site_code])
             
     data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
 
@@ -142,19 +139,14 @@ def main(args: argparse.Namespace):
         Output:    
     """
     # If you're going to specify these like this, why not just use a string?
-    startY=1950
-    startM=10
-    startD=1
-    start_date = "%s-%s-0%s"%(startY,startM,startD) #if start day is single digit, add leading 0
+
     end_date = datetime.now().strftime('%Y-%m-%d')
 
     verbose = args.verbose
     if args.snotel:
-        get_snotel_data(start_date, end_date, verbose)
+        get_snotel_data(end_date, verbose)
     if args.weather:
         convert_weather_data(verbose)
-
-    #import and store site data for ALL Snotel Sites
 
 
 
