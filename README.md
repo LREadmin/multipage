@@ -1,7 +1,7 @@
 SNOTEL Data
 1)	Download/run “Data_fetch.py” lines through 105:
 
-    a. 	This SNOTEL block of code is needed because The "ulmo" library (necessary for SNOTEL data fetch) is not supported by Streamlit. 
+    a.  This SNOTEL block of code is needed because The "ulmo" library (necessary for SNOTEL data fetch) is not supported by Streamlit. 
 
     b.	Verify that the sitecode list in lines 36 through 51 is representative of the SNOTEL sites you would like to include in the analysis. 
 
