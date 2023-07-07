@@ -18,7 +18,6 @@ import json
 import ulmo  
 import pandas as pd
 import numpy as np
-import requests 
 
 ### Global Variables ###
 # not necessarily good practice, but these might be updated in the future, and 
