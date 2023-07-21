@@ -119,15 +119,12 @@ urlData['year']=urlData['Date'].str[0:4].astype(int)
 urlData['month']=urlData['Date'].str[5:7].astype(int)
 urlData['WY']= urlData.apply(lambda x: convert_to_WY(x), axis=1)
 
-#  THIS DOES NOT FILTER OUT YEARS WITH FEWER THAN 330 OBSERVATIONS, 
-#  IT ONLY FILTERS OUT YEARS WITH FEWER THAN 330 RECORDS - i.e., it only
-#  filters out the most recent water year (which is undesireable )
-# dayCountThres=330
-# g=urlData.groupby(['WY'])
-# data=g.filter(lambda x: len(x)>=dayCountThres)
+dayCountThres=330
+g=urlData.groupby(['WY'])
+data=g.filter(lambda x: len(x)>=dayCountThres)
 
 dayCountThres=25
-g=urlData.groupby(['WY','month'])
+g=data.groupby(['WY','month'])
 data=g.filter(lambda x: len(x)>=dayCountThres)
 
 urlData=data
