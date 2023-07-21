@@ -35,7 +35,7 @@ st.markdown("- National Resource Conservation Service (NRCS) [Snow Telemetry (SN
 
 st.markdown(
     """
-This Dashboard includes data from the early 1900s through mid-September 2022, depending  on the period of record (POR) for each site. The analysis options target a long-term view of SWE, temperature, precipitation, and soil moisture over time and space using summary statistics and trends. Monthly updates and analysis are available through Climate Tracker reports available from the Climate Adaptation & Water Resource Planning Team.     
+This Dashboard includes data from the early 1900s through the current month, depending  on the period of record (POR) for each site. The analysis options target a long-term view of SWE, temperature, precipitation, and soil moisture over time and space using summary statistics and trends. Monthly updates and analysis are available through Climate Tracker reports available from the Climate Adaptation & Water Resource Planning Team.     
 
     """
     )
