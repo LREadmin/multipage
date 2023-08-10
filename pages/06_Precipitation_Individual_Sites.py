@@ -20,7 +20,6 @@ import numpy as np
 from PIL import Image
 
 
-
 #%% Website display information
 st.set_page_config(page_title="Precipitation Individual Sites", page_icon="🌦")
 st.header("Individual Precipitation Site Data Assessment")

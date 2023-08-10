@@ -4,21 +4,12 @@
 """
 #%% Import Libraries
 import pandas #for dataframe
-
 import numpy #for math
-
 import matplotlib.pyplot as plt #for plotting
-
 from matplotlib import colors #for additional colors
-
 import streamlit as st #for displaying on web app
-
-import datetime #for date/time manipulation
-
 import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 from PIL import Image
 
 #%% Define data download as CSV function

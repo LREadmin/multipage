@@ -7,14 +7,11 @@ import pandas #for dataframe
 import numpy #for math
 import matplotlib.pyplot as plt #for plotting
 import streamlit as st #for displaying on web app
-import datetime #for date/time manipulation
-import arrow #another library for date/time manipulation
 import pymannkendall as mk #for trend anlaysis
 from PIL import Image
 
 #%% Website display information
 st.set_page_config(page_title="SNOTEL Individual Sites", page_icon="📈")
-
 st.header("Individual SNOTEL Site Data Assessment")
 
 #%% Define data download as CSV function

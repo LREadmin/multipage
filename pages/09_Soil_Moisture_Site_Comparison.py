@@ -7,19 +7,12 @@ Created on Tue Oct 11 11:53:06 2022
 #%% import packages
 
 import streamlit as st #for displaying on web app
-
 import pandas as pd
-
 import datetime #for date/time manipulation
-
-import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 import numpy as np
 import matplotlib.pyplot as plt #for plotting
 from matplotlib import colors #for additional colors
-
 from PIL import Image
 
 
