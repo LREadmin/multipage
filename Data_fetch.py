@@ -10,7 +10,6 @@ Get data for DW tools
 # streamlit to use conda. I suggest using `channel: conda-forge`, but I'm not
 # the code police - follow your bliss.
 # https://docs.streamlit.io/streamlit-community-cloud/get-started/deploy-an-app/app-dependencies#add-python-dependencies
-import os
 import time
 import argparse
 from datetime import datetime

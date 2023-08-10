@@ -129,7 +129,7 @@ for row in yearList:
     tempData=data_param_site_date[data_param_site_date['WY']==row]
     
     #filter by day count threshold
-    dayCountThres=25
+    naCountThres=5
     yearCountThres=0
     
     if tempData['pcpn'].count().sum()>0:
@@ -137,14 +137,13 @@ for row in yearList:
         for row1 in monthList:
             try:    
                 tempData2=tempData[tempData['Month']==row1]
-                        
                 tempData2=tempData2.drop(columns='site')
                 if len(tempData2)==0:
-                    count=[np.nan, np.nan, np.nan]
+                    count=0
                     na_count = 0
                     # count[1]=np.nan 
                 else:
-                    count=tempData2[(tempData2 <= thresholdHigh)&(tempData2 >= thresholdLow)].count()
+                    count=tempData2.pcpn[(tempData2.pcpn <= thresholdHigh) & (tempData2.pcpn >= thresholdLow)].count()
                     na_count=tempData2['pcpn'].isna().sum()
                     
                 if len(tempData2)==0:
@@ -153,7 +152,9 @@ for row in yearList:
                     monthlyCumPrecip=tempData2.pcpn.sum() #calculate monthly total
                     
                 newParamData.append([row,row1,monthlyCumPrecip,na_count])
-                newParamData1.append([row,row1,count[1],na_count])
+                newParamData1.append([row,row1,count,na_count])
+                if row == 10:
+                    break
             except:
                 pass
     else:
@@ -169,7 +170,15 @@ cols=paramDataMerge.columns
 # paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month',params_select,'count']) #count
 # You know what, I'm just going to change it. Screw the consequences
 paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month','data_count','na_count']) #count
-na_inx = np.where(paramDataMerge1.data_count < dayCountThres)[0]
+
+# This was copied from the Site Comparison page - doens't make sense here.
+# If you choose a threshold value that leaves less than 25 days worth of data
+# per month, it will mark that month as NA, which doesn't make sense 
+# na_inx = np.where(paramDataMerge1.data_count < dayCountThres)[0]
+# paramDataMerge.loc[na_inx, cols[2]] = np.nan
+
+# I think this change matches the INTENTION of the original code
+na_inx = np.where(paramDataMerge1.na_count > naCountThres)[0]
 paramDataMerge.loc[na_inx, cols[2]] = np.nan
 
 # cols=paramDataMerge1.columns
