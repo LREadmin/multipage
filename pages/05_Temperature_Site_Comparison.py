@@ -19,7 +19,7 @@ st.set_page_config(page_title="Temperature Site Comparison", page_icon="📈")
 st.header("Temperature Site Comparison Data Assessment")
 
 #%% Define data download as CSV function
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')

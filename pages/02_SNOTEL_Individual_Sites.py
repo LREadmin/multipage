@@ -15,20 +15,18 @@ st.set_page_config(page_title="SNOTEL Individual Sites", page_icon="📈")
 st.header("Individual SNOTEL Site Data Assessment")
 
 #%% Define data download as CSV function
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
 
 #%% Select year type
-yearType="WY" #CY = calendar year, WY = water year
+# Remove in the next big commit (it was not being used)
+# yearType="WY" #CY = calendar year, WY = water year
 
 #%% Read in raw data and isolate site names
+# def thing():
 data_raw=pandas.read_csv('SNOTEL_data_raw.csv.gz')
-
-# This didn't do anything - need to use inplace=True or data_raw = pd....
-#convert date to datetime
-# pandas.to_datetime(data_raw['Date'])
 
 # get site list
 with open("siteNamesList.txt") as f:
@@ -57,6 +55,7 @@ data=filterdata()
 cols=data.columns.tolist()
 cols=cols[-1:] + cols[:-1]
 data=data[cols]
+
 data1=data
 data1=data1.set_index('Site') # Oh god, why? The index will all be the same value
 data1['Date']=data1['Date'].str[:-15]
@@ -150,19 +149,23 @@ daysWY=[]
 daysWY.extend(range(274,367))
 daysWY.extend(range(1,274))
 
-if yearType=="WY":
-    dataDay=daysWY
-else:
-    dataDay=daysCY
+# Remove in next big commit
+# if yearType=="WY":
+#     dataDay=daysWY
+# else:
+#     dataDay=daysCY
+dataDay=daysWY
 
 #%%transpose to get days as columns
 list=years
 yearList=[]
 for n in list:
-    if yearType=="WY":
-        temp=data2.loc[data2['WY']==n]
-    else:
-        temp=data2.loc[data2['CY']==n]
+    # Remove in next big commit 
+    # if yearType=="WY":
+    #     temp=data2.loc[data2['WY']==n]
+    # else:
+    #     temp=data2.loc[data2['CY']==n]
+    temp=data2.loc[data2['WY']==n]
     temp2=temp.iloc[:,[0,2]].copy()
     temp2=temp2.sort_values(by="CalDay")
     temp3=temp2.T
@@ -259,27 +262,33 @@ ax2=ax1.twiny()
 
 ax1.set_yticks(numpy.arange(0,len(years),step=1))
 ax1.set_yticklabels(years,fontsize=11)
-
-if yearType=="WY":
-    ax1.set_xticks([-1,31,61,92,123,151,182,212,243,274])#,304,335,365])
-    ax2.set_xticks([0,31,61,92,123,151,182,212,243,273])#,304,335,365])
-    ax1.set_ylabel("Water Year")
-    ax1.set_xlabel("Day of Calendar Year")
-else:
-    ax1.set_xticks([0,31,59,90,120,151,181,212,243,273,304,334,365])
-    ax2.set_xticks([0,31,59,90,120,151,181,212,243,273,304,334,365])
-    ax1.set_ylabel("Cal. Year")
-    ax1.set_xlabel("Day of Calendar Year")
+# Remove in the next big commit
+# if yearType=="WY":
+#     ax1.set_xticks([-1,31,61,92,123,151,182,212,243,274])#,304,335,365])
+#     ax2.set_xticks([0,31,61,92,123,151,182,212,243,273])#,304,335,365])
+#     ax1.set_ylabel("Water Year")
+#     ax1.set_xlabel("Day of Calendar Year")
+# else:
+#     ax1.set_xticks([0,31,59,90,120,151,181,212,243,273,304,334,365])
+#     ax2.set_xticks([0,31,59,90,120,151,181,212,243,273,304,334,365])
+#     ax1.set_ylabel("Cal. Year")
+#     ax1.set_xlabel("Day of Calendar Year")
+ax1.set_xticks([-1,31,61,92,123,151,182,212,243,274])#,304,335,365])
+ax2.set_xticks([0,31,61,92,123,151,182,212,243,273])#,304,335,365])
+ax1.set_ylabel("Water Year")
+ax1.set_xlabel("Day of Calendar Year")
 
 ax2.set_xlim(ax2.get_xlim())
 
-if yearType=="WY":
-    ax2.set_xticklabels(["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"])#,"Aug","Sep"])
-    ax1.set_xticklabels(["273","304","334","0","31","59","90","120","151","181"])#,"212","243"])
-else:
-    ax2.set_xticklabels(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"])
-    ax1.set_xticklabels(["0","31","59","90","120","151","181","212","243","273","304","334"])
-
+# Remove in the next big commit
+# if yearType=="WY":
+#     ax2.set_xticklabels(["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"])#,"Aug","Sep"])
+#     ax1.set_xticklabels(["273","304","334","0","31","59","90","120","151","181"])#,"212","243"])
+# else:
+#     ax2.set_xticklabels(["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"])
+#     ax1.set_xticklabels(["0","31","59","90","120","151","181","212","243","273","304","334"])
+ax2.set_xticklabels(["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul"])#,"Aug","Sep"])
+ax1.set_xticklabels(["273","304","334","0","31","59","90","120","151","181"])#,"212","243"])
 plotTitle=site_selected
 plt.title(plotTitle)
 plt.xticks(rotation=90)

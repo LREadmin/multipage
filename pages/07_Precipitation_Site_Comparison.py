@@ -19,7 +19,7 @@ st.set_page_config(page_title="Precipitation Site Comparison", page_icon="🌦")
 st.header("Precipitation Site Comparison Data Assessment")
 
 #%% Define data download as CSV function
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
@@ -605,7 +605,7 @@ st.download_button(
 st.subheader("Net Difference Between Select WY Median of %s and POR Median of %s"%(stat_select,stat_select))
 st.markdown(
     """
-For example, the total accumulated precipitation for 2015 at Antero was 14.87 inches and the median for the full period of record was 10.37 in, so the net difference presented for Antero in 2015 with is +4.50 inches. This shows that 2015 had higher than average precipitation.
+For example, the total accumulated precipitation for 2015 at Antero was 14.87 inches and the median for the full period of record was 10.37 in, so the net difference presented for Antero in 2015 is +4.50 inches. This shows that 2015 had higher than average precipitation.
 """
     )
 

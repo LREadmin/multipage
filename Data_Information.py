@@ -42,8 +42,11 @@ This Dashboard includes data from the early 1900s through the current month, dep
 
 #%%
 st.header("SNOTEL and Weather Station Locations ")
-image=Image.open("Maps/4_All_Sites.png")
-st.image(image)
+# image=Image.open("Maps/4_All_Sites.png")
+# st.image(image)
+
+# this cuts the page load time in half vs. above
+st.image("Maps/4_All_Sites.png")
 
 #%%
 st.header("Data Availability and Assessment Notes")

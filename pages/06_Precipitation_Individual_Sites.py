@@ -25,7 +25,7 @@ st.set_page_config(page_title="Precipitation Individual Sites", page_icon="🌦"
 st.header("Individual Precipitation Site Data Assessment")
 
 #%% Define data download as CSV function
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
