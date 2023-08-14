@@ -116,9 +116,17 @@ tableEndDate=datetime.datetime(endYear,9,30).strftime("%Y-%m-%d")
 maxDaily=round(data_param_site_date['pcpn'].max(),2)
 minDaily=round(data_param_site_date['pcpn'].min(),2)
 
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation (in/day) Threshold (Inclusive):',step=0.1,min_value=minDaily, value=maxDaily)
+thresholdHigh = st.sidebar.number_input('Set Upper Precipitation (in/day) Threshold (Inclusive):',
+                                        step=0.1,
+                                        min_value=minDaily, 
+                                        value=maxDaily,
+                                        format='%.2f')
 
-thresholdLow = st.sidebar.number_input('Set Lower Precipitation (in/day) Threshold (Inclusive):',step=0.1,min_value=minDaily, value=minDaily)
+thresholdLow = st.sidebar.number_input('Set Lower Precipitation (in/day) Threshold (Inclusive):',
+                                       step=0.1,
+                                       min_value=minDaily, 
+                                       value=minDaily,
+                                       format='%.2f')
 
 #%%calc statistic for all months
 yearList=data_param_site_date['WY'].drop_duplicates()
