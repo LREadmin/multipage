@@ -346,7 +346,7 @@ countTableData=data5.style\
 
 #%%display
 pandas.set_option('display.width',100)
-st.subheader("Count of %s Days Between %s and %s Inches"%(params_select,thresholdLow,thresholdHigh))
+st.subheader("Count of %s Days Between %.2f and %.2f Inches"%(params_select,thresholdLow,thresholdHigh))
 st.markdown(
 """For the selected site and selected water year(s), 
 displays the number of days in each month within the user-defined upper and lower accumulated precipitation thresholds:   
