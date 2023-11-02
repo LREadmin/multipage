@@ -20,6 +20,10 @@ We have a cron job running on a machine to automatically refresh the data, so th
 
 There is no need to update the soil moisture data, since it directly queries the API.
 
+## Development 
+[here is the dev environment](https://development-xax2apn4jgksccuchtxw7v.streamlit.app/)
+
+You deploy to it by pushing from the "development" branch. Then, after you check that everything still works, you can merge the changes into main. 
     
 ### Incorporating updated data into app
 1)	No app updates are needed so long as the updated data files from the scripts are uploaded into the GitHub repository; simply refresh the app and check that the year selection includes the updated data. 
