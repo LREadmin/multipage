@@ -19,7 +19,6 @@ We have a cron job running on a machine to automatically refresh the data, so th
     - `git push`
 
 There is no need to update the soil moisture data, since it directly queries the API.
-
     
 ### Incorporating updated data into app
 1)	No app updates are needed so long as the updated data files from the scripts are uploaded into the GitHub repository; simply refresh the app and check that the year selection includes the updated data. 
