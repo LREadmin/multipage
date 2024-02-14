@@ -55,10 +55,10 @@ def snotel_fetch(site_code: str,
         print(site_code, VARIABLE_CODE, START_DATE, end_date)
     try:
         # Request data from the server
-        site_values = ulmo.cuahsi.wof.get_values(WSDLURL, 
-                                                 site_code, 
-                                                 VARIABLE_CODE, 
-                                                 start=START_DATE, 
+        site_values = ulmo.cuahsi.wof.get_values(WSDLURL,
+                                                 site_code,
+                                                 VARIABLE_CODE,
+                                                 start=START_DATE,
                                                  end=end_date)
         #Convert to a Pandas DataFrame   
         values_df = pd.DataFrame.from_dict(site_values['values'])
@@ -71,8 +71,9 @@ def snotel_fetch(site_code: str,
         values_df = values_df[values_df['quality_control_level_code'] == '1']
     # Try/Excepts that don't specify what kind of error they're expecting cause
     # me physical pain
-    except:
-        print("Unable to fetch %s" % VARIABLE_CODE)
+    except Exception as e:
+        print(f"Unable to fetch site_code: {site_code}")
+        raise e
     # As written this function can return None
     return values_df
 
