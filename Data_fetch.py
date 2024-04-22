@@ -55,10 +55,10 @@ def snotel_fetch(site_code: str,
         print(site_code, VARIABLE_CODE, START_DATE, end_date)
     try:
         # Request data from the server
-        site_values = ulmo.cuahsi.wof.get_values(WSDLURL, 
-                                                 site_code, 
-                                                 VARIABLE_CODE, 
-                                                 start=START_DATE, 
+        site_values = ulmo.cuahsi.wof.get_values(WSDLURL,
+                                                 site_code,
+                                                 VARIABLE_CODE,
+                                                 start=START_DATE,
                                                  end=end_date)
         #Convert to a Pandas DataFrame   
         values_df = pd.DataFrame.from_dict(site_values['values'])
@@ -69,12 +69,13 @@ def snotel_fetch(site_code: str,
         values_df['value'] = pd.to_numeric(values_df['value']).replace(-9999, np.nan)
         #Remove any records flagged with lower quality
         values_df = values_df[values_df['quality_control_level_code'] == '1']
+        # As written this function can return None
+        return values_df
     # Try/Excepts that don't specify what kind of error they're expecting cause
     # me physical pain
-    except:
-        print("Unable to fetch %s" % VARIABLE_CODE)
-    # As written this function can return None
-    return values_df
+    except Exception as e:
+        print(f"Unable to fetch site_code: {site_code}")
+        raise e
 
 def get_snotel_data(end_date: str, 
                     verbose: bool=False):
@@ -97,7 +98,8 @@ def get_snotel_data(end_date: str,
         temp=values_df[['datetime','value']].copy()
         name=sites_df['name'][sites_df['index']==site_code].iloc[0]
         temp['Site']=name
-        data_raw=pd.concat([data_raw,temp])    
+        data_raw=pd.concat([data_raw,temp])
+        time.sleep(1)
     data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
 
     data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)

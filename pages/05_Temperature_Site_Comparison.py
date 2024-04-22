@@ -60,6 +60,7 @@ sites = {
     'Kassler (KS)': 'KS',
     'Moffat HQ (MF)': 'MF',
     'Ralston (RS)': 'RS',
+    'Roberts Tunnel (RT)': 'RT',
     'Central Park (SP)': 'SP',
     'Strontia (ST)': 'ST',
     'Williams Fork (WF)': 'WF'}
@@ -78,6 +79,7 @@ rev_sites = {
     'KS': 'Kassler (KS)',
     'MF': 'Moffat HQ (MF)',
     'RS': 'Ralston (RS)',
+    'RT': 'Roberts Tunnel (RT)',
     'SP': 'Central Park (SP)',
     'ST': 'Strontia (ST)',
     'WF': 'Williams Fork (WF)'}
