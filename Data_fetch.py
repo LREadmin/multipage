@@ -69,13 +69,13 @@ def snotel_fetch(site_code: str,
         values_df['value'] = pd.to_numeric(values_df['value']).replace(-9999, np.nan)
         #Remove any records flagged with lower quality
         values_df = values_df[values_df['quality_control_level_code'] == '1']
+        # As written this function can return None
+        return values_df
     # Try/Excepts that don't specify what kind of error they're expecting cause
     # me physical pain
     except Exception as e:
         print(f"Unable to fetch site_code: {site_code}")
         raise e
-    # As written this function can return None
-    return values_df
 
 def get_snotel_data(end_date: str, 
                     verbose: bool=False):
@@ -98,7 +98,8 @@ def get_snotel_data(end_date: str,
         temp=values_df[['datetime','value']].copy()
         name=sites_df['name'][sites_df['index']==site_code].iloc[0]
         temp['Site']=name
-        data_raw=pd.concat([data_raw,temp])    
+        data_raw=pd.concat([data_raw,temp])
+        time.sleep(1)
     data_raw.rename({'datetime': 'Date', 'value': 'SWE_in', 'name':'Site'}, axis=1, inplace=True)
 
     data_raw.to_csv("SNOTEL_data_raw.csv.gz",index=False)
