@@ -14,7 +14,7 @@ import time
 import argparse
 from datetime import datetime
 import json
-import ulmo  
+import ulmo
 import pandas as pd
 import numpy as np
 
