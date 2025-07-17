@@ -80,8 +80,8 @@ elementStr= ','.join(element_select)
 if len(element_select)==0:
     st.sidebar.error("Select at least one depth")
 
-headerAdj=pd.DataFrame({'ElementCount':[0,1,2,3,4,5],"HeaderRowCount":[57,58,59,60,61,62]})
-headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_select)]
+# headerAdj=pd.DataFrame({'ElementCount':[0,1,2,3,4,5],"HeaderRowCount":[57,58,59,60,61,62]})
+# headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_select)]
 
 base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
 part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
@@ -91,9 +91,12 @@ element=elementStr
 part2="?fitToScreen=false"
 url=base+part1+site+por+element+part2
 
-s=requests.get(url).text
+# s=requests.get(url, timeout=3).text
 
-urlDataRaw=pd.read_csv(url,header=headerCount.iloc[0],delimiter=',')#headerCount.iloc[0]
+urlDataRaw=pd.read_csv(
+    url,
+    comment='#'
+)
 
 #filter out data >100%
 datecol=urlDataRaw['Date']
