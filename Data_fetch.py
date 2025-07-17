@@ -115,7 +115,7 @@ def get_weather_data(verbose: bool=False):
     """
     # Fail loudly and informatively if file is missing
     try:
-        with open('dropbox_url_list.json','r') as f:    
+        with open('dropbox_url_list.json','r', encoding='utf-8') as f:
             url_dict = json.load(f)
     except FileNotFoundError as e:
         print('The file "dropbox_url_list.json" is missing!')
@@ -123,14 +123,15 @@ def get_weather_data(verbose: bool=False):
     # Proceed if file is present
     if verbose:
         print(f'Preparing to download {len(url_dict)} files from dropbox...')
-    
+
     # Download each excel in dropbox_url_list, concatenate them, and save as
     # compressed csv
     weather = pd.DataFrame()
     for site_id, url in url_dict.items():
         if verbose:
             print(f'site_id: {site_id}, url: {url}')
-        df = pd.read_excel(url)
+        # df = pd.read_excel(url)
+        df = pd.read_csv(url)
         df['site'] = site_id
         weather=pd.concat([weather, df])
         time.sleep(.5)
