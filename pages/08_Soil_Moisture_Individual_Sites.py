@@ -104,7 +104,7 @@ cols=urlDataRaw.columns[1:]
 urlData=urlDataRaw[cols].applymap(lambda x: np.nan if x > 100 else x)
 urlData['Date']=datecol
 cols2=urlData.columns.tolist()
-cols2 = [cols2[-1]]+cols2[:-1] 
+cols2 = [cols2[-1]]+cols2[:-1]
 urlData=urlData.reindex(columns=cols2)
 
 urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']

@@ -137,6 +137,76 @@ def get_weather_data(verbose: bool=False):
         time.sleep(.5)
     weather.to_csv("DW_weather.csv.gz",index=False)
 
+def get_soil_moisture_data():
+    """ Retrieves the soil moisture data for the sites.
+    """
+    print('Retrieving soil moisture data...')
+    site_names = pd.read_csv("siteNamesListCode.csv")
+    site_names = site_names[
+        ~site_names['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek")]
+    site_codes = site_names.iloc[:,1]
+    site_codes = site_codes.str.replace('SNOTEL:','')
+    site_codes = site_codes.str.replace('_',':')
+    # This was a gross thing that had a lot of moving parts earlier.
+    # It was a data frame, then some other junk - gross.
+    # The values were hardcoded, they were just pretending to be dynamic
+    # before, so we're going to just add a hardcoded list and replace the
+    # extra complexity.
+    param_list = [
+        'SMS:-2:value',
+        'SMS:-4:value',
+        'SMS:-8:value',
+        'SMS:-20:value',
+        'SMS:-40:value'
+    ]
+    param_str = ','.join(param_list)
+
+    df_list = []
+    for site_code in site_codes:
+        print(f'Beginning site: {site_code}')
+        df_list.append(get_soil_moisture_for_site(site_code, param_str))
+        time.sleep(1)
+    df = pd.concat(df_list)
+    df.to_csv("SNOTEL_SMS.csv.gz",index=False)
+    return df
+
+def get_soil_moisture_for_site(site_code, param_str):
+    """ Input:
+            site_code: str - something like "1014:CO:SNTL"
+            param_str: str - a comma separated list of the values we want
+                to request from the API
+        Output:
+            returns a dataframe with columns for Date, soil moisture percent
+            at various depths, and the site code.
+    """
+    url = '/'.join(
+        [
+            'https://wcc.sc.egov.usda.gov',
+            'reportGenerator',
+            'view_csv',
+            'customMultiTimeSeriesGroupByStationReport',
+            'daily',
+            'start_of_period',
+            f'{site_code}%7Cid=%22%22%7Cname',
+            'POR_BEGIN,POR_END',
+            param_str,
+        ]
+    )
+    url = url + '?fitToScreen=false'
+    df = pd.read_csv(url, comment='#')
+    # Filters out data where the value is > 100%
+    df.iloc[:,1:] = df.iloc[:,1:].map(lambda x: np.nan if x > 100 else x)
+    df.columns = [
+        'Date',
+        'minus_2inch_pct',
+        'minus_4inch_pct',
+        'minus_8inch_pct',
+        'minus_20inch_pct',
+        'minus_40inch_pct'
+    ]
+    df['site'] = site_code
+    return df
+
 def main(args: argparse.Namespace):
     """ Input:
             args: populated namespace from Argument.Parser.parse_args()
