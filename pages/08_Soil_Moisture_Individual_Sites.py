@@ -67,8 +67,8 @@ siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
 # SOIL MOISTURE DATA filtered by site, parameter and date
 
 # Selections
-# sitecodeSMS=siteCode.replace("SNOTEL:", "" )
-# sitecodeSMS=sitecodeSMS.replace("_", ":" )
+sitecodeSMS=siteCode.replace("SNOTEL:", "" )
+sitecodeSMS=sitecodeSMS.replace("_", ":" )
 
 # elementDF = pd.DataFrame(
 #         {
@@ -121,7 +121,7 @@ siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
 
 # urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
 urlData = pd.read_csv('SNOTEL_SMS.csv.gz')
-urlData = urlData[urlData.site == siteCode]
+urlData = urlData[urlData.site == sitecodeSMS]
 #add WY column from date
 urlData['year']=urlData['Date'].str[0:4].astype(int)
 urlData['month']=urlData['Date'].str[5:7].astype(int)
@@ -157,11 +157,11 @@ emptyDepths_items=[depth_dict.get(k) for k in emptyDepths]
 elementDF = pd.DataFrame(
         {
             0: [
-                "SMS:-2:value",
-                "SMS:-4:value",
-                "SMS:-8:value",
-                "SMS:-20:value",
-                "SMS:-40:value"
+                "minus_2inch_pct",
+                "minus_4inch_pct",
+                "minus_8inch_pct",
+                "minus_20inch_pct",
+                "minus_40inch_pct"
             ],
             'long': [
                 '2 inch depth',
