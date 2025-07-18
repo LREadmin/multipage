@@ -195,7 +195,7 @@ def get_soil_moisture_for_site(site_code, param_str):
     url = url + '?fitToScreen=false'
     df = pd.read_csv(url, comment='#')
     # Filters out data where the value is > 100%
-    df.iloc[:,1:] = df.iloc[:,1:].map(lambda x: np.nan if x > 100 else x)
+    df.iloc[:,1:] = df.iloc[:,1:].applymap(lambda x: np.nan if x > 100 else x)
     df.columns = [
         'Date',
         'minus_2inch_pct',
