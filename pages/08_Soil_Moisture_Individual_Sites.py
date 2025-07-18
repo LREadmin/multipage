@@ -121,7 +121,7 @@ sitecodeSMS=sitecodeSMS.replace("_", ":" )
 
 # urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
 urlData = pd.read_csv('SNOTEL_SMS.csv.gz')
-urlData = urlData[urlData.site == siteCode]
+urlData = urlData[urlData.site == sitecodeSMS]
 #add WY column from date
 urlData['year']=urlData['Date'].str[0:4].astype(int)
 urlData['month']=urlData['Date'].str[5:7].astype(int)
