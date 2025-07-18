@@ -157,11 +157,11 @@ emptyDepths_items=[depth_dict.get(k) for k in emptyDepths]
 elementDF = pd.DataFrame(
         {
             0: [
-                "SMS:-2:value",
-                "SMS:-4:value",
-                "SMS:-8:value",
-                "SMS:-20:value",
-                "SMS:-40:value"
+                "minus_2inch_pct",
+                "minus_4inch_pct",
+                "minus_8inch_pct",
+                "minus_20inch_pct",
+                "minus_40inch_pct"
             ],
             'long': [
                 '2 inch depth',
