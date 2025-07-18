@@ -17,6 +17,7 @@ import json
 import ulmo
 import pandas as pd
 import numpy as np
+from utils import error_logger
 
 ### Global Variables ###
 # not necessarily good practice, but these might be updated in the future, and 
@@ -207,6 +208,7 @@ def get_soil_moisture_for_site(site_code, param_str):
     df['site'] = site_code
     return df
 
+@error_logger(channel_name='denver-water')
 def main(args: argparse.Namespace):
     """ Input:
             args: populated namespace from Argument.Parser.parse_args()
