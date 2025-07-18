@@ -217,18 +217,24 @@ def main(args: argparse.Namespace):
         get_snotel_data(end_date, verbose)
     if args.weather:
         get_weather_data(verbose)
+    if args.soil_moisture:
+        get_soil_moisture_data()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-s', 
+    parser.add_argument('-s',
                         '--snotel', 
                         action='store_true',
                         help='download the SNOTEL data')
-    parser.add_argument('-w', 
+    parser.add_argument('-w',
                         '--weather', 
                         action='store_true',
                         help='read the weather data from excel docs stored in dropbox.')
-    parser.add_argument('-v', 
+    parser.add_argument('-m',
+                        '--soil-moisture', 
+                        action='store_true',
+                        help='get soil moisture data from the USDA api.')
+    parser.add_argument('-v',
                         '--verbose', 
                         action='store_true',
                         help='print a bunch of stuff to stdout - useful for debugging')
