@@ -31,7 +31,7 @@ def convert_to_WY(row):
         return(datetime.date(row.year+1,1,1).year)
     else:
         return(datetime.date(row.year,1,1).year)
-    
+
 def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.1, high=1):
     if m is None:
         m = s.min().min()
@@ -54,61 +54,74 @@ months={1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',
 #constants
 dayCountThres=25
 
-#%% Site data
+### Site data
 siteNames = pd.read_csv("siteNamesListCode.csv")
 siteNames = siteNames[siteNames['0'].str.contains("Buffalo Park|Echo Lake|Fool Creek")==False]
 
-#%% Left Filters
+### Left Filters
 
-#01 Select Site 
+#01 Select Site
 site_selected = st.sidebar.selectbox('Select your site:', siteNames.iloc[:,0])
 siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
-#siteCode='SNOTEL:485_CO_SNTL'
 
-#%% SOIL MOISTURE DATA filtered by site, parameter and date
-#Selections
-sitecodeSMS=siteCode.replace("SNOTEL:", "" )
-sitecodeSMS=sitecodeSMS.replace("_", ":" )
+# SOIL MOISTURE DATA filtered by site, parameter and date
 
-elementDF=pd.DataFrame({0:["SMS:-2:value","SMS:-4:value", "SMS:-8:value","SMS:-20:value","SMS:-40:value"], 
-                           'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+# Selections
+# sitecodeSMS=siteCode.replace("SNOTEL:", "" )
+# sitecodeSMS=sitecodeSMS.replace("_", ":" )
 
-element_select=elementDF['long']
-element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
-elementStr= ','.join(element_select)
+# elementDF = pd.DataFrame(
+#         {
+#             0: [
+#                 "SMS:-2:value",
+#                 "SMS:-4:value",
+#                 "SMS:-8:value",
+#                 "SMS:-20:value",
+#                 "SMS:-40:value"
+#             ],
+#             'long': [
+#                 '2 inch depth',
+#                 '4 inch depth',
+#                 '8 inch depth',
+#                 '20 inch depth',
+#                 '40 inch depth'
+#             ]
+#         }
+#     )
+# element_select=elementDF['long']
+# element_select=elementDF.loc[elementDF['long'].isin(element_select)][0]
+# elementStr= ','.join(element_select)
 
-if len(element_select)==0:
-    st.sidebar.error("Select at least one depth")
+# if len(element_select)==0:
+#     st.sidebar.error("Select at least one depth")
 
-# headerAdj=pd.DataFrame({'ElementCount':[0,1,2,3,4,5],"HeaderRowCount":[57,58,59,60,61,62]})
-# headerCount=headerAdj['HeaderRowCount'][headerAdj['ElementCount']==len(element_select)]
+# base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
+# part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
+# site=sitecodeSMS
+# por="%7Cid=%22%22%7Cname/POR_BEGIN,POR_END/"#  "%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear) + "-09-30/"
+# element=elementStr
+# part2="?fitToScreen=false"
+# url=base+part1+site+por+element+part2
 
-base="https://wcc.sc.egov.usda.gov/reportGenerator/view_csv/"
-part1="customMultiTimeSeriesGroupByStationReport/daily/start_of_period/"
-site=sitecodeSMS
-por="%7Cid=%22%22%7Cname/POR_BEGIN,POR_END/"#  "%7Cid=%22%22%7Cname/" + str(startYear-1) + "-10-01," + str(endYear) + "-09-30/"
-element=elementStr
-part2="?fitToScreen=false"
-url=base+part1+site+por+element+part2
+# # s=requests.get(url, timeout=3).text
 
-# s=requests.get(url, timeout=3).text
+# urlDataRaw=pd.read_csv(
+#     url,
+#     comment='#'
+# )
 
-urlDataRaw=pd.read_csv(
-    url,
-    comment='#'
-)
+# #filter out data >100%
+# datecol=urlDataRaw['Date']
+# cols=urlDataRaw.columns[1:]
+# urlData=urlDataRaw[cols].applymap(lambda x: np.nan if x > 100 else x)
+# urlData['Date']=datecol
+# cols2=urlData.columns.tolist()
+# cols2 = [cols2[-1]]+cols2[:-1]
+# urlData=urlData.reindex(columns=cols2)
 
-#filter out data >100%
-datecol=urlDataRaw['Date']
-cols=urlDataRaw.columns[1:]
-urlData=urlDataRaw[cols].applymap(lambda x: np.nan if x > 100 else x)
-urlData['Date']=datecol
-cols2=urlData.columns.tolist()
-cols2 = [cols2[-1]]+cols2[:-1] 
-urlData=urlData.reindex(columns=cols2)
-
-urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
-
+# urlData.columns=['Date','minus_2inch_pct','minus_4inch_pct','minus_8inch_pct','minus_20inch_pct','minus_40inch_pct']
+urlData = pd.read_csv('SNOTEL_SMS.csv.gz')
+urlData = urlData[urlData.site == siteCode]
 #add WY column from date
 urlData['year']=urlData['Date'].str[0:4].astype(int)
 urlData['month']=urlData['Date'].str[5:7].astype(int)
@@ -141,8 +154,24 @@ emptyDepths_items=[depth_dict.get(k) for k in emptyDepths]
 
 #%%02 Select Depths
 
-elementDF=pd.DataFrame({0:["minus_2inch_pct","minus_4inch_pct", "minus_8inch_pct","minus_20inch_pct","minus_40inch_pct"], 
-                           'long': ['2 inch depth', '4 inch depth','8 inch depth', '20 inch depth','40 inch depth']})
+elementDF = pd.DataFrame(
+        {
+            0: [
+                "SMS:-2:value",
+                "SMS:-4:value",
+                "SMS:-8:value",
+                "SMS:-20:value",
+                "SMS:-40:value"
+            ],
+            'long': [
+                '2 inch depth',
+                '4 inch depth',
+                '8 inch depth',
+                '20 inch depth',
+                '40 inch depth'
+            ]
+        }
+    )
 elementDF=elementDF[~elementDF[0].isin(emptyDepths)]
 
 container=st.sidebar.container()
