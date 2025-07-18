@@ -67,8 +67,8 @@ siteCode=siteNames[siteNames.iloc[:,0]==site_selected].iloc[0][1]
 # SOIL MOISTURE DATA filtered by site, parameter and date
 
 # Selections
-# sitecodeSMS=siteCode.replace("SNOTEL:", "" )
-# sitecodeSMS=sitecodeSMS.replace("_", ":" )
+sitecodeSMS=siteCode.replace("SNOTEL:", "" )
+sitecodeSMS=sitecodeSMS.replace("_", ":" )
 
 # elementDF = pd.DataFrame(
 #         {
