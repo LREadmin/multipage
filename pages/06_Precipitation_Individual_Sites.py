@@ -30,6 +30,8 @@ def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
 
+MIN_DATA_THRESHOLD = 25
+
 #%% Read in raw weather data
 data_raw=pandas.read_csv('DW_weather.csv.gz')
 
@@ -137,8 +139,8 @@ for row in yearList:
     tempData=data_param_site_date[data_param_site_date['WY']==row]
     
     #filter by day count threshold
-    naCountThres=5
-    yearCountThres=0
+    # naCountThres=5
+    # yearCountThres=0
     
     if tempData['pcpn'].count().sum()>0:
        
@@ -185,8 +187,12 @@ paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month','data_count
 # na_inx = np.where(paramDataMerge1.data_count < dayCountThres)[0]
 # paramDataMerge.loc[na_inx, cols[2]] = np.nan
 
+
 # I think this change matches the INTENTION of the original code
-na_inx = np.where(paramDataMerge1.na_count > naCountThres)[0]
+## NOTE: This was also wrong
+# na_inx = np.where(paramDataMerge1.na_count > naCountThres)[0]
+
+na_inx = np.where(paramDataMerge1.data_count < MIN_DATA_THRESHOLD)[0]
 paramDataMerge.loc[na_inx, cols[2]] = np.nan
 
 # cols=paramDataMerge1.columns
