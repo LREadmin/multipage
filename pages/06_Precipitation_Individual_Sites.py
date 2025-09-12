@@ -30,6 +30,8 @@ def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
 
+MIN_DATA_THRESHOLD = 25
+
 #%% Read in raw weather data
 data_raw=pandas.read_csv('DW_weather.csv.gz')
 
@@ -98,9 +100,6 @@ data_param_site=sitefilter()
 endY=data_param_site['WY'].max()
 startY=data_param_site['WY'].min()
 
-startM=10
-startD=1
-
 # with st.sidebar: 
 startYear = st.sidebar.number_input('Enter Beginning Water Year:', min_value=startY, max_value=endY,value=startY)
 endYear = st.sidebar.number_input('Enter Ending Water Year:',min_value=startY, max_value=endY,value=endY)
@@ -117,17 +116,19 @@ tableEndDate=datetime.datetime(endYear,9,30).strftime("%Y-%m-%d")
 maxDaily=round(data_param_site_date['pcpn'].max(),2)
 minDaily=round(data_param_site_date['pcpn'].min(),2)
 
-thresholdHigh = st.sidebar.number_input('Set Upper Precipitation (in/day) Threshold (Inclusive):',
-                                        step=0.1,
-                                        min_value=minDaily, 
-                                        value=maxDaily,
-                                        format='%.2f')
+thresholdHigh = st.sidebar.number_input(
+    'Set Upper Precipitation (in/day) Threshold (Inclusive):',
+    step=0.1,
+    min_value=minDaily,
+    value=maxDaily,
+    format='%.2f')
 
-thresholdLow = st.sidebar.number_input('Set Lower Precipitation (in/day) Threshold (Inclusive):',
-                                       step=0.1,
-                                       min_value=minDaily, 
-                                       value=minDaily,
-                                       format='%.2f')
+thresholdLow = st.sidebar.number_input(
+    'Set Lower Precipitation (in/day) Threshold (Inclusive):',
+    step=0.1,
+    min_value=minDaily,
+    value=minDaily,
+    format='%.2f')
 
 #%%calc statistic for all months
 yearList=data_param_site_date['WY'].drop_duplicates()
@@ -138,8 +139,8 @@ for row in yearList:
     tempData=data_param_site_date[data_param_site_date['WY']==row]
     
     #filter by day count threshold
-    naCountThres=5
-    yearCountThres=0
+    # naCountThres=5
+    # yearCountThres=0
     
     if tempData['pcpn'].count().sum()>0:
        
@@ -186,8 +187,12 @@ paramDataMerge1=pandas.DataFrame(newParamData1,columns=['WY','Month','data_count
 # na_inx = np.where(paramDataMerge1.data_count < dayCountThres)[0]
 # paramDataMerge.loc[na_inx, cols[2]] = np.nan
 
+
 # I think this change matches the INTENTION of the original code
-na_inx = np.where(paramDataMerge1.na_count > naCountThres)[0]
+## NOTE: This was also wrong
+# na_inx = np.where(paramDataMerge1.na_count > naCountThres)[0]
+
+na_inx = np.where(paramDataMerge1.data_count < MIN_DATA_THRESHOLD)[0]
 paramDataMerge.loc[na_inx, cols[2]] = np.nan
 
 # cols=paramDataMerge1.columns
@@ -210,9 +215,9 @@ data4=pandas.concat(yearList)
 years=list.values.tolist()
 data4['Years']=years
 data4=data4.set_index('Years')
-data4.dropna(axis=1, how='all',inplace=True)
 data4.columns=monthNames
 data4=data4[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
+# data4.dropna(axis=1, how='all',inplace=True)
 
 medianData=pandas.DataFrame([["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"],data4.median()])
 
@@ -333,9 +338,9 @@ data5=pandas.concat(yearList)
 years=list.values.tolist()
 data5['Years']=years
 data5=data5.set_index('Years')
-data5.dropna(axis=1, how='all',inplace=True)
 data5.columns=monthNames
 data5=data5[["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"]]
+# data5.dropna(axis=1, how='all',inplace=True)
 
 #%%colormap
 data5.index = data5.index.astype(str)
