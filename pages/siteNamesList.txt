@@ -1,1 +1,0 @@
-['Berthoud Summit', 'Buckskin Joe', 'Buffalo Park', 'Copper Mountain', 'Echo Lake', 'Fool Creek', 'Fremont Pass', 'Grizzly Peak', 'High Lonesome', 'Hoosier Pass', 'Jackwhacker Gulch', 'Jones Pass', 'Michigan Creek', 'Middle Fork Camp', 'Rough And Tumble']
