@@ -191,7 +191,7 @@ def api_data_to_df(data_list):
         depth = param_info['heightDepth']
         param = depth_to_param[depth]
         values = d['values']
-        temp = pd.DataFrame([(i['date'], i['value']) for i in values])
+        temp = pd.DataFrame([(i['date'], i.get('value', np.nan)) for i in values])
         temp.columns = ['Date', param]
         temp = temp.set_index('Date')
         df_list.append(temp)
@@ -256,7 +256,7 @@ def soil_moisture_for_site(site_code, param_str):
         ]
     )
     url = base_url + url_params
-    req = requests.get(url)
+    req = requests.get(url, timeout=5)
     req.raise_for_status()
     json_data = json.loads(req.text)
     data_list = json_data[0]['data']
