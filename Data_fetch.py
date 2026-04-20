@@ -166,47 +166,10 @@ def get_soil_moisture_data():
     df_list = []
     for site_code in site_codes:
         print(f'Beginning site: {site_code}')
-        df_list.append(get_soil_moisture_for_site(site_code, param_str))
+        df_list.append(soil_moisture_for_site(site_code, param_str))
         time.sleep(1)
     df = pd.concat(df_list)
     df.to_csv("SNOTEL_SMS.csv.gz",index=False)
-    return df
-
-def get_soil_moisture_for_site(site_code, param_str):
-    """ Input:
-            site_code: str - something like "1014:CO:SNTL"
-            param_str: str - a comma separated list of the values we want
-                to request from the API
-        Output:
-            returns a dataframe with columns for Date, soil moisture percent
-            at various depths, and the site code.
-    """
-    url = '/'.join(
-        [
-            'https://wcc.sc.egov.usda.gov',
-            'reportGenerator',
-            'view_csv',
-            'customMultiTimeSeriesGroupByStationReport',
-            'daily',
-            'start_of_period',
-            f'{site_code}%7Cid=%22%22%7Cname',
-            'POR_BEGIN,POR_END',
-            param_str,
-        ]
-    )
-    url = url + '?fitToScreen=false'
-    df = pd.read_csv(url, comment='#')
-    # Filters out data where the value is > 100%
-    df.iloc[:,1:] = df.iloc[:,1:].applymap(lambda x: np.nan if x > 100 else x)
-    df.columns = [
-        'Date',
-        'minus_2inch_pct',
-        'minus_4inch_pct',
-        'minus_8inch_pct',
-        'minus_20inch_pct',
-        'minus_40inch_pct'
-    ]
-    df['site'] = site_code
     return df
 
 def api_data_to_df(data_list):
@@ -237,7 +200,7 @@ def api_data_to_df(data_list):
     # columns (in the right places) for the data we didn't get from the API
     return pd.concat((template, df))
 
-def soil_moisture_for_site2(site_code, param_str):
+def soil_moisture_for_site(site_code, param_str):
     por_start_dict = {}
     por_start = por_start_dict[site_code]
     base_url = 'https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?'
@@ -255,6 +218,8 @@ def soil_moisture_for_site2(site_code, param_str):
     json_data = json.loads(req.text)
     data_list = json_data[0]['data']
     df = api_data_to_df(data_list)
+    # replace values greater than 100% with NAN
+    df = df.map(lambda x: np.nan if x > 100 else x)
     df['site'] = site_code
     return df
 
