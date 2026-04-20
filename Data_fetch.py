@@ -17,6 +17,7 @@ import json
 import ulmo
 import pandas as pd
 import numpy as np
+import requests
 from utils import error_logger
 
 ### Global Variables ###
@@ -205,6 +206,55 @@ def get_soil_moisture_for_site(site_code, param_str):
         'minus_20inch_pct',
         'minus_40inch_pct'
     ]
+    df['site'] = site_code
+    return df
+
+def api_data_to_df(data_list):
+    df_list = []
+    depth_to_param = {
+        -2: 'minus_2inch_pct',
+        -4: 'minus_4inch_pct',
+        -8: 'minus_8inch_pct',
+        -20: 'minus_20inch_pct',
+        -40: 'minus_40inch_pct'
+    }
+    # the reason for this whole hullabaloo is that the API stopped returning
+    # empty columns - so if there's no -4 inch data for a site, for example,
+    # we just don't get that column at all even though we specifically request
+    # it. So we make an empty dataframe as a template
+    template = pd.DataFrame(columns=list(depth_to_param.values()))
+    for d in data_list:
+        param_info = d['stationElement']
+        depth = param_info['heightDepth']
+        param = depth_to_param[depth]
+        values = d['values']
+        temp = pd.DataFrame([(i['date'], i['value']) for i in values])
+        temp.columns = ['Date', param]
+        temp = temp.set_index('Date')
+        df_list.append(temp)
+    df = pd.concat(df_list, axis=1)
+    # this will return the data we got from the API, along with empty
+    # columns (in the right places) for the data we didn't get from the API
+    return pd.concat((template, df))
+
+def soil_moisture_for_site2(site_code, param_str):
+    por_start_dict = {}
+    por_start = por_start_dict[site_code]
+    base_url = 'https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1/data?'
+    url_params = '&'.join(
+        [
+            f'stationTriplets={site_code}',
+            f'elements={param_str}',
+            'duration=DAILY',
+            f'beginDate={por_start}'
+        ]
+    )
+    url = base_url + url_params
+    req = requests.get(url)
+    req.raise_for_status()
+    json_data = json.loads(req.text)
+    data_list = json_data[0]['data']
+    df = api_data_to_df(data_list)
     df['site'] = site_code
     return df
 
