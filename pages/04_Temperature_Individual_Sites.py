@@ -5,28 +5,19 @@
 
 #%% Import Libraries
 import pandas #for dataframe
-
 import matplotlib.pyplot as plt #for plotting
-
 from matplotlib import colors #for additional colors
-
 import streamlit as st #for displaying on web app
-
 import datetime #for date/time manipulation
-
-import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 import numpy as np
-
 from PIL import Image #for map
 #%% Website display information
 st.set_page_config(page_title="Temperature Individual Sites", page_icon="📈")
 st.header("Individual Temperature Site Data Assessment")
 
 #%% Define data download as CSV function
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
@@ -43,32 +34,52 @@ monthList=data_raw['Month'].drop_duplicates()
 monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
 #get parameter list
-params=data_raw.columns
-params=params[params.isin(["maxt","mint","meant"])==True]
+# params=data_raw.columns
+# params=params[params.isin(["maxt","mint","meant"])==True]
 
-paramsDF=pandas.DataFrame(params)
-paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
-paramsSelect=paramsDF['long']
+# paramsDF=pandas.DataFrame(params)
+# paramsDF['long']=['Max Temp (F)', 'Min Temp (F)', 'Mean Temp (F)']
+# paramsSelect=paramsDF['long']
+
+# The "long" values are already hardcoded in, so there's no reason not to use
+# a dict. It simplifies things a lot, an it speeds things up by a factor of 
+# around 5000
+params_dict =  {
+    'Max Temp (F)': 'maxt',
+    'MinTemp(F)': 'mint',
+    'Mean Temp (F)': 'meant'}
 
 #get site list
-sites=pandas.DataFrame(data_raw['site'].drop_duplicates())
-sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
-               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
-               'Strontia (ST)','Williams Fork (WF)']
+sites = {
+    'Antero (AN)': 'AN',
+    'Cheesman (CM)': 'CM',
+    'DIA (DI)': 'DI',
+    'Dillon (DL)': 'DL',
+    'DW Admin (DW)': 'DW',
+    'Evergreen (EG)': 'EG',
+    'Eleven Mile (EM)': 'EM',
+    'Gross (GR)': 'GR',
+    'Kassler (KS)': 'KS',
+    'Moffat HQ (MF)': 'MF',
+    'Ralston (RS)': 'RS',
+    'Roberts Tunnel (RT)':'RT',
+    'Central Park (SP)': 'SP',
+    'Strontia (ST)': 'ST',
+    'Williams Fork (WF)': 'WF'}
 
 #%% filter first for parameters
-params_select = st.sidebar.selectbox('Select One Statistic:', paramsSelect)
-param=paramsDF.loc[paramsDF['long']==params_select][0]
+params_select = st.sidebar.selectbox('Select One Statistic:', params_dict.keys())
+param=params_dict[params_select]
 data_param=data_raw
-data1=data_param[[param.iloc[0],'Month','site','CY']]
+data1=data_param[[param,'Month','site','CY']]
 
 #%% filter second for site
-site_select_long = st.sidebar.selectbox('Select One Site:', sites['long'])
+site_select_long = st.sidebar.selectbox('Select One Site:', sites.keys())
 
-site_select=sites['site'][sites['long']==site_select_long]
+site_select=sites[site_select_long]
 
 def sitefilter():
-    return data1.loc[data1['site'] == site_select.iloc[0]]
+    return data1.loc[data1['site'] == site_select]
 
 data_param_site=sitefilter()
 
@@ -105,7 +116,7 @@ for row in yearList:
 
     #filter by day count threshold
     dayCountThres=25
-    tempData=tempData.groupby('Month').filter(lambda x : x['%s'%param.iloc[0]].count().sum()>=dayCountThres)
+    tempData=tempData.groupby('Month').filter(lambda x : x['%s'%param].count().sum()>=dayCountThres)
     
     for row1 in monthList:
         tempData2=tempData[tempData['Month']==row1]
@@ -131,10 +142,10 @@ tableStartDate=datetime.datetime(selectStartYear,1,1).strftime("%Y-%m-%d")
 
 tableEndDate=datetime.datetime(selectEndYear,12,31).strftime("%Y-%m-%d")
 #%%transpose to get months as columns
-list=paramDataMerge['CY'].drop_duplicates()
-list=list.sort_values(ascending=False)
+years=paramDataMerge['CY'].drop_duplicates()
+years=years.sort_values(ascending=False)
 yearList=[]
-for n in list:
+for n in years:
     temp1=paramDataMerge[paramDataMerge['CY']==n]
     temp2=temp1.iloc[:,[1,2]].copy()
     temp2=temp2.sort_values(by="Month")
@@ -144,7 +155,7 @@ for n in list:
     yearList.append(temp3)
 
 data4=pandas.concat(yearList)
-years=list.values.tolist()
+years=years.values.tolist()
 data4['Years']=years
 data4=data4.set_index('Years')
 data4.columns=monthNames
@@ -185,7 +196,8 @@ def background_gradient(s, m=None, M=None, cmap='OrRd', low=0, high=0):
     ret = c.applymap(lambda x: 'background-color: %s' % x)
 
     return ret 
-    
+
+data4.index = data4.index.astype(str)
 tableData=data4.style\
     .format(precision=1)\
     .set_properties(**{'width':'10000px'})\
@@ -208,7 +220,7 @@ st.dataframe(tableData)
 
 st.markdown(
     """Table Notes:
-- Months with fewer than 25 results are excluded and presented as “nan.""
+- Months with fewer than 25 results are not shown.
 - The user-defined temperature threshold does not change this table.  
     """
     )
@@ -218,7 +230,7 @@ csv = convert_df(data4)
 st.download_button(
      label="Download Monthly Median of %s Data (as CSV)"%params_select,
      data=csv,
-     file_name='Monthly_Median_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
+     file_name='Monthly_Median_Data_%s_%s.csv'%(params_select,site_select),
      mime='text/csv',
  )
 
@@ -240,7 +252,7 @@ Provides the monthly median and monthly trend for %s for the selected water year
 st.markdown("Selected Calendar Year(s): %s through %s"%(tableStartDate, tableEndDate))   
 sumStats1
 st.markdown("""Table Notes:
-- If no trend, then result is presented as “nan.”
+- If no trend, then result is presented as "None".
 - The user-defined temperature threshold does not change this table.
 """
 )
@@ -250,14 +262,14 @@ csv = convert_df(sumStats)
 st.download_button(
      label="Download Monthly %s Table (as CSV)"%params_select,
      data=csv,
-     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select.iloc[0]),
+     file_name='Sum_Stats_Data_%s_%s.csv'%(params_select,site_select),
      mime='text/csv',
  )
 
 #%%FOR THRESHOLD
 #%%transpose to get Months as columns
 yearList=[]
-for n in list:
+for n in years:
     temp1=paramDataMerge1[paramDataMerge1['CY']==n]
     temp2=temp1.iloc[:,[1,2]].copy()
     temp2=temp2.sort_values(by="Month")
@@ -267,9 +279,10 @@ for n in list:
     yearList.append(temp3)
 
 data5=pandas.concat(yearList)
-years=list.values.tolist()
+# years=med_list.values.tolist()
 data5['Years']=years
 data5=data5.set_index('Years')
+data5.index = data5.index.astype(str)
 data5.columns=monthNames
    
 countTableData=data5.style\

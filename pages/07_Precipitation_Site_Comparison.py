@@ -7,19 +7,11 @@ Created on Tue Aug 16 05:31:28 2022
 
 #%% Import Libraries
 import pandas #for dataframe
-
 import matplotlib.pyplot as plt #for plotting
-
 from matplotlib import colors #for additional colors
-
 import streamlit as st #for displaying on web app
-
 import datetime #for date/time manipulation
-
-import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 from PIL import Image
 
 #%% Website display information
@@ -27,7 +19,7 @@ st.set_page_config(page_title="Precipitation Site Comparison", page_icon="🌦")
 st.header("Precipitation Site Comparison Data Assessment")
 
 #%% Define data download as CSV function
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
@@ -56,23 +48,55 @@ stat_select = "Accumulated Precipitation (in)"
 
 stat_selection=paramsDF.loc[paramsDF['long']==stat_select][0]
 
-#%%make selections
-sites=pandas.DataFrame(data['site'].drop_duplicates())
-sites['long']=['Antero (AN)','Cheesman (CM)','DIA (DI)','Dillon (DL)','DW Admin (DW)','Evergreen (EG)',
-               'Eleven Mile (EM)','Gross (GR)','Kassler (KS)','Moffat HQ (MF)','Ralston (RS)','Central Park (SP)',
-               'Strontia (ST)','Williams Fork (WF)']
+#get site list
+sites = {
+    'Antero (AN)': 'AN',
+    'Cheesman (CM)': 'CM',
+    'DIA (DI)': 'DI',
+    'Dillon (DL)': 'DL',
+    'DW Admin (DW)': 'DW',
+    'Evergreen (EG)': 'EG',
+    'Eleven Mile (EM)': 'EM',
+    'Gross (GR)': 'GR',
+    'Kassler (KS)': 'KS',
+    'Moffat HQ (MF)': 'MF',
+    'Ralston (RS)': 'RS',
+    'Roberts Tunnel (RT)': 'RT',
+    'Central Park (SP)': 'SP',
+    'Strontia (ST)': 'ST',
+    'Williams Fork (WF)': 'WF'}
+
+rev_sites = {
+    'AN': 'Antero (AN)',
+    'CM': 'Cheesman (CM)',
+    'DI': 'DIA (DI)',
+    'DL': 'Dillon (DL)',
+    'DW': 'DW Admin (DW)',
+    'EG': 'Evergreen (EG)',
+    'EM': 'Eleven Mile (EM)',
+    'GR': 'Gross (GR)',
+    'KS': 'Kassler (KS)',
+    'MF': 'Moffat HQ (MF)',
+    'RS': 'Ralston (RS)',
+    'RT': 'Roberts Tunnel (RT)',
+    'SP': 'Central Park (SP)',
+    'ST': 'Strontia (ST)',
+    'WF': 'Williams Fork (WF)'}
+
+long_site_names = list(sites.keys())
 
 container=st.sidebar.container()
 all=st.sidebar.checkbox("Select all")
 
 if all:
-    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'], sites['long'])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', long_site_names, long_site_names)
 
 else:
-    multi_site_select_long = container.multiselect('Select One or More Sites:', sites['long'],default=sites['long'].iloc[0])
+    multi_site_select_long = container.multiselect('Select One or More Sites:', long_site_names, default=long_site_names[0])
 
 #multi_site_select_long=["Antero (AN)" ]   
-multi_site_select=sites['site'][sites['long'].isin(multi_site_select_long)]
+
+multi_site_select=[sites[i] for i in multi_site_select_long]
 
 def multisitefilter():
     return data[data['site'].isin(multi_site_select)]
@@ -205,7 +229,7 @@ tableEndDate=datetime.datetime(selectEndYearTable,9,30).strftime("%Y-%m-%d")
 manKPOR=[]
 por=[]
 medstat=[]
-for site in sites['site']:
+for site in sites.values():
     dataBySite=data_months[data_months['site']==site]
 
     porS=dataBySite['date'].min()
@@ -230,15 +254,14 @@ for site in sites['site']:
         manKPOR.append([site,tempPORManK[7]])       #slope value 
 
 manKPOR=pandas.DataFrame(manKPOR)
-manKPOR=manKPOR.set_index([sites['site']])
 manKPOR.columns=(['Site','POR Trend for %s'%stat_select])
+manKPOR = manKPOR.set_index('Site')
     
 pordf=pandas.DataFrame(por)
 pordf=pordf.set_index([0])
 pordf.columns=["POR Start","POR End"]
 
-medstatdf=pandas.DataFrame(medstat)
-medstatdf=medstatdf.set_index([sites['site']])
+medstatdf=pandas.DataFrame(medstat, index=sites.values())
 medstatdf.columns=['POR Median of %s'%stat_select]
 
 sumSites=pandas.concat([pordf,medstatdf,manKPOR],axis=1)
@@ -261,7 +284,7 @@ medstatSelect=[]
 
 siteSelect=data_sites_years_months['site'].drop_duplicates()
 
-for site in sites['site']:
+for site in sites.values():
     dataBySite=data_sites_years_months[data_sites_years_months['site']==site]
    
     #filter by day count threshold
@@ -288,29 +311,23 @@ for site in sites['site']:
     else:
         manKPORSelect.append(tempPORManK[7])       #slope value 
 
-manKPORSelect=pandas.DataFrame(manKPORSelect)
-manKPORSelect=manKPORSelect.set_index([sites['site']])
+manKPORSelect=pandas.DataFrame(manKPORSelect, index=sites.values())
+# manKPORSelect=manKPORSelect.set_index([sites['site']])
 manKPORSelect.columns=(['Select WY Trend for %s'%stat_select])
 manKPORSelect=manKPORSelect[manKPORSelect.index.isin(siteSelect)]
 
-medstatSelectdf=pandas.DataFrame(medstatSelect)
-medstatSelectdf=medstatSelectdf.set_index([sites['site']])
+medstatSelectdf=pandas.DataFrame(medstatSelect, index=sites.values())
+# medstatSelectdf=medstatSelectdf.set_index([sites['site']])
 medstatSelectdf.columns=(['Select WY Median of %s'%stat_select])
 medstatSelectdf=medstatSelectdf[medstatSelectdf.index.isin(siteSelect)]
 
 sumSites=pandas.concat([sumSites,medstatSelectdf,manKPORSelect],axis=1)      
-sumSites=sumSites.drop("Site",axis=1)
+# sumSites=sumSites.drop("Site",axis=1)
 
 sumSites1=sumSites[sumSites.index.isin(multi_site_select)]
 
-sumSites1['long']=""
-
-for i in range(0,len(sumSites1)):
-    idx=sumSites1.index[i]
-    site_long=sites[sites.site==idx].long.iloc[0]
-    sumSites1.long.iloc[i]=site_long
-    
-sumSites1=sumSites1.set_index('long')
+sumSites1.index = sumSites1.index.map(rev_sites)
+sumSites1.index.name = 'Site'
 sumSitesDisplay=sumSites1.style\
     .format({'POR Median of %s'%stat_select:"{:.2f}",'POR Trend for %s'%stat_select:"{:.3f}"
               ,'Select WY Median of %s'%stat_select:"{:.2f}",'Select WY Trend for %s'%stat_select:"{:.3f}"})\
@@ -327,7 +344,7 @@ for WYrow in selectWY:
     tempWYdata=compData[compData['WY']==WYrow]
     try:
         for siterow in selectSite:
-            site_long=sites[sites.site==siterow].long.iloc[0]
+            site_long=rev_sites[siterow]
             tempSiteData=tempWYdata[tempWYdata['site']==siterow]
             if len(tempSiteData)==0:
                 compList.append([site_long,WYrow,None,None,None,None])
@@ -474,7 +491,7 @@ for WYrow in selectWY:
         for siterow in selectSite:
             tempSiteData=tempWYdata[tempWYdata['site']==siterow]
             tempSiteData=tempSiteData[['WY','pcpn']].set_index('WY')
-            site_long=sites[sites.site==siterow].long.iloc[0]
+            site_long=rev_sites[siterow]
             
             count=tempSiteData[(tempSiteData <= thresholdHigh)&(tempSiteData >= thresholdLow)].count()[0]
             if (len(tempSiteData)==0):
@@ -530,8 +547,8 @@ st.subheader("Monthly %s for Selected Site(s) and Month(s)/Season(s) by Water Ye
 st.markdown("""
 Provides the total accumulated precipitation (in inches) for each selected site for the selected month(s)/season(s) and water year(s):  
 Notes for all tables:
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”          
+- If full year (12 months) is selected, years with fewer than 330 results are not shown.
+- If less than 12 months are selected, months with fewer than 25 results are not shown.    
     """)
             
 st.markdown("Selected Water Year(s): %s through %s"%(tableStartDate, tableEndDate))   
@@ -571,7 +588,7 @@ sumSitesDisplay
 st.markdown(
     """
 Table Notes:
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None".
 - The user-defined precipitation threshold does not change this table.
     """)
     
@@ -590,7 +607,7 @@ st.download_button(
 st.subheader("Net Difference Between Select WY Median of %s and POR Median of %s"%(stat_select,stat_select))
 st.markdown(
     """
-For example, the total accumulated precipitation for 2015 at Antero was 14.87 inches and the median for the full period of record was 10.37 in, so the net difference presented for Antero in 2015 with is +4.50 inches. This shows that 2015 had higher than average precipitation.
+For example, the total accumulated precipitation for 2015 at Antero was 14.87 inches and the median for the full period of record was 10.37 in, so the net difference presented for Antero in 2015 is +4.50 inches. This shows that 2015 had higher than average precipitation.
 """
     )
 
@@ -625,7 +642,7 @@ yearList1
 st.markdown(
     """
 Table Notes:
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None".
 - The user-defined precipitation threshold does not change this table.
     """)
 #%% download temp comparison data

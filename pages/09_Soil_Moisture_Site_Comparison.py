@@ -7,19 +7,12 @@ Created on Tue Oct 11 11:53:06 2022
 #%% import packages
 
 import streamlit as st #for displaying on web app
-
 import pandas as pd
-
 import datetime #for date/time manipulation
-
-import arrow #another library for date/time manipulation
-
 import pymannkendall as mk #for trend anlaysis
-
 import numpy as np
 import matplotlib.pyplot as plt #for plotting
 from matplotlib import colors #for additional colors
-
 from PIL import Image
 
 
@@ -31,7 +24,7 @@ st.header("Soil Moisture Site Comparison Data Assessment")
 
 #%% Define data download as CSV function
 #functions
-@st.cache
+@st.cache_data
 def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv().encode('utf-8')
@@ -41,7 +34,7 @@ def convert_to_WY(row):
         return(pd.datetime(row.year+1,1,1).year)
     else:
         return(pd.datetime(row.year,1,1).year)
-    
+
 def background_gradient(s, m=None, M=None, cmap='gist_earth_r', low=0.1, high=1):
     if m is None:
         m = s.min().min()
@@ -445,8 +438,8 @@ st.markdown(
 """
 Notes for all tables:
 - Excludes user-selected sites if no data exists for one of the user-selected depths ("X" in Available Data Summary Table). 
-- If full year (12 months) is selected, years with fewer than 330 results are excluded and the result is presented as “nan.”
-- If less than 12 months are selected, months with fewer than 25 results are excluded and presented as “nan.”
+- If full year (12 months) is selected, years with fewer than 330 results are not shown.
+- If less than 12 months are selected, months with fewer than 25 results are not shown.
 Based on average for %s for user-selected month(s)/season(s) in selected water year(s): %s through %s    
 """%(tableDepths2Str, tableStartY, tableEndY)
     )
@@ -487,7 +480,7 @@ st.dataframe(displayTableDataPOR)
 st.markdown(
     """
 Table Note: 
-- If no trend, then result is presented as “nan.” 
+- If no trend, then result is presented as "None".
     """)
 
 #download pivot table
@@ -517,7 +510,7 @@ st.dataframe(tableDataDiv)
 st.markdown(
     """
 Table Note:
-- If divisor is zero, result is excluded and presented as “nan.”
+- If divisor is zero, result is excluded and presented as "None".
     """)
 #download pivot table
 csv = convert_df(pvTable_division)
