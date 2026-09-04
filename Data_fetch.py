@@ -169,7 +169,7 @@ def get_soil_moisture_data():
         df_list.append(soil_moisture_for_site(site_code, param_str))
         time.sleep(1)
     df = pd.concat(df_list)
-    df.to_csv("SNOTEL_SMS.csv.gz")
+    df.to_csv("SNOTEL_SMS.csv.gz", index_label='Date')
     return df
 
 def api_data_to_df(data_list):
